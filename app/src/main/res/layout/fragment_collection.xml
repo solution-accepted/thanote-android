@@ -10,8 +10,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/collection_fragment_title"
-        android:textSize="30sp"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"
+        style="@style/TitleFont" />
 
     <Button
         android:id="@+id/button_collection_detail"
@@ -19,6 +19,7 @@
         android:layout_height="wrap_content"
         android:text="@string/collection_fragment_note_detail"
         android:layout_centerInParent="true"
+        style="@style/DemoButtonFont"
         android:layout_below="@+id/text_view_collection" />
 
 </RelativeLayout>
