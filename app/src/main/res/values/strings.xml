@@ -1,3 +1,14 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Thanote</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_collection">Collection</string>
+    <string name="nav_setting">Setting</string>
+
+    <!-- Home Fragment -->
+
+    <!-- Collection Fragment -->
+
+    <!-- Setting Fragment -->
+
 </resources>
