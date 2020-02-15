@@ -16,7 +16,8 @@ public interface CategoryDao {
     @Delete
     void delete(Category category);
 
-    @Query("DELETE FROM category_table")
+    // we keep the default category here
+    @Query("DELETE FROM category_table WHERE name != 'default'")
     void deleteAllCategories();
 
     @Query("SELECT * FROM category_table")
