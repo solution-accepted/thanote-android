@@ -8,6 +8,7 @@
     <!-- Define Custom Strings here -->
     <!-- Home Fragment -->
     <string name="home_fragment_note_detail">Demo Detail</string>
+    <string name="search_hint">Search anything here…</string>
 
     <!-- Collection Fragment -->
     <string name="collection_fragment_title">Collection(Has a + button)</string>

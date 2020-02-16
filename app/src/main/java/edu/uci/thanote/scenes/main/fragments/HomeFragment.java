@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,7 +14,7 @@ import edu.uci.thanote.scenes.note.NoteActivity;
 
 public class HomeFragment extends Fragment {
     // TODO: - Declare private UI Components here...
-    // private Button xxxButton;
+    private SearchView searchView;
 
     @Nullable
     @Override
@@ -26,16 +26,11 @@ public class HomeFragment extends Fragment {
 
     private void setupViews(View view) {
         // TODO: - Binding Views Here...
-        // xxxButton = view.findViewById(R.id.button_xxx);
-
-        // TODO: - Remove Demo Code
-        Button button = view.findViewById(R.id.button_home_detail);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openNoteDetail();
-            }
-        });
+        searchView = view.findViewById(R.id.search_view_home);
+        searchView.setSubmitButtonEnabled(true);
+//        searchView.setIconifiedByDefault(false);
+//        searchView.setIconified(false);
+        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
     }
 
     private void openNoteDetail() {
