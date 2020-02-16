@@ -3,4 +3,11 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
+
+    <!-- Define Custom Colors here -->
+    <!-- Fragment Background Colors -->
+    <color name="holo_green_light">#FF99CC00</color>
+    <color name="holo_blue_bright">#FF00DDFF</color>
+    <color name="holo_red_light">#FFFF4444</color>
+
 </resources>

@@ -5,11 +5,17 @@
     <string name="nav_collection">Collection</string>
     <string name="nav_setting">Setting</string>
 
+    <!-- Define Custom Strings here -->
     <!-- Home Fragment -->
+    <string name="home_fragment_note_detail">Demo Detail</string>
 
     <!-- Collection Fragment -->
     <string name="collection_search">CollectionSearch</string>
     <string name="collection_search_hint">Find your collections</string>
     <!-- Setting Fragment -->
+    <string name="setting_fragment_title">Setting</string>
+
+    <!-- Note Activity -->
+    <string name="note_activity_title">Edit, view note detail in here.</string>
 
 </resources>
