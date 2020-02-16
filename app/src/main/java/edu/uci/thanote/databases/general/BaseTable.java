@@ -2,7 +2,6 @@ package edu.uci.thanote.databases.general;
 
 import androidx.room.ColumnInfo;
 import androidx.room.PrimaryKey;
-import androidx.room.TypeConverters;
 
 import java.io.Serializable;
 import java.util.Date;

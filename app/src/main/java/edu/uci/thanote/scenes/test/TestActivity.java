@@ -11,7 +11,9 @@ import androidx.lifecycle.ViewModelProvider;
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.general.DateTimeConverter;
+import edu.uci.thanote.databases.note.Note;
 
+import java.util.Date;
 import java.util.List;
 
 public class TestActivity extends AppCompatActivity {
@@ -27,7 +29,11 @@ public class TestActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+        setupViewModel();
+        setupViews();
+    }
 
+    private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(TestViewModel.class);
         viewModel.setListener(new TestViewModel.TestViewModelListener() {
             @Override
@@ -45,11 +51,33 @@ public class TestActivity extends AppCompatActivity {
                     builder.append("id: ").append(category.getId()).append(", name: ").append(category.getName()).append(", created: ").append(dateString).append("\n");
                 }
                 testTextView.setText(builder.toString());
-                showToast("refresh");
+                showToast("refresh category");
             }
         });
 
-        setupViews();
+        viewModel.getNotes().observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notes) {
+                StringBuilder builder = new StringBuilder();
+
+                for (Note note : notes) {
+                    String id = String.valueOf(note.getId());
+                    String categoryId = String.valueOf(note.getCategoryId());
+                    String title = note.getTitle();
+                    String detail = note.getDetail();
+                    String imageUrl = note.getImageUrl();
+                    String createDate = DateTimeConverter.dateToString(note.getCreateDate());
+
+                    builder.append("id: " + id + ", ");
+                    builder.append("categoryId: " + categoryId + ", ");
+                    builder.append("title: " + title + ", ");
+                    builder.append("detail: " + detail + ", ");
+                    builder.append("createDate: " + createDate + "\n");
+                }
+                testTextView.setText(builder.toString());
+                showToast("refresh note");
+            }
+        });
     }
 
     private void setupViews() {
