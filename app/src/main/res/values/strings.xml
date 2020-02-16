@@ -8,12 +8,11 @@
     <!-- Define Custom Strings here -->
     <!-- Home Fragment -->
     <string name="home_fragment_note_detail">Demo Detail</string>
-    <string name="search_hint">Search anything hereâ€¦</string>
+    <string name="search_hint">Search anything here¡­</string>
 
     <!-- Collection Fragment -->
-    <string name="collection_fragment_title">Collection(Has a + button)</string>
-    <string name="collection_fragment_note_detail">Demo Detail</string>
-
+    <string name="collection_search">CollectionSearch</string>
+    <string name="collection_search_hint">Find your collections</string>
     <!-- Setting Fragment -->
     <string name="setting_fragment_title">Setting</string>
 
