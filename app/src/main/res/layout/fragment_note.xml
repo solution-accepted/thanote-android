@@ -23,10 +23,11 @@
             android:layout_height="40dp"
             android:layout_margin="5dp"
             android:background="@android:color/white"
-            android:drawableLeft="@drawable/ic_search"
             android:ems="10"
-            android:gravity="center"
-            android:hint="@string/collection_search_hint"></EditText>
+            android:hint="@string/collection_search_hint"
+            android:drawableLeft="@drawable/ic_search"
+            android:gravity="center" >
+        </EditText>
 
         <!--        </LinearLayout>-->
 
@@ -35,16 +36,16 @@
             android:id="@+id/collection_recycle_view"
             android:layout_width="match_parent"
             android:layout_height="756dp"
-            tools:listitem="@layout/collection_item" />
-    </LinearLayout>
+            tools:listitem="@layout/note_item" />
 
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/button_add_note"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:src="@drawable/ic_add"
         android:layout_margin="32dp"
-        android:src="@drawable/ic_add" />
+        android:layout_gravity="bottom|end"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
