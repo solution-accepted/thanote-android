@@ -9,11 +9,13 @@ import android.os.Bundle;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import edu.uci.thanote.R;
+import edu.uci.thanote.apis.demo.Post;
+import edu.uci.thanote.apis.joke.SingleJoke;
+import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.general.DateTimeConverter;
 import edu.uci.thanote.databases.note.Note;
 
-import java.util.Date;
 import java.util.List;
 
 public class TestActivity extends AppCompatActivity {
@@ -22,6 +24,11 @@ public class TestActivity extends AppCompatActivity {
     private Button updateButton;
     private Button deleteButton;
     private Button deleteAllButton;
+    private Button singleJokeButton;
+    private Button twopartJokeButton;
+    private Button postsButton;
+    private Button searchSingleJokeButton;
+    private Button searchTwoPartJokeButton;
 
     private TestViewModel viewModel;
 
@@ -37,8 +44,66 @@ public class TestActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(TestViewModel.class);
         viewModel.setListener(new TestViewModel.TestViewModelListener() {
             @Override
+            public void didFetchSingleJoke(SingleJoke joke) {
+                testTextView.setText(joke.getJoke());
+                showToast("get a single joke");
+
+                // test insert note
+                String title = "A " + joke.getCategory() + " joke";
+                String detail = joke.getJoke();
+                Note note = new Note(title, detail, 1, "");
+                viewModel.insertNote(note);
+            }
+
+            @Override
+            public void didFetchTwoPartJoke(TwoPartJoke joke) {
+                String jokeString = joke.getSetup() + "\n" + joke.getDelivery();
+                testTextView.setText(jokeString);
+                showToast("get a two part joke");
+
+                // test insert note
+                String title = "A " + joke.getCategory() + " joke";
+                String detail = joke.getSetup() + "\n\n" + joke.getDelivery();
+                Note note = new Note(title, detail, 1, "");
+                viewModel.insertNote(note);
+            }
+
+            @Override
+            public void didFetchSingleJokeByKey(SingleJoke joke) {
+                testTextView.setText(joke.getJoke());
+                showToast("get a single joke");
+            }
+
+            @Override
+            public void didFetchTwoPartJokeByKey(TwoPartJoke joke) {
+                String jokeString = joke.getSetup() + "\n" + joke.getDelivery();
+                testTextView.setText(jokeString);
+                showToast("get a two part joke");
+            }
+
+            @Override
+            public void didFetchError(String message) {
+                showToast(message);
+            }
+
+            @Override
             public void didVerifyError(String message) {
                 showToast(message);
+            }
+
+            @Override
+            public void didFetchAllPosts(List<Post> posts) {
+                String content = "";
+
+                for (Post post : posts) {
+                    content += "ID: " + post.getId() + "\n";
+                    content += "User ID: " + post.getUserId() + "\n";
+                    content += "Title: " + post.getTitle() + "\n";
+                    content += "Text: " + post.getText() + "\n\n";
+                }
+
+                testTextView.setText(content);
+                showToast("refresh posts");
             }
         });
         viewModel.getCategories().observe(this, new Observer<List<Category>>() {
@@ -72,6 +137,7 @@ public class TestActivity extends AppCompatActivity {
                     builder.append("categoryId: " + categoryId + ", ");
                     builder.append("title: " + title + ", ");
                     builder.append("detail: " + detail + ", ");
+                    builder.append("imageUrl: " + imageUrl + ", ");
                     builder.append("createDate: " + createDate + "\n");
                 }
                 testTextView.setText(builder.toString());
@@ -86,10 +152,20 @@ public class TestActivity extends AppCompatActivity {
         updateButton = findViewById(R.id.button_update);
         deleteButton = findViewById(R.id.button_delete);
         deleteAllButton = findViewById(R.id.button_delete_all);
+        singleJokeButton = findViewById(R.id.button_get_single_joke);
+        twopartJokeButton = findViewById(R.id.button_get_two_part_joke);
+        searchSingleJokeButton = findViewById(R.id.button_search_single_joke);
+        searchTwoPartJokeButton = findViewById(R.id.button_search_two_part_joke);
+        postsButton = findViewById(R.id.button_get_posts);
         insertButton.setOnClickListener(onClickListener);
         updateButton.setOnClickListener(onClickListener);
         deleteButton.setOnClickListener(onClickListener);
         deleteAllButton.setOnClickListener(onClickListener);
+        singleJokeButton.setOnClickListener(onClickListener);
+        twopartJokeButton.setOnClickListener(onClickListener);
+        postsButton.setOnClickListener(onClickListener);
+        searchSingleJokeButton.setOnClickListener(onClickListener);
+        searchTwoPartJokeButton.setOnClickListener(onClickListener);
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -107,6 +183,21 @@ public class TestActivity extends AppCompatActivity {
                     break;
                 case R.id.button_delete_all:
                     viewModel.testDeleteAll();
+                    break;
+                case R.id.button_get_single_joke:
+                    viewModel.getSingleJoke();
+                    break;
+                case R.id.button_get_two_part_joke:
+                    viewModel.getTwoPartJoke();
+                    break;
+                case R.id.button_get_posts:
+                    viewModel.getAllPosts();
+                    break;
+                case R.id.button_search_single_joke:
+                    viewModel.searchSingleJoke("a");
+                    break;
+                case R.id.button_search_two_part_joke:
+                    viewModel.searchTwoPartJoke("c");
                     break;
                 default:
                     showToast("Error test with view: " + view.getId());
