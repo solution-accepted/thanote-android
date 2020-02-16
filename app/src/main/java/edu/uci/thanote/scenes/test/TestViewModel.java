@@ -4,11 +4,13 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import edu.uci.thanote.apis.demo.Post;
+import edu.uci.thanote.apis.joke.SingleJoke;
+import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
 
 import java.util.List;
-import java.util.Random;
 
 public class TestViewModel extends AndroidViewModel {
     private final TestRepository repository;
@@ -18,9 +20,42 @@ public class TestViewModel extends AndroidViewModel {
     public TestViewModel(@NonNull Application application) {
         super(application);
         repository = new TestRepository(application);
+        repository.setListener(testRepositoryListener);
         categories = repository.getCategories();
         notes = repository.getNotes();
     }
+
+    private TestRepository.TestRepositoryListener testRepositoryListener = new TestRepository.TestRepositoryListener() {
+        @Override
+        public void didFetchSingleJoke(SingleJoke joke) {
+            listener.didFetchSingleJoke(joke);
+        }
+
+        @Override
+        public void didFetchTwoPartJoke(TwoPartJoke joke) {
+            listener.didFetchTwoPartJoke(joke);
+        }
+
+        @Override
+        public void didFetchSingleJokeByKey(SingleJoke joke) {
+            listener.didFetchSingleJokeByKey(joke);
+        }
+
+        @Override
+        public void didFetchTwoPartJokeByKey(TwoPartJoke joke) {
+            listener.didFetchTwoPartJokeByKey(joke);
+        }
+
+        @Override
+        public void didFetchAllPosts(List<Post> posts) {
+            listener.didFetchAllPosts(posts);
+        }
+
+        @Override
+        public void didFetchError(String message) {
+            listener.didFetchError(message);
+        }
+    };
 
     // region Public APIs
 
@@ -88,6 +123,26 @@ public class TestViewModel extends AndroidViewModel {
         return notes;
     }
 
+    public void getSingleJoke() {
+        repository.fetchSingleJoke();
+    }
+
+    public void getTwoPartJoke() {
+        repository.fetchTwoPartJoke();
+    }
+
+    public void getAllPosts() {
+        repository.fetchAllPosts();
+    }
+
+    public void searchSingleJoke(String key) {
+        repository.fetchSingleJokeBy(key);
+    }
+
+    public void searchTwoPartJoke(String key) {
+        repository.fetchTwoPartJokeBy(key);
+    }
+
     // endregion
 
     // TODO: - Must define listener to notify view change state or messages
@@ -96,7 +151,13 @@ public class TestViewModel extends AndroidViewModel {
     private TestViewModelListener listener;
 
     public interface TestViewModelListener {
+        void didFetchSingleJoke(SingleJoke joke);
+        void didFetchTwoPartJoke(TwoPartJoke joke);
+        void didFetchSingleJokeByKey(SingleJoke joke);
+        void didFetchTwoPartJokeByKey(TwoPartJoke joke);
+        void didFetchError(String message);
         void didVerifyError(String message);
+        void didFetchAllPosts(List<Post> posts);
     }
 
     public void setListener(TestViewModelListener listener) {

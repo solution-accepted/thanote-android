@@ -40,11 +40,57 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_get_single_joke"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A single Joke" />
+
+        <Button
+            android:id="@+id/button_get_two_part_joke"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A two part Joke" />
+
+        <Button
+            android:id="@+id/button_get_posts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Get posts" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/button_search_single_joke"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search a single Joke" />
+
+        <Button
+            android:id="@+id/button_search_two_part_joke"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search a two part Joke" />
+
+    </LinearLayout>
+
     <TextView
         android:id="@+id/text_view_test"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10sp"
-        android:text="123" />
+        android:scrollbars="vertical"
+        android:padding="10sp" />
 
 </LinearLayout>
