@@ -1,6 +1,5 @@
 package edu.uci.thanote.scenes.main.fragments.home;
 
-import android.content.Intent;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -11,9 +10,6 @@ import edu.uci.thanote.databases.note.Note;
 
 public class HomeRecyclerViewViewHolder extends RecyclerView.ViewHolder {
 
-    private HomeFragment homeFragment;
-    private HomeViewModel homeViewModel;
-
     TextView textViewTitle;
     TextView textViewDate;
     TextView textViewDescription;
@@ -21,9 +17,7 @@ public class HomeRecyclerViewViewHolder extends RecyclerView.ViewHolder {
     ImageButton buttonShare;
     ImageButton buttonFavorite;
 
-    boolean isFavorite = false;
-
-    public HomeRecyclerViewViewHolder(@NonNull View itemView, HomeFragment homeFragment) {
+    public HomeRecyclerViewViewHolder(@NonNull View itemView) {
         super(itemView);
 
         textViewTitle = itemView.findViewById(R.id.text_view_note_title);
@@ -32,9 +26,6 @@ public class HomeRecyclerViewViewHolder extends RecyclerView.ViewHolder {
 
         buttonShare = itemView.findViewById(R.id.button_note_share);
         buttonFavorite = itemView.findViewById(R.id.button_note_favorite);
-
-        this.homeFragment = homeFragment;
-        this.homeViewModel = homeFragment.getViewModel();
     }
 
     public void setNote(Note note) {
@@ -42,17 +33,19 @@ public class HomeRecyclerViewViewHolder extends RecyclerView.ViewHolder {
         textViewTitle.setText(note.getTitle());
         textViewDate.setText("");
 
-        buttonShare.setOnClickListener(v -> {
-            Intent intent = new Intent("ACTION_SHARE");
-            homeFragment.startActivity(intent);
-        });
+        buttonShare.setOnClickListener(v -> listener.onButtonShareClicked(note));
+        buttonFavorite.setOnClickListener(v -> listener.onButtonFavoriteClicked(note));
+    }
 
-        buttonFavorite.setOnClickListener(v -> {
-            if (isFavorite) {
-                homeViewModel.deleteNote(note);
-            } else {
-                homeViewModel.insertNote(note);
-            }
-        });
+    public interface Listener {
+        void onButtonShareClicked(Note note);
+
+        void onButtonFavoriteClicked(Note note);
+    }
+
+    private Listener listener;
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 }

@@ -13,25 +13,14 @@ import java.util.List;
 
 public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewViewHolder> {
 
-    HomeFragment homeFragment;
     List<Note> notes;
 
     HomeRecyclerViewAdapter() {
         this.notes = new ArrayList<>();
     }
 
-    HomeRecyclerViewAdapter(HomeFragment homeFragment) {
-        this.homeFragment = homeFragment;
-        this.notes = new ArrayList<>();
-    }
-
     HomeRecyclerViewAdapter(List<Note> notes) {
         this.notes = notes;
-    }
-
-    public void setNotes(List<Note> notes) {
-        this.notes = notes;
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -41,7 +30,22 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
                 .from(parent.getContext())
                 .inflate(R.layout.item_note, parent, false);
 
-        return new HomeRecyclerViewViewHolder(v, homeFragment);
+        HomeRecyclerViewViewHolder holder =
+                new HomeRecyclerViewViewHolder(v);
+
+        holder.setListener(new HomeRecyclerViewViewHolder.Listener() {
+            @Override
+            public void onButtonShareClicked(Note note) {
+                listener.onButtonShareClicked(note);
+            }
+
+            @Override
+            public void onButtonFavoriteClicked(Note note) {
+                listener.onButtonFavoriteClicked(note);
+            }
+        });
+
+        return holder;
     }
 
     @Override
@@ -52,5 +56,22 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     @Override
     public int getItemCount() {
         return notes.size();
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+        notifyDataSetChanged();
+    }
+
+    public interface Listener {
+        void onButtonShareClicked(Note note);
+
+        void onButtonFavoriteClicked(Note note);
+    }
+
+    private Listener listener;
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
     }
 }

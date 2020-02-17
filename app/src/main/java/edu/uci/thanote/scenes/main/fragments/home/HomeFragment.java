@@ -1,5 +1,6 @@
 package edu.uci.thanote.scenes.main.fragments.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,7 @@ public class HomeFragment extends Fragment {
 
     private final int NOTE_INIT_COUNT = 10;
     private final int NOTE_TYPE_COUNT = 2;
+    private final int NOTE_DEFAULT_CATEGORY_ID = 1;
 
     private HomeViewModel viewModel;
 
@@ -54,13 +56,13 @@ public class HomeFragment extends Fragment {
         viewModel.setListener(new HomeViewModel.Listener() {
             @Override
             public void didFetchSingleJoke(SingleJoke joke) {
-                Note newNote = new Note("Joke", joke.getJoke(), 0, "");
+                Note newNote = new Note("Joke", joke.getJoke(), NOTE_DEFAULT_CATEGORY_ID, "");
                 addNote(newNote);
             }
 
             @Override
             public void didFetchTwoPartJoke(TwoPartJoke joke) {
-                Note newNote = new Note("Joke", joke.getSetup() + " " + joke.getDelivery(), 0, "");
+                Note newNote = new Note("Joke", joke.getSetup() + " " + joke.getDelivery(), NOTE_DEFAULT_CATEGORY_ID, "");
                 addNote(newNote);
             }
 
@@ -111,7 +113,29 @@ public class HomeFragment extends Fragment {
 //        searchView.setIconifiedByDefault(false);
 //        searchView.setIconified(false);
 
-        recyclerViewAdapter = new HomeRecyclerViewAdapter(this);
+        recyclerViewAdapter = new HomeRecyclerViewAdapter();
+        recyclerViewAdapter.setListener(new HomeRecyclerViewAdapter.Listener() {
+            @Override
+            public void onButtonShareClicked(Note note) {
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, note.getDetail());
+                sendIntent.setType("text/plain");
+
+                Intent shareIntent = Intent.createChooser(sendIntent, null);
+                startActivity(shareIntent);
+            }
+
+            @Override
+            public void onButtonFavoriteClicked(Note note) {
+                // TODO note.isFavorite()
+//                if (note.isFavorite()) {
+//                    viewModel.deleteNote(note);
+//                } else {
+//                    viewModel.insertNote(note);
+//                }
+            }
+        });
         recyclerView = view.findViewById(R.id.recycler_view_home);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         recyclerView.setAdapter(recyclerViewAdapter);
@@ -137,7 +161,7 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void showToast(String message) {
+    public void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
