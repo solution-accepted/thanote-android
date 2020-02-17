@@ -16,6 +16,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class HomeRepository {
 
@@ -23,12 +24,12 @@ public class HomeRepository {
     private CategoryTable categoryTable;
     private NoteTable noteTable;
 
-    // api
-    private JokeAPIInterface jokeAPIInterface;
-
     // data fields
     private LiveData<List<Category>> categories;
     private LiveData<List<Note>> notes;
+
+    // api
+    private JokeAPIInterface jokeAPIs;
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -38,10 +39,10 @@ public class HomeRepository {
         notes = noteTable.getNotes();
 
         Retrofit jokeRetrofit = APIClient.getInstance().getRetrofitJoke();
-        jokeAPIInterface = jokeRetrofit.create(JokeAPIInterface.class);
+        jokeAPIs = jokeRetrofit.create(JokeAPIInterface.class);
     }
 
-    // region Public APIs (Database)
+    // region Public Methods (Local Database)
 
     public void insertCategory(Category category) {
         categoryTable.insert(category);
@@ -65,7 +66,7 @@ public class HomeRepository {
 
     // endregion
 
-    // region Public APIs (API)
+    // region Public Methods (Remote API)
 
     public interface Listener {
         void didFetchError(String message);
@@ -86,84 +87,41 @@ public class HomeRepository {
     }
 
     public void fetchSingleJoke() {
-        jokeAPIInterface
-                .getSingleJoke()
-                .enqueue(new Callback<SingleJoke>() {
-                    @Override
-                    public void onResponse(Call<SingleJoke> call, Response<SingleJoke> response) {
-                        if (!response.isSuccessful()) {
-                            listener.didFetchError("Response Code: " + response.code());
-                            return;
-                        }
-
-                        listener.didFetchSingleJoke(response.body());
-                    }
-
-                    @Override
-                    public void onFailure(Call<SingleJoke> call, Throwable t) {
-                        listener.didFetchError(t.getMessage());
-                    }
-                });
+        jokeAPIs.getSingleJoke()
+                .enqueue(getCallback(listener::didFetchSingleJoke));
     }
 
     public void fetchTwoPartJoke() {
-        Call<TwoPartJoke> call = jokeAPIInterface.getTwoPartJoke();
-        call.enqueue(new Callback<TwoPartJoke>() {
-            @Override
-            public void onResponse(Call<TwoPartJoke> call, Response<TwoPartJoke> response) {
-                if (!response.isSuccessful()) {
-                    listener.didFetchError("Response Code: " + response.code());
-                    return;
-                }
-
-                listener.didFetchTwoPartJoke(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<TwoPartJoke> call, Throwable t) {
-                listener.didFetchError(t.getMessage());
-            }
-        });
+        jokeAPIs.getTwoPartJoke()
+                .enqueue(getCallback(listener::didFetchTwoPartJoke));
     }
 
     public void fetchSingleJokeBy(String key) {
-        Call<SingleJoke> call = jokeAPIInterface.getSingleJokeBy(key);
-        call.enqueue(new Callback<SingleJoke>() {
-            @Override
-            public void onResponse(Call<SingleJoke> call, Response<SingleJoke> response) {
-                if (!response.isSuccessful()) {
-                    listener.didFetchError("Response Code: " + response.code());
-                    return;
-                }
-
-                listener.didFetchSingleJokeByKey(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<SingleJoke> call, Throwable t) {
-                listener.didFetchError(t.getMessage());
-            }
-        });
+        jokeAPIs.getSingleJokeBy(key)
+                .enqueue(getCallback(listener::didFetchSingleJokeByKey));
     }
 
     public void fetchTwoPartJokeBy(String key) {
-        Call<TwoPartJoke> call = jokeAPIInterface.getTwoPartJokeBy(key);
-        call.enqueue(new Callback<TwoPartJoke>() {
-            @Override
-            public void onResponse(Call<TwoPartJoke> call, Response<TwoPartJoke> response) {
-                if (!response.isSuccessful()) {
-                    listener.didFetchError("Response Code: " + response.code());
-                    return;
-                }
+        jokeAPIs.getTwoPartJokeBy(key)
+                .enqueue(getCallback(listener::didFetchTwoPartJokeByKey));
+    }
 
-                listener.didFetchTwoPartJokeByKey(response.body());
+    private <T> Callback<T> getCallback(Consumer<T> function) {
+        return new Callback<T>() {
+            @Override
+            public void onResponse(Call<T> call, Response<T> response) {
+                if (response.isSuccessful()) {
+                    function.accept(response.body());
+                } else {
+                    listener.didFetchError("Response Code: " + response.code());
+                }
             }
 
             @Override
-            public void onFailure(Call<TwoPartJoke> call, Throwable t) {
+            public void onFailure(Call<T> call, Throwable t) {
                 listener.didFetchError(t.getMessage());
             }
-        });
+        };
     }
 
     // endregion

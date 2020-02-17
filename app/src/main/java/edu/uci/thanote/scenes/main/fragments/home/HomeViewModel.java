@@ -21,9 +21,12 @@ public class HomeViewModel extends AndroidViewModel {
             new Note("note3", "note3", 3, "")
     );
 
+    // model = local database + remote api
     private final HomeRepository repository;
-    private LiveData<List<Category>> categories;
-    private LiveData<List<Note>> notes;
+
+    // view model = local user interface
+    private LiveData<List<Category>> categoriesInDatabase;
+    private LiveData<List<Note>> notesInDatabase;
     private MutableLiveData<List<Note>> notesInMemory;
 
     public HomeViewModel(@NonNull Application application) {
@@ -63,8 +66,8 @@ public class HomeViewModel extends AndroidViewModel {
                 listener.didFetchTwoPartJokeByKey(joke);
             }
         });
-        categories = repository.getCategories();
-        notes = repository.getNotes();
+        categoriesInDatabase = repository.getCategories();
+        notesInDatabase = repository.getNotes();
         notesInMemory = new MutableLiveData<>();
     }
 
@@ -78,8 +81,8 @@ public class HomeViewModel extends AndroidViewModel {
         repository.insertCategory(category);
     }
 
-    public LiveData<List<Category>> getCategories() {
-        return categories;
+    public LiveData<List<Category>> getCategoriesInDatabase() {
+        return categoriesInDatabase;
     }
 
     public void insertNote(Note note) {
@@ -90,8 +93,8 @@ public class HomeViewModel extends AndroidViewModel {
         repository.deleteNote(note);
     }
 
-    public LiveData<List<Note>> getNotes() {
-        return notes;
+    public LiveData<List<Note>> getNotesInDatabase() {
+        return notesInDatabase;
     }
 
     public MutableLiveData<List<Note>> getNotesInMemory() {
