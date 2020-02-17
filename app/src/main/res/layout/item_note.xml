@@ -1,24 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="8dp"
     android:layout_marginTop="8dp"
-    android:layout_marginEnd="8dp">
-
+    android:layout_marginEnd="8dp"
+    app:cardCornerRadius="8dp">
 
     <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp">
-
-        <TextView
-            android:id="@+id/text_view_note_date"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:text="02/15/2020"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <TextView
             android:id="@+id/text_view_note_title"
@@ -28,18 +21,57 @@
             android:layout_toStartOf="@id/text_view_note_date"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Title"
+            android:text="@string/item_note_title"
             android:textAppearance="@style/TextAppearance.AppCompat.Large" />
-
 
         <TextView
             android:id="@+id/text_view_note_description"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/text_view_note_date"
+            android:layout_below="@id/text_view_note_title"
             android:ellipsize="end"
             android:maxLines="3"
-            android:text="Description" />
+            android:text="@string/item_note_desc"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <TextView
+            android:id="@+id/text_view_note_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/item_note_date"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/text_view_note_description"
+            android:orientation="horizontal">
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4" />
+
+            <ImageButton
+                android:id="@+id/button_note_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/item_note_share"
+                app:srcCompat="@android:drawable/ic_menu_share" />
+
+            <ImageButton
+                android:id="@+id/button_note_favorite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/item_note_fav"
+                app:srcCompat="@android:drawable/btn_star_big_off" />
+        </LinearLayout>
+
     </RelativeLayout>
 
 

@@ -8,12 +8,30 @@ import androidx.recyclerview.widget.RecyclerView;
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewViewHolder> {
 
-    Note[] notes;
+    HomeFragment homeFragment;
+    List<Note> notes;
 
-    HomeRecyclerViewAdapter(Note[] notes) {
+    HomeRecyclerViewAdapter() {
+        this.notes = new ArrayList<>();
+    }
+
+    HomeRecyclerViewAdapter(HomeFragment homeFragment) {
+        this.homeFragment = homeFragment;
+        this.notes = new ArrayList<>();
+    }
+
+    HomeRecyclerViewAdapter(List<Note> notes) {
         this.notes = notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -23,16 +41,16 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
                 .from(parent.getContext())
                 .inflate(R.layout.item_note, parent, false);
 
-        return new HomeRecyclerViewViewHolder(v);
+        return new HomeRecyclerViewViewHolder(v, homeFragment);
     }
 
     @Override
     public void onBindViewHolder(@NonNull HomeRecyclerViewViewHolder holder, int position) {
-        holder.setNote(notes[position]);
+        holder.setNote(notes.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return notes.length;
+        return notes.size();
     }
 }
