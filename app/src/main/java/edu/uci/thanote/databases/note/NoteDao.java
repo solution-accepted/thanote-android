@@ -2,7 +2,6 @@ package edu.uci.thanote.databases.note;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.*;
-import edu.uci.thanote.databases.category.Category;
 
 import java.util.List;
 

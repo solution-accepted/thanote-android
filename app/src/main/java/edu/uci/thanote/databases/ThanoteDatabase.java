@@ -16,9 +16,10 @@ import edu.uci.thanote.databases.general.DateTimeConverter;
 import edu.uci.thanote.databases.note.Note;
 import edu.uci.thanote.databases.note.NoteDao;
 
-@Database(entities = {Category.class, Note.class}, version = 1)
+@Database(entities = {Category.class, Note.class}, version = 1, exportSchema = false)
 @TypeConverters({DateTimeConverter.class})
 public abstract class ThanoteDatabase extends RoomDatabase {
+    private static final String DATABASE_NAME = "thanote_database";
     private static ThanoteDatabase instance;
     public abstract CategoryDao categoryDao();
     public abstract NoteDao noteDao();
@@ -28,7 +29,7 @@ public abstract class ThanoteDatabase extends RoomDatabase {
             instance = Room.databaseBuilder(
                     context.getApplicationContext(),
                     ThanoteDatabase.class,
-                    "thanote_database")
+                    DATABASE_NAME)
                     .fallbackToDestructiveMigration()
 //                    .addMigrations(MIGRATION_6_7)
                     .addCallback(roomCallback)
@@ -56,7 +57,7 @@ public abstract class ThanoteDatabase extends RoomDatabase {
         @Override
         protected Void doInBackground(Void... voids) {
             // set default category for every user when initializing the category table
-            categoryDao.insert(new Category("default"));
+            categoryDao.insert(new Category(Category.DEFAULT_CATEGORY_NAME));
             return null;
         }
     }
@@ -65,7 +66,8 @@ public abstract class ThanoteDatabase extends RoomDatabase {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
             try {
-                database.execSQL("INSERT INTO category_table (name, created_date) VALUES ('default', 'CURRENT_TIMESTAMP')");
+                String defaultName = "'" + Category.DEFAULT_CATEGORY_NAME + "'";
+                database.execSQL("INSERT INTO category_table (name, created_date) VALUES (defaultName, 'CURRENT_TIMESTAMP')");
             } catch (SQLiteConstraintException e) {
                 // expected
             }
