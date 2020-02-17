@@ -13,22 +13,27 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import edu.uci.thanote.R;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.note.Note;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
 
-    private final int NOTE_INIT_COUNT = 1;
+    private final int NOTE_INIT_COUNT = 10;
     private final int NOTE_TYPE_COUNT = 2;
 
     private HomeViewModel viewModel;
 
+    private SwipeRefreshLayout swipeRefreshLayout;
     private SearchView searchView;
     private RecyclerView recyclerView;
     private HomeRecyclerViewAdapter recyclerViewAdapter;
@@ -49,13 +54,14 @@ public class HomeFragment extends Fragment {
         viewModel.setListener(new HomeViewModel.Listener() {
             @Override
             public void didFetchSingleJoke(SingleJoke joke) {
-                // TODO show notes without inserting
-                viewModel.insertNote(new Note("Joke", joke.getJoke(), 0, null));
+                Note newNote = new Note("Joke", joke.getJoke(), 0, "");
+                addNote(newNote);
             }
 
             @Override
             public void didFetchTwoPartJoke(TwoPartJoke joke) {
-                viewModel.insertNote(new Note("Joke", joke.getSetup() + " " + joke.getDelivery(), 0, null));
+                Note newNote = new Note("Joke", joke.getSetup() + " " + joke.getDelivery(), 0, "");
+                addNote(newNote);
             }
 
             @Override
@@ -78,11 +84,19 @@ public class HomeFragment extends Fragment {
                 showToast(message);
             }
         });
-        viewModel.getNotes().observe(getViewLifecycleOwner(),
+        viewModel.getNotesInMemory().observe(getViewLifecycleOwner(),
                 notes -> recyclerViewAdapter.setNotes(notes));
     }
 
     private void setupViews(View view) {
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout_home);
+        swipeRefreshLayout.setOnRefreshListener(this::getSomeNotes);
+        swipeRefreshLayout.setColorSchemeResources(
+                android.R.color.holo_blue_light,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         searchView = view.findViewById(R.id.search_view_home);
         searchView.setSubmitButtonEnabled(true);
         searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
@@ -104,6 +118,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void getSomeNotes() {
+        viewModel.getNotesInMemory().setValue(new ArrayList<>());
         Random random = new Random();
         for (int i = 0; i < NOTE_INIT_COUNT; ++i) {
             int next = random.nextInt(NOTE_TYPE_COUNT);
@@ -128,5 +143,12 @@ public class HomeFragment extends Fragment {
 
     public HomeViewModel getViewModel() {
         return viewModel;
+    }
+
+    private void addNote(Note note) {
+        swipeRefreshLayout.setRefreshing(false);
+        List<Note> notes = viewModel.getNotesInMemory().getValue();
+        Objects.requireNonNull(notes).add(note);
+        viewModel.getNotesInMemory().setValue(notes);
     }
 }

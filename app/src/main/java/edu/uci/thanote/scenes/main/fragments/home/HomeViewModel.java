@@ -4,6 +4,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.category.Category;
@@ -23,6 +24,7 @@ public class HomeViewModel extends AndroidViewModel {
     private final HomeRepository repository;
     private LiveData<List<Category>> categories;
     private LiveData<List<Note>> notes;
+    private MutableLiveData<List<Note>> notesInMemory;
 
     public HomeViewModel(@NonNull Application application) {
         super(application);
@@ -63,6 +65,7 @@ public class HomeViewModel extends AndroidViewModel {
         });
         categories = repository.getCategories();
         notes = repository.getNotes();
+        notesInMemory = new MutableLiveData<>();
     }
 
     // region Public APIs
@@ -89,6 +92,10 @@ public class HomeViewModel extends AndroidViewModel {
 
     public LiveData<List<Note>> getNotes() {
         return notes;
+    }
+
+    public MutableLiveData<List<Note>> getNotesInMemory() {
+        return notesInMemory;
     }
 
     public void getSingleJoke() {
