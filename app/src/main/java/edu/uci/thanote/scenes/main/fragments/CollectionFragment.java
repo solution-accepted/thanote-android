@@ -27,15 +27,6 @@ public class CollectionFragment extends Fragment {
     private void setupViews(View view) {
         // TODO: - Binding Views Here...
         // xxxButton = view.findViewById(R.id.button_xxx);
-
-        // TODO: - Remove Demo Code
-        Button button = view.findViewById(R.id.button_collection_detail);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                openNoteDetail();
-            }
-        });
     }
 
     private void openNoteDetail() {

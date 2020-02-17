@@ -1,4 +1,4 @@
-package edu.uci.thanote.scenes.main.fragments;
+package edu.uci.thanote.scenes.main.fragments.home;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,13 +9,15 @@ import android.widget.SearchView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import edu.uci.thanote.R;
-import edu.uci.thanote.scenes.note.NoteActivity;
+import edu.uci.thanote.databases.note.Note;
 import edu.uci.thanote.scenes.test.TestActivity;
 
 public class HomeFragment extends Fragment {
-    // TODO: - Declare private UI Components here...
     private SearchView searchView;
+    private RecyclerView recyclerView;
 
     @Nullable
     @Override
@@ -26,12 +28,22 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupViews(View view) {
-        // TODO: - Binding Views Here...
         searchView = view.findViewById(R.id.search_view_home);
         searchView.setSubmitButtonEnabled(true);
+        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
+
+//        Also try:
 //        searchView.setIconifiedByDefault(false);
 //        searchView.setIconified(false);
-        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
+
+        final Note[] NOTES = {
+                new Note("note1", "note1", 1, ""),
+                new Note("note2", "note2", 2, ""),
+                new Note("note3", "note3", 3, ""),
+        };
+        recyclerView = view.findViewById(R.id.recycler_view_home);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        recyclerView.setAdapter(new HomeRecyclerViewAdapter(NOTES));
     }
 
     private void openNoteDetail() {
