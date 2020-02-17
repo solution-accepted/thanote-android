@@ -16,7 +16,7 @@ import edu.uci.thanote.databases.general.DateTimeConverter;
 import edu.uci.thanote.databases.note.Note;
 import edu.uci.thanote.databases.note.NoteDao;
 
-@Database(entities = {Category.class, Note.class}, version = 1)
+@Database(entities = {Category.class, Note.class}, version = 1, exportSchema = false)
 @TypeConverters({DateTimeConverter.class})
 public abstract class ThanoteDatabase extends RoomDatabase {
     private static final String DATABASE_NAME = "thanote_database";
