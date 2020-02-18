@@ -194,10 +194,10 @@ public class TestActivity extends AppCompatActivity {
                     viewModel.getAllPosts();
                     break;
                 case R.id.button_search_single_joke:
-                    viewModel.searchSingleJoke("a");
+                    viewModel.searchSingleJoke("why");
                     break;
                 case R.id.button_search_two_part_joke:
-                    viewModel.searchTwoPartJoke("c");
+                    viewModel.searchTwoPartJoke("why");
                     break;
                 default:
                     showToast("Error test with view: " + view.getId());

@@ -1,6 +1,7 @@
 package edu.uci.thanote.databases.note;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteConstraintException;
 import android.os.AsyncTask;
 import androidx.lifecycle.LiveData;
 import edu.uci.thanote.databases.ThanoteDatabase;
@@ -52,7 +53,12 @@ public class NoteTable {
 
         @Override
         protected Void doInBackground(Note... notes) {
-            noteDao.insert(notes[0]);
+            // if insert the same object, we update it
+            try {
+                noteDao.insert(notes[0]);
+            } catch (SQLiteConstraintException e) {
+                noteDao.update(notes[0]);
+            }
             return null;
         }
     }
