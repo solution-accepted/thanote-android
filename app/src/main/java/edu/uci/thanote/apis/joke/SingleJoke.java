@@ -6,4 +6,11 @@ public class SingleJoke extends Joke {
     public String getJoke() {
         return joke;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + "SingleJoke{" +
+                "joke='" + joke + '\'' +
+                '}';
+    }
 }

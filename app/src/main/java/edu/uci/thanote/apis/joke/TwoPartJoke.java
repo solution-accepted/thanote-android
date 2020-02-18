@@ -11,4 +11,12 @@ public class TwoPartJoke extends Joke {
     public String getDelivery() {
         return delivery;
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + "TwoPartJoke{" +
+                "setup='" + setup + '\'' +
+                ", delivery='" + delivery + '\'' +
+                '}';
+    }
 }

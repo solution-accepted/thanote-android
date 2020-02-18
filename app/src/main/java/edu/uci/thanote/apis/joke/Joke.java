@@ -54,4 +54,15 @@ public class Joke {
             return sexist;
         }
     }
+
+    @Override
+    public String toString() {
+        return "Joke{" +
+                "id=" + id +
+                ", category='" + category + '\'' +
+                ", type='" + type + '\'' +
+                ", error=" + error +
+                ", flags=" + flags +
+                '}';
+    }
 }
