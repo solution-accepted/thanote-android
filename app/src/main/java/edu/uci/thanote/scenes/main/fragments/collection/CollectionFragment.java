@@ -75,7 +75,7 @@ public class CollectionFragment extends Fragment {
     }
 
     private void setupViews(View view) {
-        recyclerView = view.findViewById(R.id.collection_recycle_view);
+        recyclerView = view.findViewById(R.id.recycler_view_collection);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);

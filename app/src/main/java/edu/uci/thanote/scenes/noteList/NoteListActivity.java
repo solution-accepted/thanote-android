@@ -32,7 +32,7 @@ public class NoteListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_note);
+        setContentView(R.layout.activity_note_list);
         setupViewModel();
         setupViews();
     }
@@ -66,7 +66,7 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void setupViews() {
-        recyclerView = findViewById(R.id.note_recycle_view);
+        recyclerView = findViewById(R.id.recycler_view_note_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
