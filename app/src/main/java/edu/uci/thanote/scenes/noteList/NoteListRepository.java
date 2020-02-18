@@ -1,4 +1,4 @@
-package edu.uci.thanote.scenes.note;
+package edu.uci.thanote.scenes.noteList;
 
 import android.app.Application;
 
@@ -9,15 +9,13 @@ import java.util.List;
 import edu.uci.thanote.databases.note.Note;
 import edu.uci.thanote.databases.note.NoteTable;
 
-
-public class NoteRepository {
-    private NoteRepository.NoteRepositoryListener listener;
+public class NoteListRepository {
     // database tables
     private NoteTable noteTable;
     // data fields
     private LiveData<List<Note>> notes;
 
-    public NoteRepository(Application application) {
+    public NoteListRepository(Application application) {
         noteTable = new NoteTable(application);
         notes = noteTable.getNotes();
     }
@@ -42,12 +40,6 @@ public class NoteRepository {
         return notes;
     }
 
-    public interface NoteRepositoryListener {
-        void onNoteClick(Note note);
-    }
-    public void setListener(NoteRepository.NoteRepositoryListener listener) {
-        this.listener = listener;
-    }
 
 
 }

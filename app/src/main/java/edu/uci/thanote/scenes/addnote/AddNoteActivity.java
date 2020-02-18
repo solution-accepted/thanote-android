@@ -1,15 +1,12 @@
 package edu.uci.thanote.scenes.addnote;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +19,8 @@ public class AddNoteActivity extends AppCompatActivity {
     public static final String EXTRA_NOTE_DETAIL =
             "com.example.myapplication.EXTRA_NOTE_DETAIL";
 
-    private EditText noteTitle;
-    private EditText noteDetail;
+    private EditText noteTitleEditText;
+    private EditText noteDetailEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,14 +30,14 @@ public class AddNoteActivity extends AppCompatActivity {
     }
 
     public void setupViews() {
-        noteTitle = findViewById(R.id.new_note_title);
-        noteDetail = findViewById(R.id.new_note_detail);
+        noteTitleEditText = findViewById(R.id.new_note_title);
+        noteDetailEditText = findViewById(R.id.new_note_detail);
 
     }
 
     private void saveNote() {
-        String newNoteTitle = noteTitle.getText().toString();
-        String newNoteDetail = noteDetail.getText().toString();
+        String newNoteTitle = noteTitleEditText.getText().toString();
+        String newNoteDetail = noteDetailEditText.getText().toString();
 
         if (newNoteTitle.trim().isEmpty() || newNoteDetail.trim().isEmpty()) {
             Toast.makeText(this, "Please insert note title and note detail", Toast.LENGTH_SHORT).show();
@@ -67,6 +64,7 @@ public class AddNoteActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save:
                 saveNote();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

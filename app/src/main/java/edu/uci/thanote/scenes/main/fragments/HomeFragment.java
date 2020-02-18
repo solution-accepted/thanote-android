@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import edu.uci.thanote.R;
-import edu.uci.thanote.scenes.note.NoteActivity;
 import edu.uci.thanote.scenes.test.TestActivity;
 
 public class HomeFragment extends Fragment {
@@ -40,7 +39,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void openNoteDetail() {
-//        Intent intent = new Intent(getActivity(), NoteActivity.class);
+//        Intent intent = new Intent(getActivity(), NoteListActivity.class);
         Intent intent = new Intent(getActivity(), TestActivity.class);
         startActivity(intent);
     }

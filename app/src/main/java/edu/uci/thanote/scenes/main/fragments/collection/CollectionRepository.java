@@ -44,6 +44,7 @@ public class CollectionRepository {
     public interface CollectionRepositoryListener {
         void onCategoryClick(Category category);
     }
+
     public void setListener(CollectionRepository.CollectionRepositoryListener listener) {
         this.listener = listener;
     }

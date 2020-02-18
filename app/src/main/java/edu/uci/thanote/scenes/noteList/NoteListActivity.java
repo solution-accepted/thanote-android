@@ -1,4 +1,4 @@
-package edu.uci.thanote.scenes.note;
+package edu.uci.thanote.scenes.noteList;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,12 +21,12 @@ import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
 import edu.uci.thanote.scenes.addnote.AddNoteActivity;
 
-public class NoteActivity extends AppCompatActivity {
+public class NoteListActivity extends AppCompatActivity {
     private final int ADD_NOTE_REQUEST = 1;
 
     private RecyclerView recyclerView;
-    private NoteViewModel viewModel;
-    private final NoteAdapter adapter = new NoteAdapter();
+    private NoteListViewModel viewModel;
+    private final NoteListAdapter adapter = new NoteListAdapter();
 
 
     @Override
@@ -35,8 +35,6 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note);
         setupViewModel();
         setupViews();
-        addNote();
-        createDeleteView();
     }
 
     public void addNote() {
@@ -44,15 +42,15 @@ public class NoteActivity extends AppCompatActivity {
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(NoteActivity.this, AddNoteActivity.class);
+                Intent intent = new Intent(NoteListActivity.this, AddNoteActivity.class);
                 startActivityForResult(intent, ADD_NOTE_REQUEST);
             }
         });
     }
 
     public void setupViewModel() {
-        viewModel = new ViewModelProvider(this).get(NoteViewModel.class);
-        viewModel.setListener(new NoteViewModel.NoteViewModelListener() {
+        viewModel = new ViewModelProvider(this).get(NoteListViewModel.class);
+        viewModel.setListener(new NoteListViewModel.NoteViewModelListener() {
             @Override
             public void onNoteClick(Note note) {
                 openNote();
@@ -72,10 +70,13 @@ public class NoteActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+
+        addNote();
+        createDeleteView();
     }
 
     private void openNote() {
-        Intent intent = new Intent(this, NoteActivity.class); //todo
+        Intent intent = new Intent(this, AddNoteActivity.class); //todo
         startActivity(intent);
     }
 
@@ -87,7 +88,7 @@ public class NoteActivity extends AppCompatActivity {
             String title = data.getStringExtra(AddNoteActivity.EXTRA_NOTE_TITLE);
             String detail = data.getStringExtra(AddNoteActivity.EXTRA_NOTE_DETAIL);
 
-            Note note = new Note(title, detail, 1,""); // todo
+            Note note = new Note(title, detail, 1, ""); // todo
             viewModel.insert(note);
 
             Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();

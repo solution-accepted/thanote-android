@@ -23,7 +23,7 @@ import java.util.List;
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.scenes.addCollection.AddCollectionActivity;
-import edu.uci.thanote.scenes.note.NoteActivity;
+import edu.uci.thanote.scenes.noteList.NoteListActivity;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -40,8 +40,6 @@ public class CollectionFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_collection, container, false);
         setupViewModel();
         setupViews(view);
-        addCategory(view);
-        createDeleteView();
         return view;
     }
 
@@ -60,12 +58,6 @@ public class CollectionFragment extends Fragment {
     public void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(CollectionViewModel.class);
 
-        viewModel.setListener(new CollectionViewModel.CollectionViewModelListener() {
-            @Override
-            public void onCategoryClick(Category category) {
-
-            }
-        });
         viewModel.getCategories().observe(getActivity(), new Observer<List<Category>>() {
             @Override
             public void onChanged(List<Category> categories) {
@@ -74,9 +66,9 @@ public class CollectionFragment extends Fragment {
         });
 
         // TODO 放哪里？
-        adapter.setOnCategoryClickListener(new CollectionAdapter.OnCategoryClickListener() {
+        adapter.setOnCategoryClickListener(new CollectionAdapter.CollectionAdapterOnClickListener() {
             @Override
-            public void OnCategoryClick(Category category) {
+            public void onCategoryClick(Category category) {
                 openNoteDetail();
             }
         });
@@ -88,10 +80,12 @@ public class CollectionFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
+        addCategory(view);
+        createDeleteView();
     }
 
     private void openNoteDetail() {
-        Intent intent = new Intent(getActivity(), NoteActivity.class);
+        Intent intent = new Intent(getActivity(), NoteListActivity.class);
         startActivity(intent);
     }
 
@@ -121,7 +115,7 @@ public class CollectionFragment extends Fragment {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 Category category = adapter.getCategory(viewHolder.getAdapterPosition());
-                if (category.getName().equals("default")) {
+                if (category.getId() == Category.DEFAULT_CATEGORY_ID) {
                     Toast.makeText(getActivity(), "default could not be deleted", Toast.LENGTH_SHORT).show();
                     adapter.notifyDataSetChanged();
                 } else {
