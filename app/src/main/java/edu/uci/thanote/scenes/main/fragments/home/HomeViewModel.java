@@ -33,6 +33,7 @@ public class HomeViewModel extends AndroidViewModel {
     private LiveData<List<Category>> categoriesInDatabase;
     private LiveData<List<Note>> notesInDatabase;
     private MutableLiveData<List<Note>> notesInMemory;
+    private List<Note> notesInMemoryBackup;
 
     public HomeViewModel(@NonNull Application application) {
         super(application);
@@ -121,6 +122,14 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void deleteNotesInMemory() {
         notesInMemory.setValue(new ArrayList<>());
+    }
+
+    public void backupNotesInMemory() {
+        notesInMemoryBackup = notesInMemory.getValue();
+    }
+
+    public void restoreNotesInMemory() {
+        setNotesInMemory(notesInMemoryBackup);
     }
 
     public void getSingleJoke() {

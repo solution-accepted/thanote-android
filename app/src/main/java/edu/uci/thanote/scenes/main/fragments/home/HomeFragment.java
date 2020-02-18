@@ -1,11 +1,15 @@
 package edu.uci.thanote.scenes.main.fragments.home;
 
 import android.content.Intent;
+import android.graphics.ImageDecoder;
+import android.graphics.drawable.AnimatedImageDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -20,6 +24,8 @@ import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.note.Note;
 
+import java.io.IOException;
+import java.util.Objects;
 import java.util.Random;
 
 public class HomeFragment extends Fragment {
@@ -33,6 +39,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel viewModel;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ImageView imageView;
     private SearchView searchView;
     private RecyclerView recyclerView;
     private HomeRecyclerViewAdapter recyclerViewAdapter;
@@ -104,6 +111,22 @@ public class HomeFragment extends Fragment {
 
         // endregion
 
+        // region imageView (Galaxy)
+
+        imageView = view.findViewById(R.id.image_view_home);
+        Drawable decodedAnimation = null;
+        try {
+            decodedAnimation = ImageDecoder.decodeDrawable(
+                    ImageDecoder.createSource(getResources(), R.drawable.home_galaxy)
+            );
+        } catch (IOException e) {
+            Log.e(TAG, "setupViews: Failed to ImageDecoder.decodeDrawable", e);
+        }
+        imageView.setImageDrawable(decodedAnimation);
+        ((AnimatedImageDrawable) Objects.requireNonNull(decodedAnimation)).start();
+
+        // endregion
+
         // region searchView
 
         searchView = view.findViewById(R.id.search_view_home);
@@ -128,7 +151,7 @@ public class HomeFragment extends Fragment {
             public boolean onQueryTextChange(String newText) {
                 Log.i(TAG, "searchView.onQueryTextChange: newText = " + newText);
                 if (newText.isEmpty()) {
-                    getSomeRandomNotes();
+                    viewModel.restoreNotesInMemory();
                     return true;
                 }
                 return false;
@@ -180,6 +203,7 @@ public class HomeFragment extends Fragment {
             Log.i(TAG, "getSomeRandomNotes: fetching note " + i);
             getSingleRandomNote();
         }
+        viewModel.backupNotesInMemory();
     }
 
     private void getSingleRandomNote() {

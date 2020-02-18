@@ -16,6 +16,7 @@
     <!-- Home Fragment -->
     <string name="home_fragment_note_detail">Demo Detail</string>
     <string name="home_search_hint">Search anything here…</string>
+    <string name="home_image_view_galaxy">galaxy</string>
 
     <!-- Collection Fragment -->
     <string name="collection_search">CollectionSearch</string>
