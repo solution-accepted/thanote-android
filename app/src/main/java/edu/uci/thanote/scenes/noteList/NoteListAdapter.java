@@ -1,4 +1,4 @@
-package edu.uci.thanote.scenes.note;
+package edu.uci.thanote.scenes.noteList;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
 
-public class NoteAdapter extends ListAdapter<Note, NoteAdapter.NoteHolder> {
+public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolder> {
 
-    NoteAdapter() {
+    NoteListAdapter() {
         super(DIFF_CALLBACK);
     }
 

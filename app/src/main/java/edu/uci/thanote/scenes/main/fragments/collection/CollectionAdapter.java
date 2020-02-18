@@ -15,7 +15,7 @@ import edu.uci.thanote.databases.category.Category;
 
 public class CollectionAdapter extends ListAdapter<Category, CollectionAdapter.CategoryHolder> {
 
-    private OnCategoryClickListener listener;
+    private CollectionAdapterOnClickListener listener;
 
     CollectionAdapter() {
         super(DIFF_CALLBACK);
@@ -43,33 +43,33 @@ public class CollectionAdapter extends ListAdapter<Category, CollectionAdapter.C
     @Override
     public void onBindViewHolder(@NonNull CategoryHolder holder, int position) {
         Category category = getItem(position);
-        holder.categoryName.setText(category.getName());
+        holder.categoryNameTextView.setText(category.getName());
     }
 
     public class CategoryHolder extends RecyclerView.ViewHolder {
-        TextView categoryName;
+        private TextView categoryNameTextView;
 
         CategoryHolder(View view) {
             super(view);
-            categoryName = view.findViewById(R.id.category);
+            categoryNameTextView = view.findViewById(R.id.category);
 
-            categoryName.setOnClickListener(new View.OnClickListener() {
+            categoryNameTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION) {
-                        listener.OnCategoryClick(getItem(position));
+                        listener.onCategoryClick(getItem(position));
                     }
                 }
             });
         }
     }
 
-    public interface OnCategoryClickListener {
-        void OnCategoryClick(Category category);
+    public interface CollectionAdapterOnClickListener {
+        void onCategoryClick(Category category);
     }
 
-    public void setOnCategoryClickListener(OnCategoryClickListener listener) {
+    public void setOnCategoryClickListener(CollectionAdapterOnClickListener listener) {
         this.listener = listener;
     }
 

@@ -17,7 +17,7 @@ public class AddCollectionActivity extends AppCompatActivity {
     public static final String EXTRA_CAGETORY =
             "com.example.myapplication.EXTRA_CAGETORY";
 
-    private EditText newCagetory;
+    private EditText newCategoryEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +27,12 @@ public class AddCollectionActivity extends AppCompatActivity {
     }
 
     public void setupViews() {
-        newCagetory = findViewById(R.id.new_cagetory);
+        newCategoryEditText = findViewById(R.id.new_cagetory);
 
     }
 
-    private void saveNote() {
-        String categoryName = newCagetory.getText().toString();
+    private void saveCategory() {
+        String categoryName = newCategoryEditText.getText().toString();
 
         if (categoryName.trim().isEmpty()) {
             Toast.makeText(this, "Please insert category name", Toast.LENGTH_SHORT).show();
@@ -57,7 +57,8 @@ public class AddCollectionActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save:
-                saveNote();
+                saveCategory();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

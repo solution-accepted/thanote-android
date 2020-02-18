@@ -13,16 +13,10 @@ import edu.uci.thanote.databases.category.Category;
 public class CollectionViewModel extends AndroidViewModel {
     private final CollectionRepository repository;
     private LiveData<List<Category>> categories;
-    private CollectionViewModelListener listener;
-
-    public interface CollectionViewModelListener {
-        void onCategoryClick(Category category);
-    }
 
     public CollectionViewModel(@NonNull Application application) {
         super(application);
         repository = new CollectionRepository(application);
-        repository.setListener(collectionRepositoryListener);
         categories = repository.getCategories();
     }
 
@@ -30,6 +24,7 @@ public class CollectionViewModel extends AndroidViewModel {
         repository.insert(category);
     }
 
+    // todo add update category
     public void update(Category category) {
         repository.update(category);
     }
@@ -38,24 +33,8 @@ public class CollectionViewModel extends AndroidViewModel {
         repository.delete(category);
     }
 
-    public void deleteAllCategories() {
-        repository.deleteAllCategories();
-    }
-
     public LiveData<List<Category>> getCategories() {
         return categories;
     }
-
-    public void setListener(CollectionViewModel.CollectionViewModelListener listener) {
-        this.listener = listener;
-    }
-
-    private CollectionRepository.CollectionRepositoryListener collectionRepositoryListener = new CollectionRepository.CollectionRepositoryListener() {
-        @Override
-        public void onCategoryClick(Category category) {
-            // todo
-
-        }
-    };
 
 }
