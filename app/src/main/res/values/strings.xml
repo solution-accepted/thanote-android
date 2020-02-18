@@ -20,7 +20,6 @@
     <!-- Collection Fragment -->
     <string name="collection_search">CollectionSearch</string>
     <string name="collection_search_hint">Find your collections</string>
-
     <!-- Setting Fragment -->
     <string name="setting_fragment_title">Setting</string>
 

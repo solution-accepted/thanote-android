@@ -141,7 +141,7 @@ public class HomeFragment extends Fragment {
 
         // endregion
 
-        // region recyclerViewAdapter
+        // region recyclerView
 
         recyclerViewAdapter = new HomeRecyclerViewAdapter();
         recyclerViewAdapter.setListener(new HomeRecyclerViewAdapter.Listener() {
