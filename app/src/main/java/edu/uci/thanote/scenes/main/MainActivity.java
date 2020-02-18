@@ -1,17 +1,19 @@
 package edu.uci.thanote.scenes.main;
 
-import android.view.MenuItem;
-import androidx.annotation.NonNull;
+import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import edu.uci.thanote.R;
-import edu.uci.thanote.scenes.main.fragments.HomeFragment;
+import edu.uci.thanote.scenes.main.fragments.home.HomeFragment;
 import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
 import edu.uci.thanote.scenes.main.fragments.SettingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final String TAG = "MainActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,25 +25,27 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Fragment selectedFragment = null;
-                switch (item.getItemId()) {
-                    case R.id.nav_home:
-                        selectedFragment = new HomeFragment();
-                        break;
-                    case R.id.nav_collection:
-                        selectedFragment = new CollectionFragment();
-                        break;
-                    case R.id.nav_setting:
-                        selectedFragment = new SettingFragment();
-                        break;
-                }
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            Fragment selectedFragment;
+            final int id = item.getItemId();
 
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
-                return true;
+            switch (id) {
+                case R.id.nav_home:
+                    selectedFragment = new HomeFragment();
+                    break;
+                case R.id.nav_collection:
+                    selectedFragment = new CollectionFragment();
+                    break;
+                case R.id.nav_setting:
+                    selectedFragment = new SettingFragment();
+                    break;
+                default:
+                    Log.e(TAG, "Unknown item id = " + id);
+                    return false;
             }
+
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+            return true;
         });
     }
 }

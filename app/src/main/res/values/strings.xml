@@ -5,9 +5,18 @@
     <string name="nav_collection">Collection</string>
     <string name="nav_setting">Setting</string>
 
+    <!-- Note CardView -->
+    <string name="item_note_title">noteTitle</string>
+    <string name="item_note_desc">noteDesc</string>
+    <string name="item_note_date">noteDate</string>
+    <string name="item_note_share">Share this note</string>
+    <string name="item_note_fav">Add this note to favorite</string>
+
     <!-- Define Custom Strings here -->
     <!-- Home Fragment -->
     <string name="home_fragment_note_detail">Demo Detail</string>
+    <string name="home_search_hint">Search anything here…</string>
+    <string name="home_image_view_galaxy">galaxy</string>
 
     <!-- Collection Fragment -->
     <string name="collection_search">CollectionSearch</string>

@@ -36,7 +36,7 @@ public class CollectionAdapter extends ListAdapter<Category, CollectionAdapter.C
     @NonNull
     @Override
     public CategoryHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.collection_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_collection, parent, false);
         return new CategoryHolder(view);
     }
 

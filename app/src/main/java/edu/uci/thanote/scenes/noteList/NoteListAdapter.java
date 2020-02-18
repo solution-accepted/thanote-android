@@ -36,7 +36,7 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
     @NonNull
     @Override
     public NoteHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.note_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note, parent, false);
         return new NoteHolder(view);
     }
 
@@ -55,9 +55,9 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
 
         NoteHolder(View view) {
             super(view);
-            noteDate = view.findViewById(R.id.note_date);
-            noteTitle = view.findViewById(R.id.note_title);
-            noteDescription = view.findViewById(R.id.note_description);
+            noteDate = view.findViewById(R.id.text_view_note_date);
+            noteTitle = view.findViewById(R.id.text_view_note_title);
+            noteDescription = view.findViewById(R.id.text_view_note_description);
         }
     }
 
