@@ -20,9 +20,6 @@ import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.note.Note;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 
 public class HomeFragment extends Fragment {
@@ -47,7 +44,7 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         setupViewModel();
         setupViews(view);
-        getSomeNotes();
+        getSomeRandomNotes();
         return view;
     }
 
@@ -56,23 +53,27 @@ public class HomeFragment extends Fragment {
         viewModel.setListener(new HomeViewModel.Listener() {
             @Override
             public void didFetchSingleJoke(SingleJoke joke) {
+                swipeRefreshLayout.setRefreshing(false);
                 Note newNote = new Note("Joke", joke.getJoke(), NOTE_DEFAULT_CATEGORY_ID, "");
-                addNote(newNote);
+                viewModel.insertNoteInMemory(newNote);
             }
 
             @Override
             public void didFetchTwoPartJoke(TwoPartJoke joke) {
-                Note newNote = new Note("Joke", joke.getSetup() + " " + joke.getDelivery(), NOTE_DEFAULT_CATEGORY_ID, "");
-                addNote(newNote);
+                swipeRefreshLayout.setRefreshing(false);
+                Note newNote = new Note("Joke", joke.getSetup() + "\n" + joke.getDelivery(), NOTE_DEFAULT_CATEGORY_ID, "");
+                viewModel.insertNoteInMemory(newNote);
             }
 
             @Override
             public void didFetchSingleJokeByKey(SingleJoke joke) {
+                viewModel.deleteNotesInMemory();
                 didFetchSingleJoke(joke);
             }
 
             @Override
             public void didFetchTwoPartJokeByKey(TwoPartJoke joke) {
+                viewModel.deleteNotesInMemory();
                 didFetchTwoPartJoke(joke);
             }
 
@@ -91,27 +92,56 @@ public class HomeFragment extends Fragment {
     }
 
     private void setupViews(View view) {
+        // region swipeRefreshLayout
+
         swipeRefreshLayout = view.findViewById(R.id.swipe_refresh_layout_home);
-        swipeRefreshLayout.setOnRefreshListener(this::getSomeNotes);
+        swipeRefreshLayout.setOnRefreshListener(this::getSomeRandomNotes);
         swipeRefreshLayout.setColorSchemeResources(
                 android.R.color.holo_blue_light,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
+        // endregion
+
+        // region searchView
+
         searchView = view.findViewById(R.id.search_view_home);
         searchView.setSubmitButtonEnabled(true);
-        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
-        searchView.setOnSearchClickListener(v -> {
-            final String query = searchView.getQuery().toString();
-            showToast("searchView.OnSearchClickListener: query = " + query);
-            Log.i(TAG, "searchView.OnSearchClickListener: query = " + query);
-            viewModel.searchSingleJoke(query);
-        });
+        searchView.setQueryHint(getString(R.string.home_search_hint));
 
-//        Also try:
+        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
+
+        // Also try:
 //        searchView.setIconifiedByDefault(false);
 //        searchView.setIconified(false);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.i(TAG, "searchView.onQueryTextSubmit: query = " + query);
+                searchSingleRandomNote(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.i(TAG, "searchView.onQueryTextChange: newText = " + newText);
+                if (newText.isEmpty()) {
+                    getSomeRandomNotes();
+                    return true;
+                }
+                return false;
+//                return onQueryTextSubmit(newText);
+            }
+        });
+
+        // Triggered when the search icon is clicked:
+//        searchView.setOnSearchClickListener(v -> { });
+
+        // endregion
+
+        // region recyclerViewAdapter
 
         recyclerViewAdapter = new HomeRecyclerViewAdapter();
         recyclerViewAdapter.setListener(new HomeRecyclerViewAdapter.Listener() {
@@ -134,45 +164,53 @@ public class HomeFragment extends Fragment {
 //                } else {
 //                    viewModel.insertNote(note);
 //                }
+                showToast("onButtonFavoriteClicked");
             }
         });
         recyclerView = view.findViewById(R.id.recycler_view_home);
         recyclerView.setLayoutManager(new LinearLayoutManager(this.getContext()));
         recyclerView.setAdapter(recyclerViewAdapter);
+
+        // endregion
     }
 
-    private void getSomeNotes() {
-        viewModel.getNotesInMemory().setValue(new ArrayList<>());
-        Random random = new Random();
+    private void getSomeRandomNotes() {
+        viewModel.deleteNotesInMemory();
         for (int i = 0; i < NOTE_INIT_COUNT; ++i) {
-            int next = random.nextInt(NOTE_TYPE_COUNT);
-            Log.i(TAG, "getSomeNotes: fetching note " + i + " next = " + next);
-            switch (next) {
-                case 0:
-                    viewModel.getSingleJoke();
-                    break;
-                case 1:
-                    viewModel.getTwoPartJoke();
-                    break;
-                default:
-                    Log.e(TAG, "getSomeNotes: unknown next id = " + next);
-                    return;
-            }
+            Log.i(TAG, "getSomeRandomNotes: fetching note " + i);
+            getSingleRandomNote();
         }
     }
 
-    public void showToast(String message) {
+    private void getSingleRandomNote() {
+        int next = new Random().nextInt(NOTE_TYPE_COUNT);
+        switch (next) {
+            case 0:
+                viewModel.getSingleJoke();
+                break;
+            case 1:
+                viewModel.getTwoPartJoke();
+                break;
+            default:
+                Log.e(TAG, "getSingleRandomNote: unknown next id = " + next);
+        }
+    }
+
+    private void searchSingleRandomNote(String query) {
+        int next = new Random().nextInt(NOTE_TYPE_COUNT);
+        switch (next) {
+            case 0:
+                viewModel.searchSingleJoke(query);
+                break;
+            case 1:
+                viewModel.searchTwoPartJoke(query);
+                break;
+            default:
+                Log.e(TAG, "searchSingleRandomNote: unknown next id = " + next);
+        }
+    }
+
+    private void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    public HomeViewModel getViewModel() {
-        return viewModel;
-    }
-
-    private void addNote(Note note) {
-        swipeRefreshLayout.setRefreshing(false);
-        List<Note> notes = viewModel.getNotesInMemory().getValue();
-        Objects.requireNonNull(notes).add(note);
-        viewModel.getNotesInMemory().setValue(notes);
     }
 }

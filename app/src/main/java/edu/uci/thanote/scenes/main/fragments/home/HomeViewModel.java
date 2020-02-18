@@ -1,6 +1,7 @@
 package edu.uci.thanote.scenes.main.fragments.home;
 
 import android.app.Application;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -10,10 +11,14 @@ import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class HomeViewModel extends AndroidViewModel {
+
+    private final String TAG = "HomeViewModel";
 
     private final List<Note> NOTES = Arrays.asList(
             new Note("note1", "note1", 1, ""),
@@ -99,6 +104,23 @@ public class HomeViewModel extends AndroidViewModel {
 
     public MutableLiveData<List<Note>> getNotesInMemory() {
         return notesInMemory;
+    }
+
+    public void insertNoteInMemory(Note note) {
+        List<Note> newNotes = notesInMemory.getValue();
+        if (Objects.requireNonNull(newNotes).add(note)) {
+            notesInMemory.setValue(newNotes);
+        } else {
+            Log.e(TAG, "insertNodeInMemory: Failed to insert note = " + note.toString());
+        }
+    }
+
+    public void setNotesInMemory(List<Note> notes) {
+        notesInMemory.setValue(notes);
+    }
+
+    public void deleteNotesInMemory() {
+        notesInMemory.setValue(new ArrayList<>());
     }
 
     public void getSingleJoke() {
