@@ -105,7 +105,7 @@ public class CollectionFragment extends Fragment {
             Category category = new Category(categoryName);
             viewModel.insert(category);
 
-            Toast.makeText(getActivity(), "Note saved", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Category saved", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -120,8 +120,14 @@ public class CollectionFragment extends Fragment {
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                viewModel.delete(adapter.getCategory(viewHolder.getAdapterPosition()));
-                Toast.makeText(getActivity(), "Category deleted", Toast.LENGTH_SHORT).show();
+                Category category = adapter.getCategory(viewHolder.getAdapterPosition());
+                if (category.getName().equals("default")) {
+                    Toast.makeText(getActivity(), "default could not be deleted", Toast.LENGTH_SHORT).show();
+                    adapter.notifyDataSetChanged();
+                } else {
+                    viewModel.delete(category);
+                    Toast.makeText(getActivity(), "Category deleted", Toast.LENGTH_SHORT).show();
+                }
             }
         }).attachToRecyclerView(recyclerView);
     }
