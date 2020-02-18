@@ -10,7 +10,6 @@ import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.category.CategoryTable;
 
 public class CollectionRepository {
-    private CollectionRepositoryListener listener;
     // database tables
     private CategoryTable categoryTable;
     // data fields
@@ -39,14 +38,6 @@ public class CollectionRepository {
 
     public LiveData<List<Category>> getCategories() {
         return categories;
-    }
-
-    public interface CollectionRepositoryListener {
-        void onCategoryClick(Category category);
-    }
-
-    public void setListener(CollectionRepository.CollectionRepositoryListener listener) {
-        this.listener = listener;
     }
 
 }

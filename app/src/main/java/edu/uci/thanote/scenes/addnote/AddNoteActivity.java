@@ -30,8 +30,8 @@ public class AddNoteActivity extends AppCompatActivity {
     }
 
     public void setupViews() {
-        noteTitleEditText = findViewById(R.id.new_note_title);
-        noteDetailEditText = findViewById(R.id.new_note_detail);
+        noteTitleEditText = findViewById(R.id.edit_text_new_note_title);
+        noteDetailEditText = findViewById(R.id.edit_text_new_note_detail);
 
     }
 

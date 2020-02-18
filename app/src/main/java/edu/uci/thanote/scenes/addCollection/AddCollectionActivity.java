@@ -27,7 +27,7 @@ public class AddCollectionActivity extends AppCompatActivity {
     }
 
     public void setupViews() {
-        newCategoryEditText = findViewById(R.id.new_cagetory);
+        newCategoryEditText = findViewById(R.id.edit_text_new_cagetory);
 
     }
 
