@@ -7,7 +7,7 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import edu.uci.thanote.R;
 import edu.uci.thanote.scenes.main.fragments.HomeFragment;
-import edu.uci.thanote.scenes.main.fragments.CollectionFragment;
+import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
 import edu.uci.thanote.scenes.main.fragments.SettingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
