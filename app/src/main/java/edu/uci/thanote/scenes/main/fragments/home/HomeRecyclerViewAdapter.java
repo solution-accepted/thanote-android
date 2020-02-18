@@ -13,7 +13,7 @@ import java.util.List;
 
 public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerViewViewHolder> {
 
-    List<Note> notes;
+    private List<Note> notes;
 
     HomeRecyclerViewAdapter() {
         this.notes = new ArrayList<>();

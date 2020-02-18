@@ -10,12 +10,12 @@ import edu.uci.thanote.databases.note.Note;
 
 public class HomeRecyclerViewViewHolder extends RecyclerView.ViewHolder {
 
-    TextView textViewTitle;
-    TextView textViewDate;
-    TextView textViewDescription;
+    private TextView textViewTitle;
+    private TextView textViewDate;
+    private TextView textViewDescription;
 
-    ImageButton buttonShare;
-    ImageButton buttonFavorite;
+    private ImageButton buttonShare;
+    private ImageButton buttonFavorite;
 
     public HomeRecyclerViewViewHolder(@NonNull View itemView) {
         super(itemView);

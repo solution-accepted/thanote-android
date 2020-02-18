@@ -35,6 +35,8 @@ public class HomeFragment extends Fragment {
     private final int NOTE_INIT_COUNT = 10;
     private final int NOTE_TYPE_COUNT = 2;
     private final int NOTE_DEFAULT_CATEGORY_ID = 1;
+    private final String NOTE_JOKE_TITLE = "Joke";
+    private final String NOTE_DEFAULT_IMAGE_URL = "";
 
     private HomeViewModel viewModel;
 
@@ -61,15 +63,25 @@ public class HomeFragment extends Fragment {
             @Override
             public void didFetchSingleJoke(SingleJoke joke) {
                 swipeRefreshLayout.setRefreshing(false);
-                Note newNote = new Note("Joke", joke.getJoke(), NOTE_DEFAULT_CATEGORY_ID, "");
-                viewModel.insertNoteInMemory(newNote);
+                String noteDetail = joke.getJoke();
+                Note note = new Note(
+                        NOTE_JOKE_TITLE,
+                        noteDetail,
+                        NOTE_DEFAULT_CATEGORY_ID,
+                        NOTE_DEFAULT_IMAGE_URL);
+                viewModel.insertNoteInMemory(note);
             }
 
             @Override
             public void didFetchTwoPartJoke(TwoPartJoke joke) {
                 swipeRefreshLayout.setRefreshing(false);
-                Note newNote = new Note("Joke", joke.getSetup() + "\n" + joke.getDelivery(), NOTE_DEFAULT_CATEGORY_ID, "");
-                viewModel.insertNoteInMemory(newNote);
+                String noteDetail = joke.getSetup() + "\n" + joke.getDelivery();
+                Note note = new Note(
+                        NOTE_JOKE_TITLE,
+                        noteDetail,
+                        NOTE_DEFAULT_CATEGORY_ID,
+                        NOTE_DEFAULT_IMAGE_URL);
+                viewModel.insertNoteInMemory(note);
             }
 
             @Override

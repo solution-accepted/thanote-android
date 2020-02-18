@@ -12,19 +12,12 @@ import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 public class HomeViewModel extends AndroidViewModel {
 
     private final String TAG = "HomeViewModel";
-
-    private final List<Note> NOTES = Arrays.asList(
-            new Note("note1", "note1", 1, ""),
-            new Note("note2", "note2", 2, ""),
-            new Note("note3", "note3", 3, "")
-    );
 
     // model = local database + remote api
     private final HomeRepository repository;
