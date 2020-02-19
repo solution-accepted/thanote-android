@@ -15,7 +15,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".scenes.test.api.ApiResultTestActivity" />
-        <activity android:name=".scenes.test.api.ApiTestActivity" />s
+        <activity android:name=".scenes.test.api.ApiTestActivity" />
         <activity android:name=".scenes.test.TestActivity" />
         <activity android:name=".scenes.noteList.NoteListActivity" />
         <activity android:name=".scenes.addnote.AddNoteActivity" />

@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class APIClient {
     private static final String DEMO_BASE_URL = "https://jsonplaceholder.typicode.com/";
     private static final String JOKE_BASE_URL = "https://sv443.net/jokeapi/v2/joke/";
-    private static final String RECIPE_PUPPUY_BASE_URL = "http://www.recipepuppy.com/api/";
+    private static final String RECIPE_PUPPY_BASE_URL = "http://www.recipepuppy.com/api/";
 
     private static APIClient instance;
     private Retrofit retrofitDemo;
@@ -40,7 +40,7 @@ public class APIClient {
 
     public Retrofit getRetrofitRecipePuppy() {
         if (retrofitRecipePuppy == null) {
-            retrofitRecipePuppy = buildRetrofit(RECIPE_PUPPUY_BASE_URL);
+            retrofitRecipePuppy = buildRetrofit(RECIPE_PUPPY_BASE_URL);
         }
 
         return  retrofitRecipePuppy;
