@@ -22,9 +22,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import edu.uci.thanote.R;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.recipepuppy.Recipe;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.note.Note;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
@@ -33,10 +36,12 @@ public class HomeFragment extends Fragment {
     private final String TAG = "HomeFragment";
 
     private final int NOTE_INIT_COUNT = 10;
-    private final int NOTE_TYPE_COUNT = 2;
+    private final int NOTE_TYPE_COUNT = 3;
     private final int NOTE_DEFAULT_CATEGORY_ID = 1;
     private final String NOTE_JOKE_TITLE = "Joke";
+    private final String NOTE_RECIPE_TITLE = "Recipe: ";
     private final String NOTE_DEFAULT_IMAGE_URL = "";
+    private final int NOTE_RECIPE_COUNT_IN_RESPONSE = 10;
 
     private HomeViewModel viewModel;
 
@@ -57,55 +62,72 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    private final HomeViewModel.Listener vmListener = new HomeViewModel.Listener() {
+        @Override
+        public void didFetchSingleJoke(SingleJoke joke) {
+            swipeRefreshLayout.setRefreshing(false);
+            String noteDetail = joke.getJoke();
+            Note note = new Note(
+                    NOTE_JOKE_TITLE,
+                    noteDetail,
+                    NOTE_DEFAULT_CATEGORY_ID,
+                    NOTE_DEFAULT_IMAGE_URL);
+            viewModel.insertNoteInMemory(note);
+        }
+
+        @Override
+        public void didFetchTwoPartJoke(TwoPartJoke joke) {
+            swipeRefreshLayout.setRefreshing(false);
+            String noteDetail = joke.getSetup() + "\n" + joke.getDelivery();
+            Note note = new Note(
+                    NOTE_JOKE_TITLE,
+                    noteDetail,
+                    NOTE_DEFAULT_CATEGORY_ID,
+                    NOTE_DEFAULT_IMAGE_URL);
+            viewModel.insertNoteInMemory(note);
+        }
+
+        @Override
+        public void didFetchSingleJokeByKey(SingleJoke joke) {
+            viewModel.deleteNotesInMemory();
+            didFetchSingleJoke(joke);
+        }
+
+        @Override
+        public void didFetchTwoPartJokeByKey(TwoPartJoke joke) {
+            viewModel.deleteNotesInMemory();
+            didFetchTwoPartJoke(joke);
+        }
+
+        @Override
+        public void didFetchPuppyRecipes(RecipePuppyResponse recipes) {
+            swipeRefreshLayout.setRefreshing(false);
+            List<Recipe> recipeList = recipes.getRecipes();
+            final int next = new Random().nextInt(NOTE_RECIPE_COUNT_IN_RESPONSE);
+            Recipe recipe = recipeList.get(next);
+            Note note = new Note(
+                    NOTE_RECIPE_TITLE + recipe.getTitle(),
+                    recipe.getIngredients() + "\n" + recipe.getWebsiteUrl(),
+                    NOTE_DEFAULT_CATEGORY_ID,
+                    recipe.getThumbnail()
+            );
+            viewModel.insertNoteInMemory(note);
+        }
+
+        @Override
+        public void didFetchError(String message) {
+            showToast(message);
+        }
+
+        @Override
+        public void didVerifyError(String message) {
+            showToast(message);
+        }
+    };
+
     private void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-        viewModel.setListener(new HomeViewModel.Listener() {
-            @Override
-            public void didFetchSingleJoke(SingleJoke joke) {
-                swipeRefreshLayout.setRefreshing(false);
-                String noteDetail = joke.getJoke();
-                Note note = new Note(
-                        NOTE_JOKE_TITLE,
-                        noteDetail,
-                        NOTE_DEFAULT_CATEGORY_ID,
-                        NOTE_DEFAULT_IMAGE_URL);
-                viewModel.insertNoteInMemory(note);
-            }
-
-            @Override
-            public void didFetchTwoPartJoke(TwoPartJoke joke) {
-                swipeRefreshLayout.setRefreshing(false);
-                String noteDetail = joke.getSetup() + "\n" + joke.getDelivery();
-                Note note = new Note(
-                        NOTE_JOKE_TITLE,
-                        noteDetail,
-                        NOTE_DEFAULT_CATEGORY_ID,
-                        NOTE_DEFAULT_IMAGE_URL);
-                viewModel.insertNoteInMemory(note);
-            }
-
-            @Override
-            public void didFetchSingleJokeByKey(SingleJoke joke) {
-                viewModel.deleteNotesInMemory();
-                didFetchSingleJoke(joke);
-            }
-
-            @Override
-            public void didFetchTwoPartJokeByKey(TwoPartJoke joke) {
-                viewModel.deleteNotesInMemory();
-                didFetchTwoPartJoke(joke);
-            }
-
-            @Override
-            public void didFetchError(String message) {
-                showToast(message);
-            }
-
-            @Override
-            public void didVerifyError(String message) {
-                showToast(message);
-            }
-        });
+        viewModel.setListener(vmListener);
         viewModel.getNotesInMemory().observe(getViewLifecycleOwner(),
                 notes -> recyclerViewAdapter.setNotes(notes));
     }
@@ -227,6 +249,8 @@ public class HomeFragment extends Fragment {
             case 1:
                 viewModel.getTwoPartJoke();
                 break;
+            case 2:
+                viewModel.getPuppyRecipesRandomly();
             default:
                 Log.e(TAG, "getSingleRandomNote: unknown next id = " + next);
         }

@@ -6,6 +6,8 @@ import edu.uci.thanote.apis.APIClient;
 import edu.uci.thanote.apis.joke.JokeAPIInterface;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyInterface;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.category.CategoryTable;
 import edu.uci.thanote.databases.note.Note;
@@ -13,7 +15,6 @@ import edu.uci.thanote.databases.note.NoteTable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -30,6 +31,7 @@ public class HomeRepository {
 
     // api
     private JokeAPIInterface jokeAPIs;
+    private RecipePuppyInterface recipePuppyAPIs;
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -38,8 +40,8 @@ public class HomeRepository {
         noteTable = new NoteTable(application);
         notes = noteTable.getNotes();
 
-        Retrofit jokeRetrofit = APIClient.getInstance().getRetrofitJoke();
-        jokeAPIs = jokeRetrofit.create(JokeAPIInterface.class);
+        jokeAPIs = APIClient.getInstance().getRetrofitJoke().create(JokeAPIInterface.class);
+        recipePuppyAPIs = APIClient.getInstance().getRetrofitRecipePuppy().create(RecipePuppyInterface.class);
     }
 
     // region Public Methods (Local Database)
@@ -78,6 +80,8 @@ public class HomeRepository {
         void didFetchSingleJokeByKey(SingleJoke joke);
 
         void didFetchTwoPartJokeByKey(TwoPartJoke joke);
+
+        void didFetchPuppyRecipes(RecipePuppyResponse recipes);
     }
 
     private Listener listener;
@@ -104,6 +108,12 @@ public class HomeRepository {
     public void fetchTwoPartJokeBy(String key) {
         jokeAPIs.getTwoPartJokeBy(key)
                 .enqueue(getCallback(listener::didFetchTwoPartJokeByKey));
+    }
+
+    public void fetchPuppyRecipes(String ingredients, String query, int page) {
+        recipePuppyAPIs
+                .getRecipePuppyResponse(ingredients, query, page)
+                .enqueue(getCallback(listener::didFetchPuppyRecipes));
     }
 
     private <T> Callback<T> getCallback(Consumer<T> function) {
