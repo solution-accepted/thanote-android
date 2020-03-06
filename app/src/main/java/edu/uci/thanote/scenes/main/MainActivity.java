@@ -1,18 +1,21 @@
 package edu.uci.thanote.scenes.main;
 
+import android.os.Bundle;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
-import android.os.Bundle;
 import androidx.fragment.app.Fragment;
-import edu.uci.thanote.R;
-import edu.uci.thanote.scenes.main.fragments.home.HomeFragment;
-import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
-import edu.uci.thanote.scenes.main.fragments.SettingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import edu.uci.thanote.R;
+import edu.uci.thanote.scenes.main.fragments.SettingFragment;
+import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
+import edu.uci.thanote.scenes.main.fragments.home.HomeFragment;
 
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
+    private final Fragment homeFragment = new HomeFragment();
+    private final Fragment collectionFragment = new CollectionFragment();
+    private final Fragment settingFragment = new SettingFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,13 +34,13 @@ public class MainActivity extends AppCompatActivity {
 
             switch (id) {
                 case R.id.nav_home:
-                    selectedFragment = new HomeFragment();
+                    selectedFragment = homeFragment;
                     break;
                 case R.id.nav_collection:
-                    selectedFragment = new CollectionFragment();
+                    selectedFragment = collectionFragment;
                     break;
                 case R.id.nav_setting:
-                    selectedFragment = new SettingFragment();
+                    selectedFragment = settingFragment;
                     break;
                 default:
                     Log.e(TAG, "Unknown item id = " + id);

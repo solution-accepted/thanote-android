@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
@@ -251,6 +252,7 @@ public class HomeFragment extends Fragment {
                 break;
             case 2:
                 viewModel.getPuppyRecipesRandomly();
+                break;
             default:
                 Log.e(TAG, "getSingleRandomNote: unknown next id = " + next);
         }
