@@ -4,6 +4,8 @@
     <string name="nav_home">Home</string>
     <string name="nav_collection">Collection</string>
     <string name="nav_setting">Setting</string>
+    <string name="button_close">Close</string>
+    <string name="button_save">Save</string>
 
     <!-- Note CardView -->
     <string name="item_note_title">noteTitle</string>
@@ -25,7 +27,7 @@
     <string name="new_category">new category</string>
 
     <!-- Setting Fragment -->
-    <string name="setting_fragment_title">Setting</string>
+
 
     <!-- Note Activity -->
     <string name="note_search_hint">Find your notes</string>
@@ -33,5 +35,9 @@
     <string name="new_note_title">Title</string>
     <string name="new_note_detail">Detail</string>
 
+    <!-- Notification Activity -->
+    <string name="notification_activity_alarm">Alarm</string>
+    <string name="notification_activity_daily_notification">Daily Notification</string>
+    <string name="notification_activity_category">Category</string>
 
 </resources>
