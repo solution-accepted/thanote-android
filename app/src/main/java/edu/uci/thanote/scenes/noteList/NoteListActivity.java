@@ -9,8 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,6 +31,8 @@ public class NoteListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private NoteListViewModel viewModel;
     private final NoteListAdapter adapter = new NoteListAdapter();
+
+    private SearchView searchView;
 
 
     @Override
@@ -60,6 +66,7 @@ public class NoteListActivity extends AppCompatActivity {
         viewModel.getNotes().observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> notes) {
+                adapter.setNotes(notes);
                 adapter.submitList(notes);
             }
         });
@@ -73,6 +80,26 @@ public class NoteListActivity extends AppCompatActivity {
 
         addNote();
         createDeleteView();
+
+        searchView = findViewById(R.id.search_view_note_list);
+//        searchView.setSubmitButtonEnabled(true);
+//        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
+        searchView.setBackgroundResource(R.color.super_light_gray);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+
     }
 
     private void openNote() {
