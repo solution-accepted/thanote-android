@@ -20,12 +20,11 @@ import edu.uci.thanote.databases.note.Note;
 
 public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolder> implements Filterable {
 
-    private List<Note> notesFullList;
     private List<Note> notesList;
+    private List<Note> notesFullList;
 
     NoteListAdapter() {
         super(DIFF_CALLBACK);
-        notesList = new ArrayList<>();
     }
 
 
@@ -60,8 +59,8 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
     }
 
     public void setNotes(List<Note> notes) {
-        this.notesFullList = notes;
-        notesList.addAll(notesFullList);
+        this.notesList = notes;
+        notesFullList = new ArrayList<>(notesList);
         notifyDataSetChanged();
     }
 
@@ -73,25 +72,27 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
     private Filter noteFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
+            List<Note> notesFilterList = new ArrayList<>();
             constraint = constraint.toString().toLowerCase().trim();
-            notesFullList.clear();
             if (constraint == null || constraint.length() == 0) {
-                notesFullList.addAll(notesList);
+                notesFilterList.addAll(notesFullList);
             } else {
-                for (Note note : notesList) {
+                for (Note note : notesFullList) {
                     if (note.getDetail().toLowerCase().contains(constraint) ||
                             note.getTitle().toLowerCase().contains(constraint)) {
-                        notesFullList.add(note);
+                        notesFilterList.add(note);
                     }
                 }
             }
             FilterResults results = new FilterResults();
-            results.values = notesFullList;
+            results.values = notesFilterList;
             return results;
         }
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
+            notesList.clear();
+            notesList.addAll((List) results.values);
             notifyDataSetChanged();
         }
     };
