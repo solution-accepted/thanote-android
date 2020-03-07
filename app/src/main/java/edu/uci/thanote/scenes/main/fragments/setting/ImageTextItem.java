@@ -2,7 +2,9 @@ package edu.uci.thanote.scenes.main.fragments.setting;
 
 import edu.uci.thanote.R;
 
-public class ImageTextItem {
+import java.io.Serializable;
+
+public class ImageTextItem implements Serializable {
     private int imageRescourceId;
     private String text;
     private boolean isShowImage; // default is true

@@ -16,7 +16,7 @@ public class ImageTextListAdapter extends RecyclerView.Adapter<ImageTextListAdap
     private ImageTextItem[] items;
     private ImageTextListAdapterListener listener;
 
-    ImageTextListAdapter(ImageTextItem[] items, ImageTextListAdapterListener listener) {
+    public ImageTextListAdapter(ImageTextItem[] items, ImageTextListAdapterListener listener) {
         this.items = items;
         this.listener = listener;
     }
