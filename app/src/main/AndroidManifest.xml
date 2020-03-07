@@ -14,12 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".scenes.test.sqlite.category.CategoryTableTestActivity"></activity>
+        <activity android:name=".scenes.test.sqlite.SQLiteTestActivity" />
 
         <service
             android:name=".helpers.AlarmService"
             android:enabled="true"
             android:exported="false" />
+
         <receiver android:name=".scenes.notification.AlertReceiver" />
+
         <activity android:name=".scenes.notification.NotificationActivity" />
         <activity android:name=".scenes.test.api.ApiResultTestActivity" />
         <activity android:name=".scenes.test.api.ApiTestActivity" />
