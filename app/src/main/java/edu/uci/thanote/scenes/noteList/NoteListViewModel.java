@@ -19,9 +19,11 @@ public class NoteListViewModel extends AndroidViewModel {
     public NoteListViewModel(@NonNull Application application) {
         super(application);
         repository = new NoteListRepository(application);
-        notes = repository.getNotes();
     }
 
+    public void setCategoryName(String categoryName) {
+        repository.setCategoryName(categoryName);
+    }
     public void insert(Note note) {
         repository.insert(note);
     }
@@ -39,6 +41,7 @@ public class NoteListViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Note>> getNotes() {
+        notes = repository.getNotes();
         return notes;
     }
 

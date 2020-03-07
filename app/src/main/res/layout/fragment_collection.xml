@@ -32,6 +32,15 @@
 
         <!--        </LinearLayout>-->
 
+        <TextView
+            android:id="@+id/text_view_fragment_collection_header"
+            android:padding="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/collection_header"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_collection"

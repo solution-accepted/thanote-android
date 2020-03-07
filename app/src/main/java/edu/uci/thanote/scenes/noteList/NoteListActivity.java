@@ -9,11 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -27,7 +25,9 @@ import edu.uci.thanote.scenes.addnote.AddNoteActivity;
 
 public class NoteListActivity extends AppCompatActivity {
     private final int ADD_NOTE_REQUEST = 1;
+    public static final String CATEGORY_NAME = "Category_name";
 
+    private String categoryName;
     private RecyclerView recyclerView;
     private NoteListViewModel viewModel;
     private final NoteListAdapter adapter = new NoteListAdapter();
@@ -39,6 +39,8 @@ public class NoteListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_list);
+        Intent intent = getIntent();
+        categoryName = intent.getStringExtra(CATEGORY_NAME);
         setupViewModel();
         setupViews();
     }
@@ -56,6 +58,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     public void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(NoteListViewModel.class);
+        viewModel.setCategoryName(categoryName);
         viewModel.setListener(new NoteListViewModel.NoteViewModelListener() {
             @Override
             public void onNoteClick(Note note) {

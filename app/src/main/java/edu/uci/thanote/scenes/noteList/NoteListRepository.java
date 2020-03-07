@@ -17,7 +17,6 @@ public class NoteListRepository {
 
     public NoteListRepository(Application application) {
         noteTable = new NoteTable(application);
-        notes = noteTable.getNotes();
     }
 
     public void insert(Note note) {
@@ -37,9 +36,13 @@ public class NoteListRepository {
     }
 
     public LiveData<List<Note>> getNotes() {
+        notes = noteTable.getNotes();
         return notes;
     }
 
+    public void setCategoryName(String categoryName) {
+        noteTable.setCategoryName(categoryName);
+    }
 
 
 }
