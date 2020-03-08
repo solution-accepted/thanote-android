@@ -1,9 +1,6 @@
 package edu.uci.thanote.scenes.main.fragments.home;
 
 import android.content.Intent;
-import android.graphics.ImageDecoder;
-import android.graphics.drawable.AnimatedImageDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import com.bumptech.glide.Glide;
 import edu.uci.thanote.R;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
@@ -24,7 +22,6 @@ import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.note.Note;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -55,7 +52,7 @@ public class HomeFragment extends Fragment {
     private HomeViewModel viewModel;
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private ImageView imageView;
+    private ImageView imageViewGalaxy;
     private SearchView searchView;
     private RecyclerView recyclerView;
     private HomeRecyclerViewAdapter recyclerViewAdapter;
@@ -183,17 +180,8 @@ public class HomeFragment extends Fragment {
 
         // region imageView (Galaxy)
 
-        imageView = view.findViewById(R.id.image_view_home);
-        Drawable decodedAnimation = null;
-        try {
-            decodedAnimation = ImageDecoder.decodeDrawable(
-                    ImageDecoder.createSource(getResources(), R.drawable.home_galaxy)
-            );
-        } catch (IOException e) {
-            Log.e(TAG, "setupViews: Failed to ImageDecoder.decodeDrawable", e);
-        }
-        imageView.setImageDrawable(decodedAnimation);
-        ((AnimatedImageDrawable) Objects.requireNonNull(decodedAnimation)).start();
+        imageViewGalaxy = view.findViewById(R.id.image_view_home_galaxy);
+        Glide.with(view).load(R.drawable.home_galaxy).into(imageViewGalaxy);
 
         // endregion
 
