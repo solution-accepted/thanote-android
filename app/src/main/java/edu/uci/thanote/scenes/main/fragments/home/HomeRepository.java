@@ -6,6 +6,8 @@ import edu.uci.thanote.apis.APIClient;
 import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.category.CategoryTable;
 import edu.uci.thanote.databases.note.Note;
@@ -30,6 +32,7 @@ public class HomeRepository {
 
     // api
     private JokeApi jokeAPIs;
+    private RecipePuppyApi recipePuppyAPIs;
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -40,6 +43,7 @@ public class HomeRepository {
 
         Retrofit jokeRetrofit = APIClient.getInstance().getRetrofitJoke();
         jokeAPIs = jokeRetrofit.create(JokeApi.class);
+        recipePuppyAPIs = APIClient.getInstance().getRetrofitRecipePuppy().create(RecipePuppyApi.class);
     }
 
     // region Public Methods (Local Database)
@@ -78,6 +82,8 @@ public class HomeRepository {
         void didFetchSingleJokeByKey(SingleJoke joke);
 
         void didFetchTwoPartJokeByKey(TwoPartJoke joke);
+
+        void didFetchPuppyRecipes(RecipePuppyResponse recipes);
     }
 
     private Listener listener;
@@ -104,6 +110,12 @@ public class HomeRepository {
     public void fetchTwoPartJokeBy(String key) {
         jokeAPIs.getTwoPartJokeBy(key)
                 .enqueue(getCallback(listener::didFetchTwoPartJokeByKey));
+    }
+
+    public void fetchPuppyRecipes(String ingredients, String query, int page) {
+        recipePuppyAPIs
+                .getRecipePuppyResponse(ingredients, query, page)
+                .enqueue(getCallback(listener::didFetchPuppyRecipes));
     }
 
     private <T> Callback<T> getCallback(Consumer<T> function) {
