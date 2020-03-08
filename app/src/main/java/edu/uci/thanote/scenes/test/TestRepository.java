@@ -4,8 +4,8 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 import edu.uci.thanote.apis.APIClient;
 import edu.uci.thanote.apis.demo.Post;
-import edu.uci.thanote.apis.demo.PostAPIInterface;
-import edu.uci.thanote.apis.joke.JokeAPIInterface;
+import edu.uci.thanote.apis.demo.PostApi;
+import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.category.Category;
@@ -27,8 +27,8 @@ public class TestRepository {
     private NoteTable noteTable;
 
     // api
-    private PostAPIInterface postApiInterface;
-    private JokeAPIInterface jokeAPIInterface;
+    private PostApi postApi;
+    private JokeApi jokeApi;
 
     // data fields
     private LiveData<List<Category>> categories;
@@ -44,10 +44,10 @@ public class TestRepository {
 
         // initial retrofit
         Retrofit demoRetrofit = APIClient.getInstance().getRetrofitDemo();
-        postApiInterface = demoRetrofit.create(PostAPIInterface.class);
+        postApi = demoRetrofit.create(PostApi.class);
 
         Retrofit jokeRetrofit = APIClient.getInstance().getRetrofitJoke();
-        jokeAPIInterface = jokeRetrofit.create(JokeAPIInterface.class);
+        jokeApi = jokeRetrofit.create(JokeApi.class);
     }
 
     // region Public APIs (Database)
@@ -110,7 +110,7 @@ public class TestRepository {
     }
 
     public void fetchAllPosts() {
-        Call<List<Post>> call = postApiInterface.getPosts();
+        Call<List<Post>> call = postApi.getPosts();
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
@@ -131,7 +131,7 @@ public class TestRepository {
     }
 
     public void fetchSingleJoke() {
-        Call<SingleJoke> call = jokeAPIInterface.getSingleJoke();
+        Call<SingleJoke> call = jokeApi.getSingleJoke();
         call.enqueue(new Callback<SingleJoke>() {
             @Override
             public void onResponse(Call<SingleJoke> call, Response<SingleJoke> response) {
@@ -151,7 +151,7 @@ public class TestRepository {
     }
 
     public void fetchTwoPartJoke() {
-        Call<TwoPartJoke> call = jokeAPIInterface.getTwoPartJoke();
+        Call<TwoPartJoke> call = jokeApi.getTwoPartJoke();
         call.enqueue(new Callback<TwoPartJoke>() {
             @Override
             public void onResponse(Call<TwoPartJoke> call, Response<TwoPartJoke> response) {
@@ -171,7 +171,7 @@ public class TestRepository {
     }
 
     public void fetchSingleJokeBy(String key) {
-        Call<SingleJoke> call = jokeAPIInterface.getSingleJokeBy(key);
+        Call<SingleJoke> call = jokeApi.getSingleJokeBy(key);
         call.enqueue(new Callback<SingleJoke>() {
             @Override
             public void onResponse(Call<SingleJoke> call, Response<SingleJoke> response) {
@@ -191,7 +191,7 @@ public class TestRepository {
     }
 
     public void fetchTwoPartJokeBy(String key) {
-        Call<TwoPartJoke> call = jokeAPIInterface.getTwoPartJokeBy(key);
+        Call<TwoPartJoke> call = jokeApi.getTwoPartJokeBy(key);
         call.enqueue(new Callback<TwoPartJoke>() {
             @Override
             public void onResponse(Call<TwoPartJoke> call, Response<TwoPartJoke> response) {

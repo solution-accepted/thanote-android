@@ -6,7 +6,8 @@ import android.os.Bundle;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import edu.uci.thanote.R;
-import edu.uci.thanote.scenes.test.BaseActivity;
+import edu.uci.thanote.apis.Api;
+import edu.uci.thanote.scenes.general.BaseActivity;
 
 public class ApiTestActivity extends BaseActivity {
     @Override
@@ -20,7 +21,7 @@ public class ApiTestActivity extends BaseActivity {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_api_test);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        TextListAdapter adapter = new TextListAdapter(ApiList.getAllApiNames(), text -> {
+        TextListAdapter adapter = new TextListAdapter(Api.getAllApiNames(), text -> {
             Intent intent = new Intent(ApiTestActivity.this, ApiResultTestActivity.class);
             intent.putExtra(ApiResultTestActivity.EXTRA_APINAME, text);
             startActivity(intent);
