@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyInterface;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
@@ -15,7 +16,6 @@ import edu.uci.thanote.databases.note.Note;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 public class HomeViewModel extends AndroidViewModel {
 
@@ -41,24 +41,24 @@ public class HomeViewModel extends AndroidViewModel {
 
     // region Public APIs
 
-    public void insertCategory(Category category) {
+    public void insertCategoryIntoDatabase(Category category) {
         if (!isValidCategory(category)) {
             listener.didVerifyError("some insert error occur...");
             return;
         }
-        repository.insertCategory(category);
+        repository.insertCategoryIntoDatabase(category);
     }
 
     public LiveData<List<Category>> getCategoriesInDatabase() {
         return categoriesInDatabase;
     }
 
-    public void insertNote(Note note) {
-        repository.insertNote(note);
+    public void insertNoteIntoDatabase(Note note) {
+        repository.insertNoteIntoDatabase(note);
     }
 
-    public void deleteNote(Note note) {
-        repository.deleteNote(note);
+    public void deleteNoteFromDatabase(Note note) {
+        repository.deleteNoteFromDatabase(note);
     }
 
     public LiveData<List<Note>> getNotesInDatabase() {
@@ -69,12 +69,12 @@ public class HomeViewModel extends AndroidViewModel {
         return notesInMemory;
     }
 
-    public void insertNoteInMemory(Note note) {
+    public void insertNoteIntoMemory(Note note) {
         List<Note> newNotes = notesInMemory.getValue();
         if (Objects.requireNonNull(newNotes).add(note)) {
             notesInMemory.setValue(newNotes);
         } else {
-            Log.e(TAG, "insertNodeInMemory: Failed to insert note = " + note.toString());
+            Log.e(TAG, "insertNoteIntoMemory: Failed to insert note = " + note.toString());
         }
     }
 
@@ -82,7 +82,7 @@ public class HomeViewModel extends AndroidViewModel {
         notesInMemory.setValue(notes);
     }
 
-    public void deleteNotesInMemory() {
+    public void deleteNotesFromMemory() {
         notesInMemory.setValue(new ArrayList<>());
     }
 
@@ -94,33 +94,32 @@ public class HomeViewModel extends AndroidViewModel {
         setNotesInMemory(notesInMemoryBackup);
     }
 
-    public void getSingleJoke() {
-        repository.fetchSingleJoke();
+    public void fetchSingleJokeFromApi() {
+        repository.fetchSingleJokeFromApiRandomly();
     }
 
-    public void getTwoPartJoke() {
-        repository.fetchTwoPartJoke();
+    public void fetchTwoPartJokeFromApi() {
+        repository.fetchTwoPartJokeFromApiRandomly();
     }
 
     public void searchSingleJoke(String key) {
-        repository.fetchSingleJokeBy(key);
+        repository.fetchSingleJokeFromApiBy(key);
     }
 
     public void searchTwoPartJoke(String key) {
-        repository.fetchTwoPartJokeBy(key);
+        repository.fetchTwoPartJokeFromApiBy(key);
     }
 
-    public void getPuppyRecipes(String ingredients, String query, int page) {
-        repository.fetchPuppyRecipes(ingredients, query, page);
+    public void fetchPuppyRecipesFromApi(String ingredients, String query, int page) {
+        repository.fetchPuppyRecipesFromApiBy(ingredients, query, page);
     }
 
-    public void getPuppyRecipesBy(String query, int page) {
-        repository.fetchPuppyRecipes("", query, page);
+    public void fetchPuppyRecipesFromApiRandomly() {
+        repository.fetchPuppyRecipesFromApiRandomly();
     }
 
-    public void getPuppyRecipesRandomly() {
-        final int PAGE_MAX = 100;
-        repository.fetchPuppyRecipes("", "", new Random().nextInt(PAGE_MAX));
+    public void searchPuppyRecipes(String query) {
+        fetchPuppyRecipesFromApi("", query, RecipePuppyInterface.getRandomPageNumber());
     }
 
     // endregion
@@ -130,15 +129,17 @@ public class HomeViewModel extends AndroidViewModel {
     private Listener listener;
 
     public interface Listener {
-        void didFetchSingleJoke(SingleJoke joke);
+        void didFetchSingleJokeRandomly(SingleJoke joke);
 
-        void didFetchTwoPartJoke(TwoPartJoke joke);
+        void didFetchTwoPartJokeRandomly(TwoPartJoke joke);
 
         void didFetchSingleJokeByKey(SingleJoke joke);
 
         void didFetchTwoPartJokeByKey(TwoPartJoke joke);
 
-        void didFetchPuppyRecipes(RecipePuppyResponse recipes);
+        void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes);
+
+        void didFetchPuppyRecipesByParams(RecipePuppyResponse recipes);
 
         void didFetchError(String message);
 
@@ -164,13 +165,13 @@ public class HomeViewModel extends AndroidViewModel {
         }
 
         @Override
-        public void didFetchSingleJoke(SingleJoke joke) {
-            listener.didFetchSingleJoke(joke);
+        public void didFetchSingleJokeRandomly(SingleJoke joke) {
+            listener.didFetchSingleJokeRandomly(joke);
         }
 
         @Override
-        public void didFetchTwoPartJoke(TwoPartJoke joke) {
-            listener.didFetchTwoPartJoke(joke);
+        public void didFetchTwoPartJokeRandomly(TwoPartJoke joke) {
+            listener.didFetchTwoPartJokeRandomly(joke);
         }
 
         @Override
@@ -184,8 +185,13 @@ public class HomeViewModel extends AndroidViewModel {
         }
 
         @Override
-        public void didFetchPuppyRecipes(RecipePuppyResponse recipes) {
-            listener.didFetchPuppyRecipes(recipes);
+        public void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes) {
+            listener.didFetchPuppyRecipesRandomly(recipes);
+        }
+
+        @Override
+        public void didFetchPuppyRecipesByParams(RecipePuppyResponse recipes) {
+            listener.didFetchPuppyRecipesByParams(recipes);
         }
     };
 

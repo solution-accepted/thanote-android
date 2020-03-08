@@ -4,14 +4,11 @@ import android.os.Bundle;
 import android.util.Log;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-
-import edu.uci.thanote.R;
-
-import edu.uci.thanote.scenes.main.fragments.home.HomeFragment;
-
-import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
-import edu.uci.thanote.scenes.main.fragments.setting.SettingFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import edu.uci.thanote.R;
+import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
+import edu.uci.thanote.scenes.main.fragments.home.HomeFragment;
+import edu.uci.thanote.scenes.main.fragments.setting.SettingFragment;
 
 public class MainActivity extends AppCompatActivity {
 

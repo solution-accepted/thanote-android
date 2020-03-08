@@ -1,6 +1,7 @@
 package edu.uci.thanote.scenes.main.fragments.home;
 
 import android.app.Application;
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import edu.uci.thanote.apis.APIClient;
 import edu.uci.thanote.apis.joke.JokeAPIInterface;
@@ -12,6 +13,7 @@ import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.category.CategoryTable;
 import edu.uci.thanote.databases.note.Note;
 import edu.uci.thanote.databases.note.NoteTable;
+import org.jetbrains.annotations.NotNull;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,6 +22,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class HomeRepository {
+
+    private final String TAG = "HomeRepository";
 
     // database tables
     private CategoryTable categoryTable;
@@ -46,7 +50,7 @@ public class HomeRepository {
 
     // region Public Methods (Local Database)
 
-    public void insertCategory(Category category) {
+    public void insertCategoryIntoDatabase(Category category) {
         categoryTable.insert(category);
     }
 
@@ -54,11 +58,11 @@ public class HomeRepository {
         return categories;
     }
 
-    public void insertNote(Note note) {
+    public void insertNoteIntoDatabase(Note note) {
         noteTable.insert(note);
     }
 
-    public void deleteNote(Note note) {
+    public void deleteNoteFromDatabase(Note note) {
         noteTable.delete(note);
     }
 
@@ -73,15 +77,17 @@ public class HomeRepository {
     public interface Listener {
         void didFetchError(String message);
 
-        void didFetchSingleJoke(SingleJoke joke);
+        void didFetchSingleJokeRandomly(SingleJoke joke);
 
-        void didFetchTwoPartJoke(TwoPartJoke joke);
+        void didFetchTwoPartJokeRandomly(TwoPartJoke joke);
 
         void didFetchSingleJokeByKey(SingleJoke joke);
 
         void didFetchTwoPartJokeByKey(TwoPartJoke joke);
 
-        void didFetchPuppyRecipes(RecipePuppyResponse recipes);
+        void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes);
+
+        void didFetchPuppyRecipesByParams(RecipePuppyResponse recipes);
     }
 
     private Listener listener;
@@ -90,36 +96,46 @@ public class HomeRepository {
         this.listener = listener;
     }
 
-    public void fetchSingleJoke() {
+    public void fetchSingleJokeFromApiRandomly() {
         jokeAPIs.getSingleJoke()
-                .enqueue(getCallback(listener::didFetchSingleJoke));
+                .enqueue(getCallback(listener::didFetchSingleJokeRandomly));
     }
 
-    public void fetchTwoPartJoke() {
+    public void fetchTwoPartJokeFromApiRandomly() {
         jokeAPIs.getTwoPartJoke()
-                .enqueue(getCallback(listener::didFetchTwoPartJoke));
+                .enqueue(getCallback(listener::didFetchTwoPartJokeRandomly));
     }
 
-    public void fetchSingleJokeBy(String key) {
+    public void fetchSingleJokeFromApiBy(String key) {
         jokeAPIs.getSingleJokeBy(key)
                 .enqueue(getCallback(listener::didFetchSingleJokeByKey));
     }
 
-    public void fetchTwoPartJokeBy(String key) {
+    public void fetchTwoPartJokeFromApiBy(String key) {
         jokeAPIs.getTwoPartJokeBy(key)
                 .enqueue(getCallback(listener::didFetchTwoPartJokeByKey));
     }
 
-    public void fetchPuppyRecipes(String ingredients, String query, int page) {
+    public void fetchPuppyRecipesFromApiRandomly() {
+        recipePuppyAPIs
+                .getRecipePuppyResponse("", "", RecipePuppyInterface.getRandomPageNumber())
+                .enqueue(getCallback(listener::didFetchPuppyRecipesRandomly));
+    }
+
+    public void fetchPuppyRecipesFromApiBy(String ingredients, String query, int page) {
+        if (page < 1 || page > 100) {
+            Log.e(TAG, "fetchPuppyRecipes: page number should be in [1, 100]");
+            Log.e(TAG, "fetchPuppyRecipes: illegal page number = " + page, new IllegalArgumentException());
+        }
         recipePuppyAPIs
                 .getRecipePuppyResponse(ingredients, query, page)
-                .enqueue(getCallback(listener::didFetchPuppyRecipes));
+                .enqueue(getCallback(listener::didFetchPuppyRecipesByParams));
     }
 
     private <T> Callback<T> getCallback(Consumer<T> function) {
         return new Callback<T>() {
             @Override
-            public void onResponse(Call<T> call, Response<T> response) {
+            public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
                 if (response.isSuccessful()) {
                     function.accept(response.body());
                 } else {
@@ -128,7 +144,7 @@ public class HomeRepository {
             }
 
             @Override
-            public void onFailure(Call<T> call, Throwable t) {
+            public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
                 listener.didFetchError(t.getMessage());
             }
         };
