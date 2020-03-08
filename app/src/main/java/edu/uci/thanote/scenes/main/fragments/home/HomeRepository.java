@@ -3,7 +3,7 @@ package edu.uci.thanote.scenes.main.fragments.home;
 import android.app.Application;
 import androidx.lifecycle.LiveData;
 import edu.uci.thanote.apis.APIClient;
-import edu.uci.thanote.apis.joke.JokeAPIInterface;
+import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.databases.category.Category;
@@ -29,7 +29,7 @@ public class HomeRepository {
     private LiveData<List<Note>> notes;
 
     // api
-    private JokeAPIInterface jokeAPIs;
+    private JokeApi jokeAPIs;
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -39,7 +39,7 @@ public class HomeRepository {
         notes = noteTable.getNotes();
 
         Retrofit jokeRetrofit = APIClient.getInstance().getRetrofitJoke();
-        jokeAPIs = jokeRetrofit.create(JokeAPIInterface.class);
+        jokeAPIs = jokeRetrofit.create(JokeApi.class);
     }
 
     // region Public Methods (Local Database)

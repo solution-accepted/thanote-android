@@ -4,7 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface RecipePuppyInterface {
+public interface RecipePuppyApi {
     /**
      * @param ingredients comma delimited ingredients
      * @param query normal search query

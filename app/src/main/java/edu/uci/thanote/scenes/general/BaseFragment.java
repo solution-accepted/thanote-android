@@ -1,4 +1,4 @@
-package edu.uci.thanote.scenes.main.fragments.setting;
+package edu.uci.thanote.scenes.general;
 
 import android.content.Context;
 import android.content.Intent;

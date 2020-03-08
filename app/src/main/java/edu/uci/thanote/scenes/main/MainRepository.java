@@ -2,32 +2,24 @@ package edu.uci.thanote.scenes.main;
 
 import android.app.Application;
 import edu.uci.thanote.apis.APIClient;
-import edu.uci.thanote.apis.demo.Post;
-import edu.uci.thanote.apis.demo.PostAPIInterface;
-import edu.uci.thanote.apis.joke.JokeAPIInterface;
+import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
-import edu.uci.thanote.apis.joke.TwoPartJoke;
-import edu.uci.thanote.databases.category.CategoryTable;
-import edu.uci.thanote.databases.note.NoteTable;
-import edu.uci.thanote.scenes.test.TestRepository;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-import java.util.List;
-
 public class MainRepository {
     private MainRepositoryListener listener;
 
     // api
-    private JokeAPIInterface jokeAPIInterface;
+    private JokeApi jokeApi;
     // TODO: - add fetch other apis
 
     public MainRepository(Application application) {
         // initial retrofit
         Retrofit jokeRetrofit = APIClient.getInstance().getRetrofitJoke();
-        jokeAPIInterface = jokeRetrofit.create(JokeAPIInterface.class);
+        jokeApi = jokeRetrofit.create(JokeApi.class);
 
         // TODO: - add fetch other apis
     }
@@ -45,7 +37,7 @@ public class MainRepository {
     }
 
     public void fetchSingleJoke() {
-        Call<SingleJoke> call = jokeAPIInterface.getSingleJoke();
+        Call<SingleJoke> call = jokeApi.getSingleJoke();
         call.enqueue(new Callback<SingleJoke>() {
             @Override
             public void onResponse(Call<SingleJoke> call, Response<SingleJoke> response) {

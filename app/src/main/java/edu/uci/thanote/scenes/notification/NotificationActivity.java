@@ -1,6 +1,5 @@
 package edu.uci.thanote.scenes.notification;
 
-import android.app.ActionBar;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
@@ -13,7 +12,7 @@ import android.widget.*;
 import androidx.fragment.app.DialogFragment;
 import edu.uci.thanote.R;
 import edu.uci.thanote.scenes.main.fragments.setting.ImageTextItem;
-import edu.uci.thanote.scenes.test.BaseActivity;
+import edu.uci.thanote.scenes.general.BaseActivity;
 
 import java.util.Calendar;
 
