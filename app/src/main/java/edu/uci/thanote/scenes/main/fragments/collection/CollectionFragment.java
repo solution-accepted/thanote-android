@@ -29,7 +29,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class CollectionFragment extends Fragment {
     public static final int ADD_CATEGORY_REQUEST = 1;
-    public static final String CATEGORY_NAME = "Category_name";
+    public static final String CATEGORY_ID = "Category_id";
 
     private RecyclerView recyclerView;
     private CollectionViewModel viewModel;
@@ -87,7 +87,7 @@ public class CollectionFragment extends Fragment {
 
     private void openNoteList(Category category) {
         Intent intent = new Intent(getActivity(), NoteListActivity.class);
-        intent.putExtra(CATEGORY_NAME, category.getName());
+        intent.putExtra(CATEGORY_ID, category.getId());
         startActivity(intent);
     }
 
@@ -96,7 +96,7 @@ public class CollectionFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ADD_CATEGORY_REQUEST && resultCode == RESULT_OK) {
-            String categoryName = data.getStringExtra(AddCollectionActivity.EXTRA_CAGETORY);
+            String categoryName = data.getStringExtra(AddCollectionActivity.EXTRA_CATEGORY);
 
             Category category = new Category(categoryName);
             viewModel.insert(category);

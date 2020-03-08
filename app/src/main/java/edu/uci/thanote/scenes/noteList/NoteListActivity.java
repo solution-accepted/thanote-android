@@ -25,9 +25,10 @@ import edu.uci.thanote.scenes.addnote.AddNoteActivity;
 
 public class NoteListActivity extends AppCompatActivity {
     private final int ADD_NOTE_REQUEST = 1;
-    public static final String CATEGORY_NAME = "Category_name";
+    public static final String CATEGORY_ID = "Category_id";
+    public static final int CATEGORY_ID_DEFAULT = 0;
 
-    private String categoryName;
+    private int categoryId;
     private RecyclerView recyclerView;
     private NoteListViewModel viewModel;
     private final NoteListAdapter adapter = new NoteListAdapter();
@@ -40,7 +41,7 @@ public class NoteListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_list);
         Intent intent = getIntent();
-        categoryName = intent.getStringExtra(CATEGORY_NAME);
+        categoryId = intent.getIntExtra(CATEGORY_ID, CATEGORY_ID_DEFAULT);
         setupViewModel();
         setupViews();
     }
@@ -58,7 +59,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     public void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(NoteListViewModel.class);
-        viewModel.setCategoryName(categoryName);
+        viewModel.setCategoryId(categoryId);
         viewModel.setListener(new NoteListViewModel.NoteViewModelListener() {
             @Override
             public void onNoteClick(Note note) {
@@ -106,7 +107,7 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void openNote() {
-        Intent intent = new Intent(this, AddNoteActivity.class); //todo
+        Intent intent = new Intent(this, AddNoteActivity.class);
         startActivity(intent);
     }
 
@@ -118,7 +119,7 @@ public class NoteListActivity extends AppCompatActivity {
             String title = data.getStringExtra(AddNoteActivity.EXTRA_NOTE_TITLE);
             String detail = data.getStringExtra(AddNoteActivity.EXTRA_NOTE_DETAIL);
 
-            Note note = new Note(title, detail, 1, ""); // todo
+            Note note = new Note(title, detail, categoryId, "");
             viewModel.insert(note);
 
             Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();

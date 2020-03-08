@@ -21,8 +21,8 @@ public class NoteListViewModel extends AndroidViewModel {
         repository = new NoteListRepository(application);
     }
 
-    public void setCategoryName(String categoryName) {
-        repository.setCategoryName(categoryName);
+    public void setCategoryId(int categoryId) {
+        repository.setCategoryId(categoryId);
     }
     public void insert(Note note) {
         repository.insert(note);

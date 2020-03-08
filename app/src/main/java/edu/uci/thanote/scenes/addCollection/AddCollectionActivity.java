@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import edu.uci.thanote.R;
 
 public class AddCollectionActivity extends AppCompatActivity {
-    public static final String EXTRA_CAGETORY =
+    public static final String EXTRA_CATEGORY =
             "com.example.myapplication.EXTRA_CAGETORY";
 
     private EditText newCategoryEditText;
@@ -40,7 +40,7 @@ public class AddCollectionActivity extends AppCompatActivity {
         }
 
         Intent data = new Intent();
-        data.putExtra(EXTRA_CAGETORY, categoryName);
+        data.putExtra(EXTRA_CATEGORY, categoryName);
 
         setResult(RESULT_OK, data);
         finish();
