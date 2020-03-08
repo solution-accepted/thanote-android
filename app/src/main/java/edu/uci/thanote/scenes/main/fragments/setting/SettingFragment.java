@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import edu.uci.thanote.R;
+import edu.uci.thanote.scenes.notification.NotificationActivity;
 import edu.uci.thanote.scenes.test.api.ApiTestActivity;
 
 public class SettingFragment extends BaseFragment {
@@ -42,7 +43,7 @@ public class SettingFragment extends BaseFragment {
         public void onItemClick(ImageTextItem item) {
             switch (item.getText()) {
                 case SETTING_ACTION_NOTIFICATIONS:
-                    showShortToast(SETTING_ACTION_NOTIFICATIONS);
+                    openPage(NotificationActivity.class);
                     break;
                 case SETTING_ACTION_BUG_REPORT:
                     showShortToast(SETTING_ACTION_BUG_REPORT);

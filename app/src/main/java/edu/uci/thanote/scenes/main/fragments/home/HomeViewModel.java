@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.omdb.OMDbMovie;
+import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyInterface;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.category.Category;
@@ -86,14 +88,6 @@ public class HomeViewModel extends AndroidViewModel {
         notesInMemory.setValue(new ArrayList<>());
     }
 
-    public void backupNotesInMemory() {
-        notesInMemoryBackup = notesInMemory.getValue();
-    }
-
-    public void restoreNotesInMemory() {
-        setNotesInMemory(notesInMemoryBackup);
-    }
-
     public void fetchSingleJokeFromApi() {
         repository.fetchSingleJokeFromApiRandomly();
     }
@@ -122,11 +116,17 @@ public class HomeViewModel extends AndroidViewModel {
         fetchPuppyRecipesFromApi("", query, RecipePuppyInterface.getRandomPageNumber());
     }
 
+    public void searchOpenMovie(String query) {
+        repository.fetchOpenMovieFromApiByTitle(query);
+        repository.fetchOpenMovieFromApiBySearching(query);
+    }
+
     // endregion
 
     // region ViewModel Listener
 
     private Listener listener;
+
 
     public interface Listener {
         void didFetchSingleJokeRandomly(SingleJoke joke);
@@ -144,6 +144,10 @@ public class HomeViewModel extends AndroidViewModel {
         void didFetchError(String message);
 
         void didVerifyError(String message);
+
+        void didFetchOpenMovie(OMDbMovie movie);
+
+        void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies);
     }
 
     public void setListener(Listener listener) {
@@ -192,6 +196,16 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         public void didFetchPuppyRecipesByParams(RecipePuppyResponse recipes) {
             listener.didFetchPuppyRecipesByParams(recipes);
+        }
+
+        @Override
+        public void didFetchOpenMovie(OMDbMovie movie) {
+            listener.didFetchOpenMovie(movie);
+        }
+
+        @Override
+        public void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies) {
+            listener.didFetchOpenMovieSearch(movies);
         }
     };
 

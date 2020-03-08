@@ -7,6 +7,9 @@ import edu.uci.thanote.apis.APIClient;
 import edu.uci.thanote.apis.joke.JokeAPIInterface;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.omdb.OMDbInterface;
+import edu.uci.thanote.apis.omdb.OMDbMovie;
+import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyInterface;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.category.Category;
@@ -34,8 +37,10 @@ public class HomeRepository {
     private LiveData<List<Note>> notes;
 
     // api
-    private JokeAPIInterface jokeAPIs;
-    private RecipePuppyInterface recipePuppyAPIs;
+    private JokeAPIInterface jokeApi;
+    private RecipePuppyInterface recipePuppyApi;
+    private OMDbInterface omdbApi;
+    private final String OMDB_API_KEY = "7c782685"; // Please DONT abuse this!
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -44,8 +49,9 @@ public class HomeRepository {
         noteTable = new NoteTable(application);
         notes = noteTable.getNotes();
 
-        jokeAPIs = APIClient.getInstance().getRetrofitJoke().create(JokeAPIInterface.class);
-        recipePuppyAPIs = APIClient.getInstance().getRetrofitRecipePuppy().create(RecipePuppyInterface.class);
+        jokeApi = APIClient.getInstance().getRetrofitJoke().create(JokeAPIInterface.class);
+        recipePuppyApi = APIClient.getInstance().getRetrofitRecipePuppy().create(RecipePuppyInterface.class);
+        omdbApi = APIClient.getInstance().getRetrofitOMDb().create(OMDbInterface.class);
     }
 
     // region Public Methods (Local Database)
@@ -88,6 +94,10 @@ public class HomeRepository {
         void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes);
 
         void didFetchPuppyRecipesByParams(RecipePuppyResponse recipes);
+
+        void didFetchOpenMovie(OMDbMovie movie);
+
+        void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies);
     }
 
     private Listener listener;
@@ -97,27 +107,27 @@ public class HomeRepository {
     }
 
     public void fetchSingleJokeFromApiRandomly() {
-        jokeAPIs.getSingleJoke()
+        jokeApi.getSingleJoke()
                 .enqueue(getCallback(listener::didFetchSingleJokeRandomly));
     }
 
     public void fetchTwoPartJokeFromApiRandomly() {
-        jokeAPIs.getTwoPartJoke()
+        jokeApi.getTwoPartJoke()
                 .enqueue(getCallback(listener::didFetchTwoPartJokeRandomly));
     }
 
     public void fetchSingleJokeFromApiBy(String key) {
-        jokeAPIs.getSingleJokeBy(key)
+        jokeApi.getSingleJokeBy(key)
                 .enqueue(getCallback(listener::didFetchSingleJokeByKey));
     }
 
     public void fetchTwoPartJokeFromApiBy(String key) {
-        jokeAPIs.getTwoPartJokeBy(key)
+        jokeApi.getTwoPartJokeBy(key)
                 .enqueue(getCallback(listener::didFetchTwoPartJokeByKey));
     }
 
     public void fetchPuppyRecipesFromApiRandomly() {
-        recipePuppyAPIs
+        recipePuppyApi
                 .getRecipePuppyResponse("", "", RecipePuppyInterface.getRandomPageNumber())
                 .enqueue(getCallback(listener::didFetchPuppyRecipesRandomly));
     }
@@ -127,9 +137,23 @@ public class HomeRepository {
             Log.e(TAG, "fetchPuppyRecipes: page number should be in [1, 100]");
             Log.e(TAG, "fetchPuppyRecipes: illegal page number = " + page, new IllegalArgumentException());
         }
-        recipePuppyAPIs
+        recipePuppyApi
                 .getRecipePuppyResponse(ingredients, query, page)
                 .enqueue(getCallback(listener::didFetchPuppyRecipesByParams));
+    }
+
+    private void fetchOpenMovieFromApiRandomly() {
+        // Not Provided
+    }
+
+    public void fetchOpenMovieFromApiByTitle(String title) {
+        omdbApi.getOMDbMovieByTitle(OMDB_API_KEY, title)
+                .enqueue(getCallback(listener::didFetchOpenMovie));
+    }
+
+    public void fetchOpenMovieFromApiBySearching(String title) {
+        omdbApi.getOMDbMovieBySearching(OMDB_API_KEY, title, 1)
+                .enqueue(getCallback(listener::didFetchOpenMovieSearch));
     }
 
     private <T> Callback<T> getCallback(Consumer<T> function) {

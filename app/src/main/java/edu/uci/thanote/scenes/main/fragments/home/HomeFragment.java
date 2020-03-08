@@ -18,6 +18,8 @@ import com.bumptech.glide.Glide;
 import edu.uci.thanote.R;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.omdb.OMDbMovie;
+import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.note.Note;
@@ -36,15 +38,16 @@ public class HomeFragment extends Fragment {
     private final int NOTE_TYPE_COUNT = 3;
     private final int NOTE_DEFAULT_CATEGORY_ID = 1;
     private final String NOTE_DEFAULT_IMAGE_URL = "";
-
-
-    private final String NOTE_RECIPE_TITLE = "Recipe: ";
+    private final String NOTE_JOKE_TITLE_PREFIX = "[Joke]: ";
+    private final String NOTE_RECIPE_TITLE_PREFIX = "[Recipe]: ";
     private final int NOTE_RECIPE_COUNT_IN_RESPONSE = 10;
+    private final String NOTE_MOVIE_TITLE_PREFIX = "[Movie]: ";
 
     private enum API {
         ALL,
         JOKE,
-        RECIPE
+        RECIPE,
+        MOVIE
     }
 
     private API apiSelected = API.ALL;
@@ -76,7 +79,7 @@ public class HomeFragment extends Fragment {
                 return;
             }
             viewModel.insertNoteIntoMemory(new Note(
-                    joke.getCategory() + " Joke",
+                    NOTE_JOKE_TITLE_PREFIX + joke.getCategory(),
                     joke.getJoke(),
                     NOTE_DEFAULT_CATEGORY_ID,
                     NOTE_DEFAULT_IMAGE_URL));
@@ -90,7 +93,7 @@ public class HomeFragment extends Fragment {
                 return;
             }
             viewModel.insertNoteIntoMemory(new Note(
-                    joke.getCategory() + " Joke",
+                    NOTE_JOKE_TITLE_PREFIX + joke.getCategory(),
                     joke.getSetup() + "\n" + joke.getDelivery(),
                     NOTE_DEFAULT_CATEGORY_ID,
                     NOTE_DEFAULT_IMAGE_URL));
@@ -116,7 +119,7 @@ public class HomeFragment extends Fragment {
             final int next = new Random().nextInt(NOTE_RECIPE_COUNT_IN_RESPONSE);
             Recipe recipe = recipeList.get(next);
             Note note = new Note(
-                    NOTE_RECIPE_TITLE + recipe.getTitle(),
+                    NOTE_RECIPE_TITLE_PREFIX + recipe.getTitle(),
                     recipe.getIngredients() + "\n" + recipe.getWebsiteUrl(),
                     NOTE_DEFAULT_CATEGORY_ID,
                     recipe.getThumbnail()
@@ -136,7 +139,7 @@ public class HomeFragment extends Fragment {
                     break;
                 case RECIPE:
                     recipes.getRecipes().forEach(recipe -> viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_RECIPE_TITLE + recipe.getTitle(),
+                            NOTE_RECIPE_TITLE_PREFIX + recipe.getTitle(),
                             recipe.getIngredients() + "\n" + recipe.getWebsiteUrl(),
                             NOTE_DEFAULT_CATEGORY_ID,
                             recipe.getThumbnail()
@@ -144,6 +147,49 @@ public class HomeFragment extends Fragment {
                     break;
                 default:
                     Log.e(TAG, "didFetchPuppyRecipesByParams: apiSelected = " + apiSelected);
+            }
+        }
+
+        @Override
+        public void didFetchOpenMovie(OMDbMovie movie) {
+            swipeRefreshLayout.setRefreshing(false);
+            Log.i(TAG, "didFetchOpenMovie: " + movie);
+            if (movie.getResponse().equals("False")) {
+                return;
+            }
+            switch (apiSelected) {
+                case ALL:
+                    viewModel.insertNoteIntoMemory(new Note(
+                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
+                            movie.getPlot() + "\n" + movie.getImdbUrl(),
+                            NOTE_DEFAULT_CATEGORY_ID,
+                            movie.getImageUrl()));
+                    break;
+                case MOVIE:
+                    break;
+                default:
+                    Log.e(TAG, "didFetchOpenMovie: apiSelected = " + apiSelected);
+            }
+        }
+
+        @Override
+        public void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies) {
+            swipeRefreshLayout.setRefreshing(false);
+            if (movies.getResponse().equals("False")) {
+                return;
+            }
+            switch (apiSelected) {
+                case ALL:
+                    break;
+                case MOVIE:
+                    movies.getResults().forEach(movie -> viewModel.insertNoteIntoMemory(new Note(
+                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
+                            movie.getImdbUrl(),
+                            NOTE_DEFAULT_CATEGORY_ID,
+                            movie.getImageUrl())));
+                    break;
+                default:
+                    Log.e(TAG, "didFetchOpenMovieSearch: apiSelected = " + apiSelected);
             }
         }
 
@@ -202,19 +248,18 @@ public class HomeFragment extends Fragment {
             public boolean onQueryTextSubmit(String query) {
                 Log.i(TAG, "searchView.onQueryTextSubmit: apiSelected = " + apiSelected);
                 Log.i(TAG, "searchView.onQueryTextSubmit: query = " + query);
-                searchNote(query);
+                if (query.isEmpty()) {
+                    fetchSomeRandomNotes();
+                } else {
+                    searchNote(query);
+                }
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.i(TAG, "searchView.onQueryTextChange: newText = " + newText);
-                if (newText.isEmpty()) {
-                    viewModel.restoreNotesInMemory();
-                    return true;
-                }
                 return false;
-//                return onQueryTextSubmit(newText);
             }
         });
 
@@ -289,7 +334,6 @@ public class HomeFragment extends Fragment {
             Log.i(TAG, "getSomeRandomNotes: fetching note " + i);
             fetchSingleRandomNote();
         }
-        viewModel.backupNotesInMemory();
     }
 
     private void fetchSingleRandomNote() {
@@ -316,6 +360,7 @@ public class HomeFragment extends Fragment {
             case ALL:
                 searchJoke(query);
                 searchRecipe(query);
+                searchMovie(query);
                 break;
             case JOKE:
                 searchJoke(query);
@@ -323,11 +368,15 @@ public class HomeFragment extends Fragment {
             case RECIPE:
                 searchRecipe(query);
                 break;
+            case MOVIE:
+                searchMovie(query);
+                break;
             default:
                 Log.e(TAG, "searchNote: unknown apiSelected =" + apiSelected);
         }
 
     }
+
 
     private void searchJoke(String query) {
         viewModel.searchSingleJoke(query);
@@ -336,6 +385,10 @@ public class HomeFragment extends Fragment {
 
     private void searchRecipe(String query) {
         viewModel.searchPuppyRecipes(query);
+    }
+
+    private void searchMovie(String query) {
+        viewModel.searchOpenMovie(query);
     }
 
     private void showToast(String message) {

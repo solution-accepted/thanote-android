@@ -1,5 +1,8 @@
 package edu.uci.thanote.scenes.test.api;
 
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.os.Bundle;
 import edu.uci.thanote.R;
@@ -7,6 +10,8 @@ import edu.uci.thanote.apis.APIClient;
 import edu.uci.thanote.apis.joke.JokeAPIInterface;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.omdb.OMDbMovie;
+import edu.uci.thanote.apis.omdb.OMDbInterface;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyInterface;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
@@ -17,46 +22,128 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 import java.util.List;
+import java.util.Random;
 
 public class ApiResultTestActivity extends BaseActivity {
     public static final String EXTRA_APINAME = "edu.uci.thanote.test.api.EXTRA_APINAME";
-    private TextView resultTextView;
     private String log = "";
+    private String apiName;
+
+    private static final String OMDB_APIKEY = "7c782685";
+
+    // components
+    private EditText queryEditText;
+    private TextView resultTextView;
+    private TextView titleTextView;
+
+    // retrofits
     private Retrofit retrofitJoke = APIClient.getInstance().getRetrofitJoke();
     private Retrofit retrofitRecipePuppy = APIClient.getInstance().getRetrofitRecipePuppy();
+    private Retrofit retrofitOMDb = APIClient.getInstance().getRetrofitOMDb();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_api_result_test);
         setupViews();
-        testApis();
+        apiName = getIntent().getStringExtra(EXTRA_APINAME);
+        titleTextView.setText(apiName);
     }
 
     private void setupViews() {
+        // components
+        Button getButton = findViewById(R.id.button_api_test_get);
+        getButton.setOnClickListener(buttonClickListener);
+        Button queryButton = findViewById(R.id.button_api_test_query);
+        queryButton.setOnClickListener(buttonClickListener);
+        Button clearButton = findViewById(R.id.button_api_test_clear);
+        clearButton.setOnClickListener(buttonClickListener);
+        queryEditText = findViewById(R.id.edit_text_api_test_query);
         resultTextView = findViewById(R.id.text_view_api_result_test);
+        titleTextView = findViewById(R.id.text_view_api_test_title);
     }
 
-    private void testApis() {
-        String apiName = getIntent().getStringExtra(EXTRA_APINAME);
-        if (apiName != null) {
-            ApiList api = ApiList.toApi(apiName);
-            switch (api) {
-                case JOKE:
-                    testJoke();
+    private View.OnClickListener buttonClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.button_api_test_get:
+                    clear();
+                    testGetApis();
                     break;
-                case RECIPEPUPPY:
-                    testRecipePuppy();
+                case R.id.button_api_test_query:
+                    clear();
+                    String keyword = queryEditText.getText().toString();
+                    testQueryApis(keyword);
+                    break;
+                case R.id.button_api_test_clear:
+                    clear();
+                    break;
+                default:
+                    showShortToast("Error button click event with id:" + v.getId());
                     break;
             }
         }
+    };
+
+    private void clear() {
+        log = "";
+        resultTextView.setText("");
     }
 
-    private void testJoke() {
+    private void testGetApis() {
+        if (apiName == null) {
+            showShortToast("Error: cannot get api name!");
+            return;
+        }
+
+        ApiList api = ApiList.toApi(apiName);
+        switch (api) {
+            case JOKE:
+                testJokeGet();
+                break;
+            case RECIPEPUPPY:
+                testRecipePuppy("");
+            case OMDB:
+                testOMDb(getRandomCharacter());
+                break;
+        }
+    }
+
+    private void testQueryApis(String keyword) {
+        if (keyword == null) {
+            showShortToast("Please enter any keyword...");
+            return;
+        }
+
+        if (apiName == null) {
+            showShortToast("Error: cannot get api name!");
+            return;
+        }
+
+        ApiList api = ApiList.toApi(apiName);
+        switch (api) {
+            case JOKE:
+                testJokeQuery(keyword);
+                break;
+            case RECIPEPUPPY:
+                testRecipePuppy(keyword);
+                break;
+            case OMDB:
+                testOMDb(keyword);
+                break;
+        }
+    }
+
+    // region JOKE API
+    private void testJokeGet() {
         fetchSingleJoke();
         fetchTwoPartJoke();
-        fetchSingleJokeBy("why");
-        fetchTwoPartJokeBy("why");
+    }
+
+    private void testJokeQuery(String keyword) {
+        fetchSingleJokeBy(keyword);
+        fetchTwoPartJokeBy(keyword);
     }
 
     private void fetchSingleJoke() {
@@ -138,10 +225,12 @@ public class ApiResultTestActivity extends BaseActivity {
         Call<TwoPartJoke> call = api.getTwoPartJokeBy(key);
         twoPartJokeCall(call);
     }
+    // endregion
 
-    private void testRecipePuppy() {
+    // region RECIPEPUPPY API
+    private void testRecipePuppy(String keyword) {
         RecipePuppyInterface api = retrofitRecipePuppy.create(RecipePuppyInterface.class);
-        Call<RecipePuppyResponse> call = api.getRecipePuppyResponse("", "", 1);
+        Call<RecipePuppyResponse> call = api.getRecipePuppyResponse("", keyword, 1);
         call.enqueue(new Callback<RecipePuppyResponse>() {
             @Override
             public void onResponse(Call<RecipePuppyResponse> call, Response<RecipePuppyResponse> response) {
@@ -172,4 +261,42 @@ public class ApiResultTestActivity extends BaseActivity {
             }
         });
     }
+    // endregion
+
+    // region OMDB API
+    private void testOMDb(String keyword) {
+        OMDbInterface api = retrofitOMDb.create(OMDbInterface.class);
+        Call<OMDbMovie> call = api.getOMDbMovieByTitle(keyword, OMDB_APIKEY);
+        call.enqueue(new Callback<OMDbMovie>() {
+            @Override
+            public void onResponse(Call<OMDbMovie> call, Response<OMDbMovie> response) {
+                if (!response.isSuccessful()) {
+                    log += "Response Code: " + response.code();
+                    resultTextView.setText(log);
+                    return;
+                }
+
+                OMDbMovie omDbMovie = response.body();
+
+                if (omDbMovie != null) {
+                    resultTextView.setText(omDbMovie.toString());
+                } else {
+                    resultTextView.setText("OMDb is null!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OMDbMovie> call, Throwable t) {
+                log += "Error: " + t.getMessage();
+                resultTextView.setText(log);
+            }
+        });
+    }
+
+    private String getRandomCharacter() {
+        Random rnd = new Random();
+        char c = (char) (rnd.nextInt(26) + 'a');
+        return String.valueOf(c);
+    }
+    // endregion
 }
