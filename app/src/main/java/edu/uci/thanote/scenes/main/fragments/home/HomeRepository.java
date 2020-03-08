@@ -4,6 +4,7 @@ import android.app.Application;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
 import edu.uci.thanote.apis.APIClient;
+import edu.uci.thanote.apis.Api;
 import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
@@ -40,7 +41,7 @@ public class HomeRepository {
     private JokeApi jokeApi;
     private RecipePuppyApi recipePuppyApi;
     private OMDbApi omdbApi;
-    private final String OMDB_API_KEY = "7c782685"; // Please DONT abuse this!
+    private final String OMDB_API_KEY = Api.OMDB.getApiKey(); // Please DONT abuse this!
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
