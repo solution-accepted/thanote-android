@@ -1,6 +1,7 @@
 package edu.uci.thanote.scenes.main.fragments.home;
 
 import android.graphics.drawable.Drawable;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -8,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.text.util.LinkifyCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -46,6 +48,7 @@ public class HomeRecyclerViewViewHolder extends RecyclerView.ViewHolder {
         textViewTitle.setText(note.getTitle());
         textViewDate.setText("");
         textViewDescription.setText(note.getDetail());
+        LinkifyCompat.addLinks(textViewDescription, Linkify.WEB_URLS);
 
         String url = note.getImageUrl();
         if (!url.isEmpty()) {
