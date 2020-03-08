@@ -8,11 +8,99 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_weight="2">
+
+                <TextView
+                    android:id="@+id/text_view_api_test_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/TitleStyle"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/button_api_test_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/BlueButton"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Clear Result" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/button_api_test_get"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/BlueButton"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="GET" />
+
+            <Button
+                android:id="@+id/button_api_test_query"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/BlueButton"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Query" />
+
+            <EditText
+                android:id="@+id/edit_text_api_test_query"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:hint="enter keyword..." />
+
+        </LinearLayout>
+
+        <View
+            style="@style/Divider"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Result"
+            style="@style/TitleStyle"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp" />
 
         <TextView
             android:id="@+id/text_view_api_result_test"
-            android:padding="10dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
