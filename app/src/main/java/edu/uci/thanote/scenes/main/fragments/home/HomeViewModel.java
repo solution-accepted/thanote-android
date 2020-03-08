@@ -8,12 +8,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class HomeViewModel extends AndroidViewModel {
 
@@ -31,40 +33,7 @@ public class HomeViewModel extends AndroidViewModel {
     public HomeViewModel(@NonNull Application application) {
         super(application);
         repository = new HomeRepository(application);
-        repository.setListener(new HomeRepository.Listener() {
-
-            // If HomeRepository.Listener didFetchError
-            // Then HomeViewModel.Listener didFetchError
-            // Then HomeFragment didFetchError
-
-            // So HomeRepository.Listener and HomeViewModel.Listener do nothing
-            // They are just passing the message to HomeFragment
-
-            @Override
-            public void didFetchError(String message) {
-                listener.didFetchError(message);
-            }
-
-            @Override
-            public void didFetchSingleJoke(SingleJoke joke) {
-                listener.didFetchSingleJoke(joke);
-            }
-
-            @Override
-            public void didFetchTwoPartJoke(TwoPartJoke joke) {
-                listener.didFetchTwoPartJoke(joke);
-            }
-
-            @Override
-            public void didFetchSingleJokeByKey(SingleJoke joke) {
-                listener.didFetchSingleJokeByKey(joke);
-            }
-
-            @Override
-            public void didFetchTwoPartJokeByKey(TwoPartJoke joke) {
-                listener.didFetchTwoPartJokeByKey(joke);
-            }
-        });
+        repository.setListener(repoListener);
         categoriesInDatabase = repository.getCategories();
         notesInDatabase = repository.getNotes();
         notesInMemory = new MutableLiveData<>();
@@ -141,6 +110,19 @@ public class HomeViewModel extends AndroidViewModel {
         repository.fetchTwoPartJokeBy(key);
     }
 
+    public void getPuppyRecipes(String ingredients, String query, int page) {
+        repository.fetchPuppyRecipes(ingredients, query, page);
+    }
+
+    public void getPuppyRecipesBy(String query, int page) {
+        repository.fetchPuppyRecipes("", query, page);
+    }
+
+    public void getPuppyRecipesRandomly() {
+        final int PAGE_MAX = 100;
+        repository.fetchPuppyRecipes("", "", new Random().nextInt(PAGE_MAX));
+    }
+
     // endregion
 
     // region ViewModel Listener
@@ -156,6 +138,8 @@ public class HomeViewModel extends AndroidViewModel {
 
         void didFetchTwoPartJokeByKey(TwoPartJoke joke);
 
+        void didFetchPuppyRecipes(RecipePuppyResponse recipes);
+
         void didFetchError(String message);
 
         void didVerifyError(String message);
@@ -164,6 +148,46 @@ public class HomeViewModel extends AndroidViewModel {
     public void setListener(Listener listener) {
         this.listener = listener;
     }
+
+    private final HomeRepository.Listener repoListener = new HomeRepository.Listener() {
+
+        // If HomeRepository.Listener didFetchError
+        // Then HomeViewModel.Listener didFetchError
+        // Then HomeFragment didFetchError
+
+        // So HomeRepository.Listener and HomeViewModel.Listener do nothing
+        // They are just passing the message to HomeFragment
+
+        @Override
+        public void didFetchError(String message) {
+            listener.didFetchError(message);
+        }
+
+        @Override
+        public void didFetchSingleJoke(SingleJoke joke) {
+            listener.didFetchSingleJoke(joke);
+        }
+
+        @Override
+        public void didFetchTwoPartJoke(TwoPartJoke joke) {
+            listener.didFetchTwoPartJoke(joke);
+        }
+
+        @Override
+        public void didFetchSingleJokeByKey(SingleJoke joke) {
+            listener.didFetchSingleJokeByKey(joke);
+        }
+
+        @Override
+        public void didFetchTwoPartJokeByKey(TwoPartJoke joke) {
+            listener.didFetchTwoPartJokeByKey(joke);
+        }
+
+        @Override
+        public void didFetchPuppyRecipes(RecipePuppyResponse recipes) {
+            listener.didFetchPuppyRecipes(recipes);
+        }
+    };
 
     // endregion
 
