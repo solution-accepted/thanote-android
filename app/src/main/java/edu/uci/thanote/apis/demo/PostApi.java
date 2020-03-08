@@ -5,7 +5,7 @@ import retrofit2.http.GET;
 
 import java.util.List;
 
-public interface PostAPIInterface {
+public interface PostApi {
 
     @GET("posts")
     Call<List<Post>> getPosts();

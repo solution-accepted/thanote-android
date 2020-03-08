@@ -6,7 +6,7 @@ import retrofit2.http.Query;
 
 import java.util.Random;
 
-public interface RecipePuppyInterface {
+public interface RecipePuppyApi {
 
     static int getRandomPageNumber() {
         final int PAGE_MIN = 1;

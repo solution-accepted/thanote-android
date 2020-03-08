@@ -7,15 +7,22 @@ import android.widget.TextView;
 import android.os.Bundle;
 import edu.uci.thanote.R;
 import edu.uci.thanote.apis.APIClient;
-import edu.uci.thanote.apis.joke.JokeAPIInterface;
+import edu.uci.thanote.apis.Api;
+import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
-import edu.uci.thanote.apis.omdb.OMDbInterface;
+import edu.uci.thanote.apis.omdb.OMDbApi;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
-import edu.uci.thanote.apis.recipepuppy.RecipePuppyInterface;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
-import edu.uci.thanote.scenes.test.BaseActivity;
+import edu.uci.thanote.apis.thecocktaildb.Cocktail;
+import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
+import edu.uci.thanote.apis.thecocktaildb.TheCocktailDbApi;
+import edu.uci.thanote.apis.themoviedb.Movie;
+import edu.uci.thanote.apis.themoviedb.TheMovieDbApi;
+import edu.uci.thanote.apis.themoviedb.TopRatedResponse;
+import edu.uci.thanote.scenes.general.BaseActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,8 +36,6 @@ public class ApiResultTestActivity extends BaseActivity {
     private String log = "";
     private String apiName;
 
-    private static final String OMDB_APIKEY = "7c782685";
-
     // components
     private EditText queryEditText;
     private TextView resultTextView;
@@ -40,6 +45,8 @@ public class ApiResultTestActivity extends BaseActivity {
     private Retrofit retrofitJoke = APIClient.getInstance().getRetrofitJoke();
     private Retrofit retrofitRecipePuppy = APIClient.getInstance().getRetrofitRecipePuppy();
     private Retrofit retrofitOMDb = APIClient.getInstance().getRetrofitOMDb();
+    private Retrofit retrofitTheMovieDb = APIClient.getInstance().getRetrofitTheMovieDb();
+    private Retrofit retrofitTheCocktailDb = APIClient.getInstance().getRetrofitTheCocktailDb();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +104,7 @@ public class ApiResultTestActivity extends BaseActivity {
             return;
         }
 
-        ApiList api = ApiList.toApi(apiName);
+        Api api = Api.toApi(apiName);
         switch (api) {
             case JOKE:
                 testJokeGet();
@@ -106,6 +113,12 @@ public class ApiResultTestActivity extends BaseActivity {
                 testRecipePuppy("");
             case OMDB:
                 testOMDb(getRandomCharacter());
+                break;
+            case THEMOVEDB:
+                testTheMovieDbGet();
+                break;
+            case THECOCKTAILDB:
+                testTheCocktailDbGet();
                 break;
         }
     }
@@ -121,7 +134,7 @@ public class ApiResultTestActivity extends BaseActivity {
             return;
         }
 
-        ApiList api = ApiList.toApi(apiName);
+        Api api = Api.toApi(apiName);
         switch (api) {
             case JOKE:
                 testJokeQuery(keyword);
@@ -131,6 +144,12 @@ public class ApiResultTestActivity extends BaseActivity {
                 break;
             case OMDB:
                 testOMDb(keyword);
+                break;
+            case THEMOVEDB:
+                testTheMovieDbQuery(keyword);
+                break;
+            case THECOCKTAILDB:
+                testTheCocktailDbQuery(keyword);
                 break;
         }
     }
@@ -147,13 +166,13 @@ public class ApiResultTestActivity extends BaseActivity {
     }
 
     private void fetchSingleJoke() {
-        JokeAPIInterface api = retrofitJoke.create(JokeAPIInterface.class);
+        JokeApi api = retrofitJoke.create(JokeApi.class);
         Call<SingleJoke> call = api.getSingleJoke();
         singleJokeCall(call);
     }
 
     private void fetchTwoPartJoke() {
-        JokeAPIInterface api = retrofitJoke.create(JokeAPIInterface.class);
+        JokeApi api = retrofitJoke.create(JokeApi.class);
         Call<TwoPartJoke> call = api.getTwoPartJoke();
         twoPartJokeCall(call);
     }
@@ -187,7 +206,7 @@ public class ApiResultTestActivity extends BaseActivity {
     }
 
     private void fetchSingleJokeBy(String key) {
-        JokeAPIInterface api = retrofitJoke.create(JokeAPIInterface.class);
+        JokeApi api = retrofitJoke.create(JokeApi.class);
         Call<SingleJoke> call = api.getSingleJokeBy(key);
         singleJokeCall(call);
     }
@@ -221,7 +240,7 @@ public class ApiResultTestActivity extends BaseActivity {
     }
 
     private void fetchTwoPartJokeBy(String key) {
-        JokeAPIInterface api = retrofitJoke.create(JokeAPIInterface.class);
+        JokeApi api = retrofitJoke.create(JokeApi.class);
         Call<TwoPartJoke> call = api.getTwoPartJokeBy(key);
         twoPartJokeCall(call);
     }
@@ -229,7 +248,7 @@ public class ApiResultTestActivity extends BaseActivity {
 
     // region RECIPEPUPPY API
     private void testRecipePuppy(String keyword) {
-        RecipePuppyInterface api = retrofitRecipePuppy.create(RecipePuppyInterface.class);
+        RecipePuppyApi api = retrofitRecipePuppy.create(RecipePuppyApi.class);
         Call<RecipePuppyResponse> call = api.getRecipePuppyResponse("", keyword, 1);
         call.enqueue(new Callback<RecipePuppyResponse>() {
             @Override
@@ -265,8 +284,8 @@ public class ApiResultTestActivity extends BaseActivity {
 
     // region OMDB API
     private void testOMDb(String keyword) {
-        OMDbInterface api = retrofitOMDb.create(OMDbInterface.class);
-        Call<OMDbMovie> call = api.getOMDbMovieByTitle(keyword, OMDB_APIKEY);
+        OMDbApi api = retrofitOMDb.create(OMDbApi.class);
+        Call<OMDbMovie> call = api.getOMDbMovieByTitle(keyword, Api.OMDB.getApiKey());
         call.enqueue(new Callback<OMDbMovie>() {
             @Override
             public void onResponse(Call<OMDbMovie> call, Response<OMDbMovie> response) {
@@ -293,10 +312,105 @@ public class ApiResultTestActivity extends BaseActivity {
         });
     }
 
+    // endregion
+
+    // region TheMovieDb API
+    private void testTheMovieDbGet() {
+        TheMovieDbApi api = retrofitTheMovieDb.create(TheMovieDbApi.class);
+        Call<TopRatedResponse> call = api.getTopRatedResponse(Api.THEMOVEDB.getApiKey());
+        executeTheMovieDb(call);
+    }
+
+    private void testTheMovieDbQuery(String keyword) {
+        TheMovieDbApi api = retrofitTheMovieDb.create(TheMovieDbApi.class);
+        Call<TopRatedResponse> call = api.queryMovie(Api.THEMOVEDB.getApiKey(), keyword);
+        executeTheMovieDb(call);
+    }
+
+    private void executeTheMovieDb(Call<TopRatedResponse> call) {
+        call.enqueue(new Callback<TopRatedResponse>() {
+            @Override
+            public void onResponse(Call<TopRatedResponse> call, Response<TopRatedResponse> response) {
+                if (!response.isSuccessful()) {
+                    log += "Response Code: " + response.code();
+                    resultTextView.setText(log);
+                    return;
+                }
+
+                List<Movie> movies = response.body().getMovies();
+
+                if (movies != null) {
+                    StringBuilder sb = new StringBuilder();
+
+                    for (Movie movie : movies) {
+                        sb.append(movie.toString()).append("\n\n");
+                    }
+
+                    resultTextView.setText(sb.toString());
+                } else {
+                    resultTextView.setText("Movies are null!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TopRatedResponse> call, Throwable t) {
+                log += "Error: " + t.getMessage();
+                resultTextView.setText(log);
+            }
+        });
+    }
+    // endregion
+
+    // region TheCocktailDb API
+    private void testTheCocktailDbGet() {
+        TheCocktailDbApi api = retrofitTheCocktailDb.create(TheCocktailDbApi.class);
+        Call<CocktailResponse> call = api.getRandomCocktail();
+        executeTheCocktailDbApi(call);
+    }
+
+    private void testTheCocktailDbQuery(String keyword) {
+        TheCocktailDbApi api = retrofitTheCocktailDb.create(TheCocktailDbApi.class);
+        Call<CocktailResponse> call = api.queryCocktail(keyword);
+        executeTheCocktailDbApi(call);
+    }
+
+    private void executeTheCocktailDbApi(Call<CocktailResponse> call) {
+        call.enqueue(new Callback<CocktailResponse>() {
+            @Override
+            public void onResponse(Call<CocktailResponse> call, Response<CocktailResponse> response) {
+                if (!response.isSuccessful()) {
+                    log += "Response Code: " + response.code();
+                    resultTextView.setText(log);
+                    return;
+                }
+
+                List<Cocktail> cocktails = response.body().getCocktails();
+
+                if (cocktails != null) {
+                    StringBuilder sb = new StringBuilder();
+
+                    for (Cocktail cocktail : cocktails) {
+                        sb.append(cocktail.toString()).append("\n\n");
+                    }
+
+                    resultTextView.setText(sb.toString());
+                } else {
+                    resultTextView.setText("Movies are null!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CocktailResponse> call, Throwable t) {
+                log += "Error: " + t.getMessage();
+                resultTextView.setText(log);
+            }
+        });
+    }
+    // endregion
+
     private String getRandomCharacter() {
         Random rnd = new Random();
         char c = (char) (rnd.nextInt(26) + 'a');
         return String.valueOf(c);
     }
-    // endregion
 }

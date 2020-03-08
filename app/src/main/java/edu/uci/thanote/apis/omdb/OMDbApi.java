@@ -4,7 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface OMDbInterface {
+public interface OMDbApi {
     /**
      * @param title title of the movie
      * @return only one movie or error message. Check "Response" before use.

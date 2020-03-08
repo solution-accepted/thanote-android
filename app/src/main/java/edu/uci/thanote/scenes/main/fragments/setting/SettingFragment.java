@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import edu.uci.thanote.R;
+import edu.uci.thanote.scenes.general.BaseFragment;
 import edu.uci.thanote.scenes.notification.NotificationActivity;
 import edu.uci.thanote.scenes.test.api.ApiTestActivity;
 

@@ -4,7 +4,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-public interface JokeAPIInterface {
+public interface JokeApi {
     @GET("Any?type=single&blacklistFlags=nsfw,religious,political,racist,sexist")
     Call<SingleJoke> getSingleJoke();
 

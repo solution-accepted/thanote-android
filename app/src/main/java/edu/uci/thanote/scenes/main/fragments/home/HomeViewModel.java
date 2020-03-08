@@ -10,7 +10,7 @@ import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
-import edu.uci.thanote.apis.recipepuppy.RecipePuppyInterface;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
@@ -106,14 +106,14 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void fetchPuppyRecipesFromApi(String ingredients, String query, int page) {
         repository.fetchPuppyRecipesFromApiBy(ingredients, query, page);
-    }
+    }                                                                                                                                                                                                                                                                                                                    
 
     public void fetchPuppyRecipesFromApiRandomly() {
         repository.fetchPuppyRecipesFromApiRandomly();
     }
 
     public void searchPuppyRecipes(String query) {
-        fetchPuppyRecipesFromApi("", query, RecipePuppyInterface.getRandomPageNumber());
+        fetchPuppyRecipesFromApi("", query, RecipePuppyApi.getRandomPageNumber());
     }
 
     public void searchOpenMovie(String query) {

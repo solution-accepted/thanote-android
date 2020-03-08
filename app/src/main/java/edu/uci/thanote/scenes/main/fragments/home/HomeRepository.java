@@ -4,13 +4,13 @@ import android.app.Application;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
 import edu.uci.thanote.apis.APIClient;
-import edu.uci.thanote.apis.joke.JokeAPIInterface;
+import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
-import edu.uci.thanote.apis.omdb.OMDbInterface;
+import edu.uci.thanote.apis.omdb.OMDbApi;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
-import edu.uci.thanote.apis.recipepuppy.RecipePuppyInterface;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.category.CategoryTable;
@@ -37,9 +37,9 @@ public class HomeRepository {
     private LiveData<List<Note>> notes;
 
     // api
-    private JokeAPIInterface jokeApi;
-    private RecipePuppyInterface recipePuppyApi;
-    private OMDbInterface omdbApi;
+    private JokeApi jokeApi;
+    private RecipePuppyApi recipePuppyApi;
+    private OMDbApi omdbApi;
     private final String OMDB_API_KEY = "7c782685"; // Please DONT abuse this!
 
     public HomeRepository(Application application) {
@@ -49,9 +49,9 @@ public class HomeRepository {
         noteTable = new NoteTable(application);
         notes = noteTable.getNotes();
 
-        jokeApi = APIClient.getInstance().getRetrofitJoke().create(JokeAPIInterface.class);
-        recipePuppyApi = APIClient.getInstance().getRetrofitRecipePuppy().create(RecipePuppyInterface.class);
-        omdbApi = APIClient.getInstance().getRetrofitOMDb().create(OMDbInterface.class);
+        jokeApi = APIClient.getInstance().getRetrofitJoke().create(JokeApi.class);
+        recipePuppyApi = APIClient.getInstance().getRetrofitRecipePuppy().create(RecipePuppyApi.class);
+        omdbApi = APIClient.getInstance().getRetrofitOMDb().create(OMDbApi.class);
     }
 
     // region Public Methods (Local Database)
@@ -128,7 +128,7 @@ public class HomeRepository {
 
     public void fetchPuppyRecipesFromApiRandomly() {
         recipePuppyApi
-                .getRecipePuppyResponse("", "", RecipePuppyInterface.getRandomPageNumber())
+                .getRecipePuppyResponse("", "", RecipePuppyApi.getRandomPageNumber())
                 .enqueue(getCallback(listener::didFetchPuppyRecipesRandomly));
     }
 

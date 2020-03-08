@@ -10,7 +10,7 @@ import edu.uci.thanote.helpers.AlarmService;
 import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
 import edu.uci.thanote.scenes.main.fragments.home.HomeFragment;
 import edu.uci.thanote.scenes.main.fragments.setting.SettingFragment;
-import edu.uci.thanote.scenes.test.BaseActivity;
+import edu.uci.thanote.scenes.general.BaseActivity;
 
 public class MainActivity extends BaseActivity {
 
