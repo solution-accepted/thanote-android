@@ -18,7 +18,7 @@
         <activity android:name=".scenes.test.api.ApiTestActivity" />
         <activity android:name=".scenes.test.TestActivity" />
         <activity android:name=".scenes.noteList.NoteListActivity" />
-        <activity android:name=".scenes.addnote.AddNoteActivity" />
+        <activity android:name=".scenes.addEditNote.AddEditNoteActivity" />
         <activity android:name=".scenes.addCollection.AddCollectionActivity" />
         <activity
             android:name=".scenes.main.MainActivity"

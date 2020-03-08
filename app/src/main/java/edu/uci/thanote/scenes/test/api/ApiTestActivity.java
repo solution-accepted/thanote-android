@@ -56,7 +56,7 @@ public class ApiTestActivity extends BaseActivity {
  <activity android:name=".scenes.main.MainActivity" />
  <activity android:name=".scenes.test.TestActivity" />
  <activity android:name=".scenes.noteList.NoteListActivity" />
- <activity android:name=".scenes.addnote.AddNoteActivity" />
+ <activity android:name=".scenes.addnote.AddEditNoteActivity" />
  <activity android:name=".scenes.addCollection.AddCollectionActivity" />
  <activity
  android:name=".scenes.test.api.ApiTestActivity"

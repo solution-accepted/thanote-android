@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import edu.uci.thanote.databases.note.Note;
-import edu.uci.thanote.scenes.test.TestViewModel;
 
 public class NoteListViewModel extends AndroidViewModel {
     private final NoteListRepository repository;

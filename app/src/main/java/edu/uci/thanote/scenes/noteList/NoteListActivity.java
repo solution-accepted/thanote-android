@@ -21,10 +21,11 @@ import java.util.List;
 
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
-import edu.uci.thanote.scenes.addnote.AddNoteActivity;
+import edu.uci.thanote.scenes.addEditNote.AddEditNoteActivity;
 
 public class NoteListActivity extends AppCompatActivity {
-    private final int ADD_NOTE_REQUEST = 1;
+    public static final int ADD_NOTE_REQUEST = 1;
+    public static final int EDIT_NOTE_REQUEST = 2;
     public static final String CATEGORY_ID = "Category_id";
     public static final int CATEGORY_ID_DEFAULT = 0;
 
@@ -40,19 +41,35 @@ public class NoteListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_list);
+
         Intent intent = getIntent();
         categoryId = intent.getIntExtra(CATEGORY_ID, CATEGORY_ID_DEFAULT);
+
         setupViewModel();
         setupViews();
+
     }
 
-    public void addNote() {
+    public void setAddNoteListener() {
         FloatingActionButton buttonAddNote = findViewById(R.id.button_add_note);
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(NoteListActivity.this, AddNoteActivity.class);
+                Intent intent = new Intent(NoteListActivity.this, AddEditNoteActivity.class);
                 startActivityForResult(intent, ADD_NOTE_REQUEST);
+            }
+        });
+    }
+
+    public void setEditNoteListener() {
+        adapter.setOnItemClickListener(new NoteListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Note note) {
+                Intent intent = new Intent(NoteListActivity.this, AddEditNoteActivity.class);
+                intent.putExtra(AddEditNoteActivity.EXTRA_ID, note.getId());
+                intent.putExtra(AddEditNoteActivity.EXTRA_NOTE_TITLE, note.getTitle());
+                intent.putExtra(AddEditNoteActivity.EXTRA_NOTE_DETAIL, note.getDetail());
+                startActivityForResult(intent, EDIT_NOTE_REQUEST);
             }
         });
     }
@@ -82,7 +99,8 @@ public class NoteListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        addNote();
+        setAddNoteListener();
+        setEditNoteListener();
         createDeleteView();
 
         searchView = findViewById(R.id.search_view_note_list);
@@ -107,7 +125,7 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void openNote() {
-        Intent intent = new Intent(this, AddNoteActivity.class);
+        Intent intent = new Intent(this, AddEditNoteActivity.class);
         startActivity(intent);
     }
 
@@ -116,13 +134,31 @@ public class NoteListActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ADD_NOTE_REQUEST && resultCode == RESULT_OK) {
-            String title = data.getStringExtra(AddNoteActivity.EXTRA_NOTE_TITLE);
-            String detail = data.getStringExtra(AddNoteActivity.EXTRA_NOTE_DETAIL);
+            String title = data.getStringExtra(AddEditNoteActivity.EXTRA_NOTE_TITLE);
+            String detail = data.getStringExtra(AddEditNoteActivity.EXTRA_NOTE_DETAIL);
 
             Note note = new Note(title, detail, categoryId, "");
             viewModel.insert(note);
 
             Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == EDIT_NOTE_REQUEST && resultCode == RESULT_OK) {
+            int id = data.getIntExtra(AddEditNoteActivity.EXTRA_ID, -1);
+
+            if (id == -1) {
+                Toast.makeText(this, "Note can't be updated", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String title = data.getStringExtra(AddEditNoteActivity.EXTRA_NOTE_TITLE);
+            String detail = data.getStringExtra(AddEditNoteActivity.EXTRA_NOTE_DETAIL);
+
+            Note note = new Note(title, detail, categoryId, "");
+            note.setId(id);
+            viewModel.update(note);
+
+            Toast.makeText(this, "Note updated", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "No note saved", Toast.LENGTH_SHORT).show();
         }
 
     }
