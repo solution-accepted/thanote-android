@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.helpers.SharePreferencesHelper;
+import edu.uci.thanote.scenes.test.api.ApiList;
 
 public class MainViewModel extends AndroidViewModel {
     private MainViewModelListener listener;
@@ -29,7 +30,8 @@ public class MainViewModel extends AndroidViewModel {
         public void didFetchSingleJoke(SingleJoke joke) {
             SharePreferencesHelper.getInstance(application).setTitle("Joke");
             SharePreferencesHelper.getInstance(application).setMessage(joke.getJoke());
-            listener.didFetchError(joke.getJoke());
+            // TODO: - Only for test, need to remove later
+            // listener.didFetchError(joke.getJoke());
         }
     };
 
@@ -45,8 +47,7 @@ public class MainViewModel extends AndroidViewModel {
         // TODO: add more api calls
         String category = SharePreferencesHelper.getInstance(application).getCategory();
 
-        // TODO: create a api enum to manage
-        if (category.equals("Joke")) {
+        if (category.equals(ApiList.JOKE.toString())) {
             repository.fetchSingleJoke();
         }
     }
