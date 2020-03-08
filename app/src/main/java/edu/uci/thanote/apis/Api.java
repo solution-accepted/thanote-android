@@ -1,7 +1,7 @@
 package edu.uci.thanote.apis;
 
 public enum Api {
-    JOKE("Joke"), RECIPEPUPPY("Recipe Puppy"), OMDB("OMDb"), THEMOVEDB("The Movie Db");
+    JOKE("Joke"), RECIPEPUPPY("Recipe Puppy"), OMDB("OMDb"), THEMOVEDB("The Movie Db"), THECOCKTAILDB("The Cocktail Db");
     private String apiName;
     private Api(String apiName) {
         this.apiName = apiName;
@@ -21,6 +21,8 @@ public enum Api {
             return OMDB;
         } else if (apiName.equals(Api.THEMOVEDB.toString())) {
             return THEMOVEDB;
+        } else if (apiName.equals(Api.THECOCKTAILDB.toString())) {
+            return THECOCKTAILDB;
         }
 
         return JOKE;
@@ -28,7 +30,7 @@ public enum Api {
 
     public static String[] getAllApiNames() {
         return new String[] {
-            Api.JOKE.toString(), Api.RECIPEPUPPY.toString(), Api.OMDB.toString(), Api.THEMOVEDB.toString()
+            Api.JOKE.toString(), Api.RECIPEPUPPY.toString(), Api.OMDB.toString(), Api.THEMOVEDB.toString(), Api.THECOCKTAILDB.toString()
         };
     }
 

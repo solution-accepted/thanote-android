@@ -9,13 +9,15 @@ public class APIClient {
     private static final String RECIPE_PUPPY_BASE_URL = "http://www.recipepuppy.com/api/";
     private static final String OMDB_BASE_URL = "http://omdbapi.com/";
     private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3/";
+    private static final String THECOCKTAILDB_BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/";
 
     private static APIClient instance;
     private Retrofit retrofitDemo;
     private Retrofit retrofitJoke;
     private Retrofit retrofitRecipePuppy;
     private Retrofit retrofitOMDb;
-    private Retrofit retrofitTHEMovieDb;
+    private Retrofit retrofitTheMovieDb;
+    private Retrofit retrofitTheCocktailDb;
 
     public static APIClient getInstance() {
         if (instance == null) {
@@ -58,12 +60,20 @@ public class APIClient {
         return retrofitOMDb;
     }
 
-    public Retrofit getRetrofitTHEMovieDb() {
-        if (retrofitTHEMovieDb == null) {
-            retrofitTHEMovieDb = buildRetrofit(THEMOVIEDB_BASE_URL);
+    public Retrofit getRetrofitTheMovieDb() {
+        if (retrofitTheMovieDb == null) {
+            retrofitTheMovieDb = buildRetrofit(THEMOVIEDB_BASE_URL);
         }
 
-        return retrofitTHEMovieDb;
+        return retrofitTheMovieDb;
+    }
+
+    public Retrofit getRetrofitTheCocktailDb() {
+        if (retrofitTheCocktailDb == null) {
+            retrofitTheCocktailDb = buildRetrofit(THECOCKTAILDB_BASE_URL);
+        }
+
+        return retrofitTheCocktailDb;
     }
 
     private Retrofit buildRetrofit(String baseUrl) {

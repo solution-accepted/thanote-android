@@ -16,6 +16,9 @@ import edu.uci.thanote.apis.omdb.OMDbApi;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.thecocktaildb.Cocktail;
+import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
+import edu.uci.thanote.apis.thecocktaildb.TheCocktailDbApi;
 import edu.uci.thanote.apis.themoviedb.Movie;
 import edu.uci.thanote.apis.themoviedb.TheMovieDbApi;
 import edu.uci.thanote.apis.themoviedb.TopRatedResponse;
@@ -42,7 +45,8 @@ public class ApiResultTestActivity extends BaseActivity {
     private Retrofit retrofitJoke = APIClient.getInstance().getRetrofitJoke();
     private Retrofit retrofitRecipePuppy = APIClient.getInstance().getRetrofitRecipePuppy();
     private Retrofit retrofitOMDb = APIClient.getInstance().getRetrofitOMDb();
-    private Retrofit retrofitTheMovieDb = APIClient.getInstance().getRetrofitTHEMovieDb();
+    private Retrofit retrofitTheMovieDb = APIClient.getInstance().getRetrofitTheMovieDb();
+    private Retrofit retrofitTheCocktailDb = APIClient.getInstance().getRetrofitTheCocktailDb();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +117,9 @@ public class ApiResultTestActivity extends BaseActivity {
             case THEMOVEDB:
                 testTheMovieDbGet();
                 break;
+            case THECOCKTAILDB:
+                testTheCocktailDbGet();
+                break;
         }
     }
 
@@ -140,6 +147,9 @@ public class ApiResultTestActivity extends BaseActivity {
                 break;
             case THEMOVEDB:
                 testTheMovieDbQuery(keyword);
+                break;
+            case THECOCKTAILDB:
+                testTheCocktailDbQuery(keyword);
                 break;
         }
     }
@@ -308,16 +318,16 @@ public class ApiResultTestActivity extends BaseActivity {
     private void testTheMovieDbGet() {
         TheMovieDbApi api = retrofitTheMovieDb.create(TheMovieDbApi.class);
         Call<TopRatedResponse> call = api.getTopRatedResponse(Api.THEMOVEDB.getApiKey());
-        executeApi(call);
+        executeTheMovieDb(call);
     }
 
     private void testTheMovieDbQuery(String keyword) {
         TheMovieDbApi api = retrofitTheMovieDb.create(TheMovieDbApi.class);
         Call<TopRatedResponse> call = api.queryMovie(Api.THEMOVEDB.getApiKey(), keyword);
-        executeApi(call);
+        executeTheMovieDb(call);
     }
 
-    private void executeApi(Call<TopRatedResponse> call) {
+    private void executeTheMovieDb(Call<TopRatedResponse> call) {
         call.enqueue(new Callback<TopRatedResponse>() {
             @Override
             public void onResponse(Call<TopRatedResponse> call, Response<TopRatedResponse> response) {
@@ -344,6 +354,53 @@ public class ApiResultTestActivity extends BaseActivity {
 
             @Override
             public void onFailure(Call<TopRatedResponse> call, Throwable t) {
+                log += "Error: " + t.getMessage();
+                resultTextView.setText(log);
+            }
+        });
+    }
+    // endregion
+
+    // region TheCocktailDb API
+    private void testTheCocktailDbGet() {
+        TheCocktailDbApi api = retrofitTheCocktailDb.create(TheCocktailDbApi.class);
+        Call<CocktailResponse> call = api.getRandomCocktail();
+        executeTheCocktailDbApi(call);
+    }
+
+    private void testTheCocktailDbQuery(String keyword) {
+        TheCocktailDbApi api = retrofitTheCocktailDb.create(TheCocktailDbApi.class);
+        Call<CocktailResponse> call = api.queryCocktail(keyword);
+        executeTheCocktailDbApi(call);
+    }
+
+    private void executeTheCocktailDbApi(Call<CocktailResponse> call) {
+        call.enqueue(new Callback<CocktailResponse>() {
+            @Override
+            public void onResponse(Call<CocktailResponse> call, Response<CocktailResponse> response) {
+                if (!response.isSuccessful()) {
+                    log += "Response Code: " + response.code();
+                    resultTextView.setText(log);
+                    return;
+                }
+
+                List<Cocktail> cocktails = response.body().getCocktails();
+
+                if (cocktails != null) {
+                    StringBuilder sb = new StringBuilder();
+
+                    for (Cocktail cocktail : cocktails) {
+                        sb.append(cocktail.toString()).append("\n\n");
+                    }
+
+                    resultTextView.setText(sb.toString());
+                } else {
+                    resultTextView.setText("Movies are null!");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CocktailResponse> call, Throwable t) {
                 log += "Error: " + t.getMessage();
                 resultTextView.setText(log);
             }
