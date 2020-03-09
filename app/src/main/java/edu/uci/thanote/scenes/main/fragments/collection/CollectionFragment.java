@@ -5,11 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -23,13 +21,12 @@ import java.util.List;
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.scenes.addCollection.AddCollectionActivity;
+import edu.uci.thanote.scenes.general.BaseFragment;
 import edu.uci.thanote.scenes.noteList.NoteListActivity;
 
-import static android.app.Activity.RESULT_OK;
+public class CollectionFragment extends BaseFragment {
 
-public class CollectionFragment extends Fragment {
-    public static final int ADD_CATEGORY_REQUEST = 1;
-    public static final String CATEGORY_NAME = "Category_name";
+    private final String DEFAULT_DELETE_WARNING = "default could not be deleted";
 
     private RecyclerView recyclerView;
     private CollectionViewModel viewModel;
@@ -49,8 +46,7 @@ public class CollectionFragment extends Fragment {
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddCollectionActivity.class);
-                startActivityForResult(intent, ADD_CATEGORY_REQUEST);
+                openPage(AddCollectionActivity.class);
 
             }
         });
@@ -66,7 +62,6 @@ public class CollectionFragment extends Fragment {
             }
         });
 
-        // TODO 放哪里？
         adapter.setOnCategoryClickListener(new CollectionAdapter.CollectionAdapterOnClickListener() {
             @Override
             public void onCategoryClick(Category category) {
@@ -87,23 +82,8 @@ public class CollectionFragment extends Fragment {
 
     private void openNoteList(Category category) {
         Intent intent = new Intent(getActivity(), NoteListActivity.class);
-        intent.putExtra(CATEGORY_NAME, category.getName());
+        intent.putExtra(NoteListActivity.CATEGORY_ID, category.getId());
         startActivity(intent);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ADD_CATEGORY_REQUEST && resultCode == RESULT_OK) {
-            String categoryName = data.getStringExtra(AddCollectionActivity.EXTRA_CAGETORY);
-
-            Category category = new Category(categoryName);
-            viewModel.insert(category);
-
-            Toast.makeText(getActivity(), "Category saved", Toast.LENGTH_SHORT).show();
-        }
-
     }
 
     public void createDeleteView() {
@@ -118,11 +98,10 @@ public class CollectionFragment extends Fragment {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 Category category = adapter.getCategory(viewHolder.getAdapterPosition());
                 if (category.getId() == Category.DEFAULT_CATEGORY_ID) {
-                    Toast.makeText(getActivity(), "default could not be deleted", Toast.LENGTH_SHORT).show();
+                    showShortToast(DEFAULT_DELETE_WARNING);
                     adapter.notifyDataSetChanged();
                 } else {
                     viewModel.delete(category);
-                    Toast.makeText(getActivity(), "Category deleted", Toast.LENGTH_SHORT).show();
                 }
             }
         }).attachToRecyclerView(recyclerView);

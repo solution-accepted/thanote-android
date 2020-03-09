@@ -9,7 +9,6 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import edu.uci.thanote.databases.note.Note;
-import edu.uci.thanote.scenes.test.TestViewModel;
 
 public class NoteListViewModel extends AndroidViewModel {
     private final NoteListRepository repository;
@@ -21,8 +20,8 @@ public class NoteListViewModel extends AndroidViewModel {
         repository = new NoteListRepository(application);
     }
 
-    public void setCategoryName(String categoryName) {
-        repository.setCategoryName(categoryName);
+    public void setCategoryId(int categoryId) {
+        repository.setCategoryId(categoryId);
     }
     public void insert(Note note) {
         repository.insert(note);

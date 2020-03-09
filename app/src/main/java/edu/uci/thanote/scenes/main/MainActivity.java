@@ -7,17 +7,14 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import edu.uci.thanote.R;
 import edu.uci.thanote.helpers.AlarmService;
-import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
 import edu.uci.thanote.scenes.main.fragments.home.HomeFragment;
+import edu.uci.thanote.scenes.main.fragments.collection.CollectionFragment;
 import edu.uci.thanote.scenes.main.fragments.setting.SettingFragment;
 import edu.uci.thanote.scenes.general.BaseActivity;
 
 public class MainActivity extends BaseActivity {
 
     private final String TAG = "MainActivity";
-    private final Fragment homeFragment = new HomeFragment();
-    private final Fragment collectionFragment = new CollectionFragment();
-    private final Fragment settingFragment = new SettingFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,13 +41,13 @@ public class MainActivity extends BaseActivity {
 
             switch (id) {
                 case R.id.nav_home:
-                    selectedFragment = homeFragment;
+                    selectedFragment = new HomeFragment();
                     break;
                 case R.id.nav_collection:
-                    selectedFragment = collectionFragment;
+                    selectedFragment = new CollectionFragment();
                     break;
                 case R.id.nav_setting:
-                    selectedFragment = settingFragment;
+                    selectedFragment = new SettingFragment();
                     break;
                 default:
                     showShortToast("Unknown item id = " + id);

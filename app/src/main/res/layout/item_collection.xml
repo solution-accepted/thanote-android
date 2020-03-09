@@ -17,6 +17,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:text="Collection"
+        style="@style/BlackContentStyle"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
 
 

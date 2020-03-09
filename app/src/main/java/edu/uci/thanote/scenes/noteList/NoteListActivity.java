@@ -1,7 +1,6 @@
 package edu.uci.thanote.scenes.noteList;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
@@ -21,15 +19,19 @@ import java.util.List;
 
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
-import edu.uci.thanote.scenes.addnote.AddNoteActivity;
+import edu.uci.thanote.scenes.addCollection.AddCollectionActivity;
+import edu.uci.thanote.scenes.addEditNote.AddEditNoteActivity;
+import edu.uci.thanote.scenes.general.BaseActivity;
 
-public class NoteListActivity extends AppCompatActivity {
-    private final int ADD_NOTE_REQUEST = 1;
-    public static final String CATEGORY_NAME = "Category_name";
+public class NoteListActivity extends BaseActivity {
+    public static final String CATEGORY_ID =
+            "edu.uci.thanote.CATEGORY_ID";
+    public static final int CATEGORY_ID_DEFAULT = 0;
 
-    private String categoryName;
+    private int categoryId;
     private RecyclerView recyclerView;
     private NoteListViewModel viewModel;
+    private FloatingActionButton buttonAddNote;
     private final NoteListAdapter adapter = new NoteListAdapter();
 
     private SearchView searchView;
@@ -39,26 +41,42 @@ public class NoteListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_list);
+
         Intent intent = getIntent();
-        categoryName = intent.getStringExtra(CATEGORY_NAME);
+        categoryId = intent.getIntExtra(CATEGORY_ID, CATEGORY_ID_DEFAULT);
+
         setupViewModel();
         setupViews();
+
     }
 
-    public void addNote() {
-        FloatingActionButton buttonAddNote = findViewById(R.id.button_add_note);
+    public void setAddNoteListener() {
+        buttonAddNote = findViewById(R.id.button_add_note);
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(NoteListActivity.this, AddNoteActivity.class);
-                startActivityForResult(intent, ADD_NOTE_REQUEST);
+            public void onClick(View view) {
+                Intent intent = new Intent(NoteListActivity.this, AddEditNoteActivity.class);
+                intent.putExtra(AddEditNoteActivity.CATEGORY_ID, categoryId);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void setEditNoteListener() {
+        adapter.setOnItemClickListener(new NoteListAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Note note) {
+
+                Intent intent = new Intent(NoteListActivity.this, AddEditNoteActivity.class);
+                intent.putExtra(AddEditNoteActivity.EXTRA_NOTE, note);
+                startActivity(intent);
             }
         });
     }
 
     public void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(NoteListViewModel.class);
-        viewModel.setCategoryName(categoryName);
+        viewModel.setCategoryId(categoryId);
         viewModel.setListener(new NoteListViewModel.NoteViewModelListener() {
             @Override
             public void onNoteClick(Note note) {
@@ -81,14 +99,21 @@ public class NoteListActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        addNote();
+        setAddNoteListener();
+        setEditNoteListener();
         createDeleteView();
 
         searchView = findViewById(R.id.search_view_note_list);
-//        searchView.setSubmitButtonEnabled(true);
-//        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
         searchView.setBackgroundResource(R.color.super_light_gray);
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                buttonAddNote.hide();
+            }
+        });
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -106,24 +131,7 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void openNote() {
-        Intent intent = new Intent(this, AddNoteActivity.class); //todo
-        startActivity(intent);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ADD_NOTE_REQUEST && resultCode == RESULT_OK) {
-            String title = data.getStringExtra(AddNoteActivity.EXTRA_NOTE_TITLE);
-            String detail = data.getStringExtra(AddNoteActivity.EXTRA_NOTE_DETAIL);
-
-            Note note = new Note(title, detail, 1, ""); // todo
-            viewModel.insert(note);
-
-            Toast.makeText(this, "Note saved", Toast.LENGTH_SHORT).show();
-        }
-
+        openPage(AddCollectionActivity.class);
     }
 
     public void createDeleteView() {
@@ -137,7 +145,6 @@ public class NoteListActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 viewModel.delete(adapter.getNote(viewHolder.getAdapterPosition()));
-//                Toast.makeText(this, "Note deleted", Toast.LENGTH_SHORT).show();
             }
         }).attachToRecyclerView(recyclerView);
     }

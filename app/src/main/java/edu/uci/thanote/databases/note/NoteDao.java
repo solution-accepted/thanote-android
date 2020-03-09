@@ -22,6 +22,6 @@ public interface NoteDao {
     @Query("SELECT * FROM note_table")
     LiveData<List<Note>> getNotes();
 
-    @Query("SELECT * FROM note_table WHERE categoryId = (SELECT c.id FROM category_table c WHERE c.name = :categoryName)")
-    LiveData<List<Note>> getNotes(String categoryName);
+    @Query("SELECT * FROM note_table WHERE categoryId = :categoryId")
+    LiveData<List<Note>> getNotes(int categoryId);
 }

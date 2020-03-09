@@ -40,8 +40,8 @@ public class NoteListRepository {
         return notes;
     }
 
-    public void setCategoryName(String categoryName) {
-        noteTable.setCategoryName(categoryName);
+    public void setCategoryId(int categoryId) {
+        noteTable.setCategoryId(categoryId);
     }
 
 

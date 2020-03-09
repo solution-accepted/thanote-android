@@ -11,7 +11,7 @@ import java.util.List;
 public class NoteTable {
     private NoteDao noteDao;
     private LiveData<List<Note>> notes;
-    private String categoryName = "";
+    private int categoryId = -1;
 
     public NoteTable(Application application) {
         ThanoteDatabase database = ThanoteDatabase.getInstance(application);
@@ -36,15 +36,15 @@ public class NoteTable {
         new DeleteAllNotesAsyncTask(noteDao).execute();
     }
 
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public LiveData<List<Note>> getNotes() {
-        if (categoryName.equals("")) {
+        if (categoryId == -1) {
             notes = noteDao.getNotes();
         } else {
-            notes = noteDao.getNotes(categoryName);
+            notes = noteDao.getNotes(categoryId);
         }
         return notes;
     }

@@ -23,6 +23,8 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
     private List<Note> notesList;
     private List<Note> notesFullList;
 
+    private OnItemClickListener listener;
+
     NoteListAdapter() {
         super(DIFF_CALLBACK);
     }
@@ -109,10 +111,28 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
             noteDate = view.findViewById(R.id.text_view_note_date);
             noteTitle = view.findViewById(R.id.text_view_note_title);
             noteDescription = view.findViewById(R.id.text_view_note_description);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (listener != null && position != RecyclerView.NO_POSITION) {
+                        listener.onItemClick(getItem(position));
+                    }
+                }
+            });
         }
     }
 
     public Note getNote(int position) {
         return getItem(position);
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(Note note);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 }
