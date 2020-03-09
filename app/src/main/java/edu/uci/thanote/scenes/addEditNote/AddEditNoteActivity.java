@@ -23,6 +23,8 @@ public class AddEditNoteActivity extends BaseActivity {
     private final String HEADER_EDIT_NOTE = "Edit Note";
     private final String HEADER_ADD_NOTE = "Add Note";
     private final String EMPTY_WARNING = "Please insert note title and note detail";
+    // TODO
+    private final String TEST_IMAGE_URL = "TEST_IMAGE_U";
 
 
     private EditText editTextNoteTitle;
@@ -80,7 +82,7 @@ public class AddEditNoteActivity extends BaseActivity {
             note.setDetail(newNoteDetail);
             viewModel.update(note);
         } else if (categoryId != -1) {
-            Note note = new Note(newNoteTitle, newNoteDetail, categoryId, "");
+            Note note = new Note(newNoteTitle, newNoteDetail, categoryId, TEST_IMAGE_URL);
             viewModel.insert(note);
         }
 

@@ -72,7 +72,7 @@ public class CollectionFragment extends BaseFragment {
 
     private void setupViews(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_collection);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 

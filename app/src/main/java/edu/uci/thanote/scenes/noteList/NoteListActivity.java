@@ -112,7 +112,7 @@ public class NoteListActivity extends BaseActivity {
 
     private void setupViews() {
         recyclerView = findViewById(R.id.recycler_view_note_list);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
