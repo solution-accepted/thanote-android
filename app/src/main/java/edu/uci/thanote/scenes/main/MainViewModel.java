@@ -3,12 +3,12 @@ package edu.uci.thanote.scenes.main;
 import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import edu.uci.thanote.apis.joke.SingleJoke;
-import edu.uci.thanote.apis.recipepuppy.Recipe;
-import edu.uci.thanote.apis.thecocktaildb.Cocktail;
-import edu.uci.thanote.apis.themoviedb.Movie;
-import edu.uci.thanote.helpers.SharePreferencesHelper;
 import edu.uci.thanote.apis.Api;
+import edu.uci.thanote.apis.joke.SingleJoke;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
+import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
+import edu.uci.thanote.helpers.SharePreferencesHelper;
 
 public class MainViewModel extends AndroidViewModel {
     private MainViewModelListener listener;
@@ -23,36 +23,38 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     private MainRepository.MainRepositoryListener repositoryListener = new MainRepository.MainRepositoryListener() {
+
         @Override
         public void didFetchError(String message) {
             listener.didFetchError(message);
         }
 
         @Override
-        public void didFetchSingleJoke(SingleJoke joke) {
-            SharePreferencesHelper.getInstance(application).setTitle(Api.JOKE.toString());
-            SharePreferencesHelper.getInstance(application).setMessage(joke.getJoke());
+        public void didFetchSingleJokeRandomly(SingleJoke joke) {
+            final SharePreferencesHelper helper = SharePreferencesHelper.getInstance(application);
+            helper.setTitle(Api.JOKE.toString());
+            helper.setMessage(joke.getJoke());
         }
 
         @Override
-        public void didFetchRecipe(Recipe recipe) {
-            SharePreferencesHelper.getInstance(application).setTitle(Api.RECIPEPUPPY.toString());
-            // TODO: - Junxian! Please help finish the content(message) for notification below
-            SharePreferencesHelper.getInstance(application).setMessage("test data for a recipe");
+        public void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes) {
+            final SharePreferencesHelper helper = SharePreferencesHelper.getInstance(application);
+            helper.setTitle(Api.RECIPEPUPPY.toString());
+            helper.setMessage(recipes.getRecipes().get(0).getTitle());
         }
 
         @Override
-        public void didFetchMovie(Movie movie) {
-            SharePreferencesHelper.getInstance(application).setTitle(Api.THEMOVIEDB.toString());
-            // TODO: - Junxian! Please help finish the content(message) for notification below
-            SharePreferencesHelper.getInstance(application).setMessage("test data for a movie");
+        public void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies) {
+            final SharePreferencesHelper helper = SharePreferencesHelper.getInstance(application);
+            helper.setTitle(Api.THEMOVIEDB.toString());
+            helper.setMessage(movies.getMovies().get(0).getTitle());
         }
 
         @Override
-        public void didFetchCocktail(Cocktail cocktail) {
-            SharePreferencesHelper.getInstance(application).setTitle(Api.THECOCKTAILDB.toString());
-            // TODO: - Junxian! Please help finish the content(message) for notification below
-            SharePreferencesHelper.getInstance(application).setMessage("test data for a cocktail");
+        public void didFetchCocktailRandomly(CocktailResponse cocktail) {
+            final SharePreferencesHelper helper = SharePreferencesHelper.getInstance(application);
+            helper.setTitle(Api.THECOCKTAILDB.toString());
+            helper.setMessage(cocktail.getCocktails().get(0).getName());
         }
     };
 
@@ -68,15 +70,15 @@ public class MainViewModel extends AndroidViewModel {
         String category = SharePreferencesHelper.getInstance(application).getCategory();
 
         if (category.equals(Api.JOKE.toString())) {
-            repository.fetchSingleJoke();
+            repository.fetchSingleJokeRandomly();
         } else if (category.equals(Api.RECIPEPUPPY.toString())) {
-            repository.fetchRecipe();
+            repository.fetchPuppyRecipesRandomly();
         } else if (category.equals(Api.THEMOVIEDB.toString())) {
-            repository.fetchMovie();
+            repository.fetchTMDBMovieRandomly();
         } else if (category.equals(Api.THECOCKTAILDB.toString())) {
-            repository.fetchCocktail();
+            repository.fetchCocktailRandomly();
         } else {
-            repository.fetchSingleJoke();
+            repository.fetchSingleJokeRandomly();
         }
     }
 }

@@ -2,87 +2,99 @@ package edu.uci.thanote.scenes.main;
 
 import android.app.Application;
 import edu.uci.thanote.apis.APIClient;
+import edu.uci.thanote.apis.Api;
 import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
-import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
-import edu.uci.thanote.apis.thecocktaildb.Cocktail;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
 import edu.uci.thanote.apis.thecocktaildb.TheCocktailDbApi;
-import edu.uci.thanote.apis.themoviedb.Movie;
+import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.apis.themoviedb.TheMovieDbApi;
+import org.jetbrains.annotations.NotNull;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
+
+import java.util.function.Consumer;
 
 public class MainRepository {
     private MainRepositoryListener listener;
 
     // apis
+    private final APIClient apiClient = APIClient.getInstance();
     private JokeApi jokeApi;
-    private RecipePuppyApi recipeApi;
-    private TheMovieDbApi movieApi;
-    private TheCocktailDbApi cocktailApi;
+    private RecipePuppyApi recipePuppyApi;
+    private TheMovieDbApi theMovieDbApi;
+    private final String TMDB_API_KEY = Api.THEMOVIEDB.getApiKey();
+    private TheCocktailDbApi theCocktailDbApi;
+
 
     public MainRepository(Application application) {
         // initial apis
-        jokeApi = APIClient.getInstance().getRetrofitJoke().create(JokeApi.class);
-        recipeApi = APIClient.getInstance().getRetrofitRecipePuppy().create(RecipePuppyApi.class);
-        movieApi = APIClient.getInstance().getRetrofitTheMovieDb().create(TheMovieDbApi.class);
-        cocktailApi = APIClient.getInstance().getRetrofitTheCocktailDb().create(TheCocktailDbApi.class);
+        jokeApi = apiClient.getRetrofitJoke().create(JokeApi.class);
+        recipePuppyApi = apiClient.getRetrofitRecipePuppy().create(RecipePuppyApi.class);
+        theMovieDbApi = apiClient.getRetrofitTheMovieDb().create(TheMovieDbApi.class);
+        theCocktailDbApi = apiClient.getRetrofitTheCocktailDb().create(TheCocktailDbApi.class);
     }
 
     // region Public APIs (API)
 
     public interface MainRepositoryListener {
         void didFetchError(String message);
-        void didFetchSingleJoke(SingleJoke joke);
-        void didFetchRecipe(Recipe recipe);
-        void didFetchMovie(Movie movie);
-        void didFetchCocktail(Cocktail cocktail);
+
+        void didFetchSingleJokeRandomly(SingleJoke joke);
+
+        void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes);
+
+        void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies);
+
+        void didFetchCocktailRandomly(CocktailResponse cocktail);
     }
 
     public void setListener(MainRepositoryListener listener) {
         this.listener = listener;
     }
 
-    // TODO: - Junxian! Please help to finish api calls for fetchSingleJoke()
-    public void fetchSingleJoke() {
-        Call<SingleJoke> call = jokeApi.getSingleJoke();
-        call.enqueue(new Callback<SingleJoke>() {
-            @Override
-            public void onResponse(Call<SingleJoke> call, Response<SingleJoke> response) {
-                if (!response.isSuccessful()) {
-                    listener.didFetchError("Response Code: " + response.code());
-                    return;
-                }
+    public void fetchSingleJokeRandomly() {
+        jokeApi.getSingleJoke()
+                .enqueue(getCallback(listener::didFetchSingleJokeRandomly));
+    }
 
-                listener.didFetchSingleJoke(response.body());
+
+    public void fetchPuppyRecipesRandomly() {
+        recipePuppyApi
+                .getRecipePuppyResponse("", "", RecipePuppyApi.getRandomPageNumber())
+                .enqueue(getCallback(listener::didFetchPuppyRecipesRandomly));
+    }
+
+
+    public void fetchTMDBMovieRandomly() {
+        theMovieDbApi.getPopularMovies(TMDB_API_KEY, TheMovieDbApi.getRandomPageNumber())
+                .enqueue(getCallback(listener::didFetchTMDBMovieRandomly));
+    }
+
+    public void fetchCocktailRandomly() {
+        theCocktailDbApi.getRandomCocktail()
+                .enqueue(getCallback(listener::didFetchCocktailRandomly));
+    }
+
+    private <T> Callback<T> getCallback(Consumer<T> function) {
+        return new Callback<T>() {
+            @Override
+            public void onResponse(@NotNull Call<T> call, @NotNull Response<T> response) {
+                if (response.isSuccessful()) {
+                    function.accept(response.body());
+                } else {
+                    listener.didFetchError("Response Code: " + response.code());
+                }
             }
 
             @Override
-            public void onFailure(Call<SingleJoke> call, Throwable t) {
+            public void onFailure(@NotNull Call<T> call, @NotNull Throwable t) {
                 listener.didFetchError(t.getMessage());
             }
-        });
-    }
-
-    // TODO: - Junxian! Please help to finish api calls for fetchRecipe()
-    public void fetchRecipe() {
-        // only for test
-        listener.didFetchRecipe(null);
-    }
-
-    // TODO: - Junxian! Please help to finish api calls for fetchMovie()
-    public void fetchMovie() {
-        // only for test
-        listener.didFetchMovie(null);
-    }
-
-    // TODO: - Junxian! Please help to finish api calls for fetchCocktail()
-    public void fetchCocktail() {
-        // only for test
-        listener.didFetchCocktail(null);
+        };
     }
 
     // endregion

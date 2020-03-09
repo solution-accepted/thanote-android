@@ -22,6 +22,8 @@ import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.thecocktaildb.Cocktail;
+import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
 import edu.uci.thanote.apis.themoviedb.TMDbMovie;
 import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.databases.note.Note;
@@ -36,21 +38,30 @@ public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
 
-    private final int NOTE_INIT_COUNT = 10;
-    private final int NOTE_TYPE_COUNT = 4;
+    private final int NOTE_RANDOM_DISPLAY_COUNT = 10;
+    private final int NOTE_RANDOM_TYPE_COUNT = 5;
+
     private final int NOTE_DEFAULT_CATEGORY_ID = 1;
     private final String NOTE_DEFAULT_IMAGE_URL = "";
+
     private final String NOTE_JOKE_TITLE_PREFIX = "[Joke]: ";
+
     private final String NOTE_RECIPE_TITLE_PREFIX = "[Recipe]: ";
     private final int NOTE_RECIPE_COUNT_IN_RESPONSE = 10;
+
     private final String NOTE_MOVIE_TITLE_PREFIX = "[Movie]: ";
     private final int NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE = 20;
+
+    private final String NOTE_COCKTAIL_TITLE_PREFIX = "[Cocktail]: ";
+    private final int NOTE_COCKTAIL_COUNT_IN_RANDOM_RESPONSE = 1;
+    private final int NOTE_COCKTAIL_COUNT_IN_SEARCH_RESPONSE = 25;
 
     private enum API {
         ALL,
         JOKE,
         RECIPE,
-        MOVIE
+        MOVIE,
+        COCKTAIL
     }
 
     private API apiSelected = API.ALL;
@@ -166,7 +177,6 @@ public class HomeFragment extends Fragment {
         @Override
         public void didFetchOpenMovie(OMDbMovie movie) {
             swipeRefreshLayout.setRefreshing(false);
-            Log.i(TAG, "didFetchOpenMovie: " + movie);
             if (movie.getResponse().equals("False")) {
                 return;
             }
@@ -209,7 +219,6 @@ public class HomeFragment extends Fragment {
         @Override
         public void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies) {
             swipeRefreshLayout.setRefreshing(false);
-            Log.i(TAG, "didFetchTMDBMovieRandomly: " + movies);
             if (movies.getMovies() == null) {
                 return;
             }
@@ -232,7 +241,6 @@ public class HomeFragment extends Fragment {
         @Override
         public void didFetchTMDBMovieBySearching(TMDbMoviesResponse movies) {
             swipeRefreshLayout.setRefreshing(false);
-            Log.i(TAG, "didFetchTMDBMovieBySearching: " + movies);
             if (movies.getMovies() == null) {
                 return;
             }
@@ -256,6 +264,51 @@ public class HomeFragment extends Fragment {
                 break;
                 default:
                     Log.e(TAG, "didFetchTMDBMovieBySearching: apiSelected = " + apiSelected);
+            }
+        }
+
+        @Override
+        public void didFetchCocktailRandomly(CocktailResponse cocktails) {
+            swipeRefreshLayout.setRefreshing(false);
+            List<Cocktail> cocktailList = cocktails.getCocktails();
+            if (cocktailList == null || cocktailList.isEmpty()) {
+                return;
+            }
+            Cocktail cocktail = cocktailList.get(0);
+            viewModel.insertNoteIntoMemory(new Note(
+                    NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
+                    cocktail.getInstruction(),
+                    NOTE_DEFAULT_CATEGORY_ID,
+                    cocktail.getImageUrl()));
+
+        }
+
+        @Override
+        public void didFetchCocktailBySearching(CocktailResponse cocktails) {
+            swipeRefreshLayout.setRefreshing(false);
+            List<Cocktail> cocktailList = cocktails.getCocktails();
+            if (cocktailList == null || cocktailList.isEmpty()) {
+                return;
+            }
+            switch (apiSelected) {
+                case ALL: {
+                    Cocktail cocktail = cocktailList.get(new Random().nextInt(cocktailList.size()));
+                    viewModel.insertNoteIntoMemory(new Note(
+                            NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
+                            cocktail.getInstruction(),
+                            NOTE_DEFAULT_CATEGORY_ID,
+                            cocktail.getImageUrl()));
+                }
+                break;
+                case COCKTAIL:
+                    cocktailList.forEach(cocktail -> viewModel.insertNoteIntoMemory(new Note(
+                            NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
+                            cocktail.getInstruction(),
+                            NOTE_DEFAULT_CATEGORY_ID,
+                            cocktail.getImageUrl())));
+                    break;
+                default:
+                    Log.e(TAG, "didFetchCocktailBySearching: apiSelected = " + apiSelected);
             }
         }
     };
@@ -386,26 +439,28 @@ public class HomeFragment extends Fragment {
 
     private void fetchSomeRandomNotes() {
         viewModel.deleteNotesFromMemory();
-        for (int i = 0; i < NOTE_INIT_COUNT; ++i) {
-            Log.i(TAG, "getSomeRandomNotes: fetching note " + i);
+        for (int i = 0; i < NOTE_RANDOM_DISPLAY_COUNT; ++i) {
             fetchSingleRandomNote();
         }
     }
 
     private void fetchSingleRandomNote() {
-        int next = new Random().nextInt(NOTE_TYPE_COUNT);
+        int next = new Random().nextInt(NOTE_RANDOM_TYPE_COUNT);
         switch (next) {
             case 0:
-                viewModel.fetchSingleJokeFromApi();
+                viewModel.fetchSingleJoke();
                 break;
             case 1:
-                viewModel.fetchTwoPartJokeFromApi();
+                viewModel.fetchTwoPartJoke();
                 break;
             case 2:
-                viewModel.fetchPuppyRecipesFromApiRandomly();
+                viewModel.fetchPuppyRecipesRandomly();
                 break;
             case 3:
-                viewModel.fetchTMDBMovieFromApiRandomly();
+                viewModel.fetchTMDBMovieRandomly();
+                break;
+            case 4:
+                viewModel.fetchCocktailRandomly();
                 break;
             default:
                 Log.e(TAG, "getSingleRandomNote: unknown next id = " + next);
@@ -420,6 +475,7 @@ public class HomeFragment extends Fragment {
                 searchJoke(query);
                 searchRecipe(query);
                 searchMovie(query);
+                searchCocktail(query);
                 break;
             case JOKE:
                 searchJoke(query);
@@ -430,11 +486,15 @@ public class HomeFragment extends Fragment {
             case MOVIE:
                 searchMovie(query);
                 break;
+            case COCKTAIL:
+                searchCocktail(query);
+                break;
             default:
                 Log.e(TAG, "searchNote: unknown apiSelected =" + apiSelected);
         }
 
     }
+
 
     private void searchJoke(String query) {
         viewModel.searchSingleJoke(query);
@@ -448,6 +508,10 @@ public class HomeFragment extends Fragment {
     private void searchMovie(String query) {
         viewModel.searchOMDBMovie(query);
         viewModel.searchTMDBMovie(query);
+    }
+
+    private void searchCocktail(String query) {
+        viewModel.searchCocktail(query);
     }
 
     private void showToast(String message) {

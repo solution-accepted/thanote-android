@@ -7,7 +7,7 @@ import retrofit2.http.Query;
 public interface TheCocktailDbApi {
 
     @GET("search.php")
-    Call<CocktailResponse> queryCocktail(@Query("s") String keyword);
+    Call<CocktailResponse> getCocktailBySearching(@Query("s") String keyword);
 
     @GET("random.php")
     Call<CocktailResponse> getRandomCocktail();

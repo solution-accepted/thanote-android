@@ -370,7 +370,7 @@ public class ApiResultTestActivity extends BaseActivity {
 
     private void testTheCocktailDbQuery(String keyword) {
         TheCocktailDbApi api = retrofitTheCocktailDb.create(TheCocktailDbApi.class);
-        Call<CocktailResponse> call = api.queryCocktail(keyword);
+        Call<CocktailResponse> call = api.getCocktailBySearching(keyword);
         executeTheCocktailDbApi(call);
     }
 

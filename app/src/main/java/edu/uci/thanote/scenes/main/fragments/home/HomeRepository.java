@@ -13,6 +13,7 @@ import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
 import edu.uci.thanote.apis.thecocktaildb.TheCocktailDbApi;
 import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.apis.themoviedb.TheMovieDbApi;
@@ -40,8 +41,6 @@ public class HomeRepository {
     private LiveData<List<Category>> categories;
     private LiveData<List<Note>> notes;
 
-    // api
-    private final APIClient apiClient = APIClient.getInstance();
     private JokeApi jokeApi;
     private RecipePuppyApi recipePuppyApi;
     private OMDbApi omdbApi;
@@ -57,6 +56,8 @@ public class HomeRepository {
         noteTable = new NoteTable(application);
         notes = noteTable.getNotes();
 
+        // apis
+        APIClient apiClient = APIClient.getInstance();
         jokeApi = apiClient.getRetrofitJoke().create(JokeApi.class);
         recipePuppyApi = apiClient.getRetrofitRecipePuppy().create(RecipePuppyApi.class);
         omdbApi = apiClient.getRetrofitOMDb().create(OMDbApi.class);
@@ -109,9 +110,13 @@ public class HomeRepository {
 
         void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies);
 
-        void didFetchTMDBMovieFromApiRandomly(TMDbMoviesResponse moviesResponse);
+        void didFetchTMDBMovieRandomly(TMDbMoviesResponse moviesResponse);
 
-        void didFetchTMDBMovieFromApiBySearching(TMDbMoviesResponse moviesResponse);
+        void didFetchTMDBMovieBySearching(TMDbMoviesResponse moviesResponse);
+
+        void didFetchCocktailRandomly(CocktailResponse cocktailResponse);
+
+        void didFetchCocktailBySearching(CocktailResponse cocktailResponse);
     }
 
     private Listener listener;
@@ -120,33 +125,33 @@ public class HomeRepository {
         this.listener = listener;
     }
 
-    public void fetchSingleJokeFromApiRandomly() {
+    public void fetchSingleJokeRandomly() {
         jokeApi.getSingleJoke()
                 .enqueue(getCallback(listener::didFetchSingleJokeRandomly));
     }
 
-    public void fetchTwoPartJokeFromApiRandomly() {
+    public void fetchTwoPartJokeRandomly() {
         jokeApi.getTwoPartJoke()
                 .enqueue(getCallback(listener::didFetchTwoPartJokeRandomly));
     }
 
-    public void fetchSingleJokeFromApiBy(String key) {
+    public void fetchSingleJokeBy(String key) {
         jokeApi.getSingleJokeBy(key)
                 .enqueue(getCallback(listener::didFetchSingleJokeByKey));
     }
 
-    public void fetchTwoPartJokeFromApiBy(String key) {
+    public void fetchTwoPartJokeBy(String key) {
         jokeApi.getTwoPartJokeBy(key)
                 .enqueue(getCallback(listener::didFetchTwoPartJokeByKey));
     }
 
-    public void fetchPuppyRecipesFromApiRandomly() {
+    public void fetchPuppyRecipesRandomly() {
         recipePuppyApi
                 .getRecipePuppyResponse("", "", RecipePuppyApi.getRandomPageNumber())
                 .enqueue(getCallback(listener::didFetchPuppyRecipesRandomly));
     }
 
-    public void fetchPuppyRecipesFromApiBy(String ingredients, String query, int page) {
+    public void fetchPuppyRecipesBy(String ingredients, String query, int page) {
         if (page < 1 || page > 100) {
             Log.e(TAG, "fetchPuppyRecipes: page number should be in [1, 100]");
             Log.e(TAG, "fetchPuppyRecipes: illegal page number = " + page, new IllegalArgumentException());
@@ -156,28 +161,38 @@ public class HomeRepository {
                 .enqueue(getCallback(listener::didFetchPuppyRecipesByParams));
     }
 
-    private void fetchOpenMovieFromApiRandomly() {
+    private void fetchOpenMovieRandomly() {
         // Not Provided
     }
 
-    public void fetchOpenMovieFromApiByTitle(String title) {
+    public void fetchOpenMovieByTitle(String title) {
         omdbApi.getOMDbMovieByTitle(OMDB_API_KEY, title)
                 .enqueue(getCallback(listener::didFetchOpenMovie));
     }
 
-    public void fetchOpenMovieFromApiBySearching(String title) {
+    public void fetchOpenMovieBySearching(String title) {
         omdbApi.getOMDbMovieBySearching(OMDB_API_KEY, title, 1)
                 .enqueue(getCallback(listener::didFetchOpenMovieSearch));
     }
 
-    public void fetchTMDBMovieFromApiRandomly() {
+    public void fetchTMDBMovieRandomly() {
         theMovieDbApi.getPopularMovies(TMDB_API_KEY, TheMovieDbApi.getRandomPageNumber())
-                .enqueue(getCallback(listener::didFetchTMDBMovieFromApiRandomly));
+                .enqueue(getCallback(listener::didFetchTMDBMovieRandomly));
     }
 
-    public void fetchTMDBMovieFromApiBySearching(String title) {
+    public void fetchTMDBMovieBySearching(String title) {
         theMovieDbApi.getMovieBySearching(TMDB_API_KEY, title)
-                .enqueue(getCallback(listener::didFetchTMDBMovieFromApiBySearching));
+                .enqueue(getCallback(listener::didFetchTMDBMovieBySearching));
+    }
+
+    public void fetchCocktailRandomly() {
+        theCocktailDbApi.getRandomCocktail()
+                .enqueue(getCallback(listener::didFetchCocktailRandomly));
+    }
+
+    public void fetchCocktailBySearching(String query) {
+        theCocktailDbApi.getCocktailBySearching(query)
+                .enqueue(getCallback(listener::didFetchCocktailBySearching));
     }
 
     private <T> Callback<T> getCallback(Consumer<T> function) {

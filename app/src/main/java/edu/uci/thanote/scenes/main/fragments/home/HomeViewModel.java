@@ -12,6 +12,7 @@ import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
 import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
@@ -89,45 +90,53 @@ public class HomeViewModel extends AndroidViewModel {
         notesInMemory.setValue(new ArrayList<>());
     }
 
-    public void fetchSingleJokeFromApi() {
-        repository.fetchSingleJokeFromApiRandomly();
+    public void fetchSingleJoke() {
+        repository.fetchSingleJokeRandomly();
     }
 
-    public void fetchTwoPartJokeFromApi() {
-        repository.fetchTwoPartJokeFromApiRandomly();
+    public void fetchTwoPartJoke() {
+        repository.fetchTwoPartJokeRandomly();
     }
 
     public void searchSingleJoke(String key) {
-        repository.fetchSingleJokeFromApiBy(key);
+        repository.fetchSingleJokeBy(key);
     }
 
     public void searchTwoPartJoke(String key) {
-        repository.fetchTwoPartJokeFromApiBy(key);
+        repository.fetchTwoPartJokeBy(key);
     }
 
-    public void fetchPuppyRecipesFromApi(String ingredients, String query, int page) {
-        repository.fetchPuppyRecipesFromApiBy(ingredients, query, page);
+    public void fetchPuppyRecipes(String ingredients, String query, int page) {
+        repository.fetchPuppyRecipesBy(ingredients, query, page);
     }
 
-    public void fetchPuppyRecipesFromApiRandomly() {
-        repository.fetchPuppyRecipesFromApiRandomly();
+    public void fetchPuppyRecipesRandomly() {
+        repository.fetchPuppyRecipesRandomly();
     }
 
     public void searchPuppyRecipes(String query) {
-        fetchPuppyRecipesFromApi("", query, RecipePuppyApi.getRandomPageNumber());
+        fetchPuppyRecipes("", query, RecipePuppyApi.getRandomPageNumber());
     }
 
     public void searchOMDBMovie(String query) {
-        repository.fetchOpenMovieFromApiByTitle(query);
-        repository.fetchOpenMovieFromApiBySearching(query);
+        repository.fetchOpenMovieByTitle(query);
+        repository.fetchOpenMovieBySearching(query);
     }
 
-    public void fetchTMDBMovieFromApiRandomly() {
-        repository.fetchTMDBMovieFromApiRandomly();
+    public void fetchTMDBMovieRandomly() {
+        repository.fetchTMDBMovieRandomly();
     }
 
     public void searchTMDBMovie(String query) {
-        repository.fetchTMDBMovieFromApiBySearching(query);
+        repository.fetchTMDBMovieBySearching(query);
+    }
+
+    public void fetchCocktailRandomly() {
+        repository.fetchCocktailRandomly();
+    }
+
+    public void searchCocktail(String query) {
+        repository.fetchCocktailBySearching(query);
     }
 
     // endregion
@@ -161,6 +170,10 @@ public class HomeViewModel extends AndroidViewModel {
         void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies);
 
         void didFetchTMDBMovieBySearching(TMDbMoviesResponse movies);
+
+        void didFetchCocktailRandomly(CocktailResponse cocktails);
+
+        void didFetchCocktailBySearching(CocktailResponse cocktails);
     }
 
     public void setListener(Listener listener) {
@@ -222,13 +235,23 @@ public class HomeViewModel extends AndroidViewModel {
         }
 
         @Override
-        public void didFetchTMDBMovieFromApiRandomly(TMDbMoviesResponse movies) {
+        public void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies) {
             listener.didFetchTMDBMovieRandomly(movies);
         }
 
         @Override
-        public void didFetchTMDBMovieFromApiBySearching(TMDbMoviesResponse movies) {
+        public void didFetchTMDBMovieBySearching(TMDbMoviesResponse movies) {
             listener.didFetchTMDBMovieBySearching(movies);
+        }
+
+        @Override
+        public void didFetchCocktailRandomly(CocktailResponse cocktails) {
+            listener.didFetchCocktailRandomly(cocktails);
+        }
+
+        @Override
+        public void didFetchCocktailBySearching(CocktailResponse cocktails) {
+            listener.didFetchCocktailBySearching(cocktails);
         }
     };
 
