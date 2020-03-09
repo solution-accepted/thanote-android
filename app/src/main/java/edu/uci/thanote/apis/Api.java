@@ -5,7 +5,7 @@ import java.util.Arrays;
 public enum Api {
     JOKE("Joke"),
     RECIPEPUPPY("Recipe Puppy"),
-    OMDB("OMDb"),
+    OMDB("Open Movie Db"),
     THEMOVIEDB("The Movie Db"),
     THECOCKTAILDB("The Cocktail Db");
 
