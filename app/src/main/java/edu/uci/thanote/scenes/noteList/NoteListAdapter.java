@@ -154,21 +154,15 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
 
             String url = note.getImageUrl();
             if (!url.isEmpty()) {
-                setIsRecyclable(false);
-                SetImage(note);
+                final ImageView imageView;
+                imageView = imageViewThumbnailSmall;
+                imageView.setVisibility(View.VISIBLE);
+                Glide.with(itemView)
+                        .load(url)
+                        .thumbnail(Glide.with(itemView).load(R.drawable.loading_spinner_50px))
+                        .transform(new RoundedCorners(10))
+                        .into(imageView);
             }
-        }
-
-        private void SetImage(Note note) {
-            final String url = note.getImageUrl();
-            final ImageView imageView;
-            imageView = imageViewThumbnailSmall;
-            imageView.setVisibility(View.VISIBLE);
-            Glide.with(itemView)
-                    .load(url)
-                    .thumbnail(Glide.with(itemView).load(R.drawable.loading_spinner_50px))
-                    .transform(new RoundedCorners(10))
-                    .into(imageView);
         }
     }
 
