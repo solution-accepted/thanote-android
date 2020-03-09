@@ -77,16 +77,6 @@
                 android:layout_weight="8"/>
 
             <ImageButton
-                android:id="@+id/button_note_share"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="#00FFFFFF"
-                android:contentDescription="@string/item_note_share"
-                android:tint="@color/colorAccent"
-                app:srcCompat="@drawable/ic_share_black_24dp"/>
-
-            <ImageButton
                 android:id="@+id/button_note_favorite"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -95,6 +85,16 @@
                 android:contentDescription="@string/item_note_fav"
                 android:tint="@color/holo_red_light"
                 app:srcCompat="@drawable/ic_favorite_border_black_24dp"/>
+
+            <ImageButton
+                android:id="@+id/button_note_share"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="#00FFFFFF"
+                android:contentDescription="@string/item_note_share"
+                android:tint="@color/colorAccent"
+                app:srcCompat="@drawable/ic_share_black_24dp"/>
 
         </LinearLayout>
 

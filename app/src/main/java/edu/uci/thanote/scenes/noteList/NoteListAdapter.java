@@ -5,12 +5,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +61,7 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
         holder.noteDate.setText(note.getCreateDate().toString());
         holder.noteTitle.setText(note.getTitle());
         holder.noteDescription.setText(note.getDetail());
+
     }
 
     public void setNotes(List<Note> notes) {
@@ -106,11 +110,20 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
         TextView noteTitle;
         TextView noteDescription;
 
-        NoteHolder(View view) {
-            super(view);
-            noteDate = view.findViewById(R.id.text_view_note_date);
-            noteTitle = view.findViewById(R.id.text_view_note_title);
-            noteDescription = view.findViewById(R.id.text_view_note_description);
+        private ImageButton buttonShare;
+        private ImageButton buttonFavorite;
+
+
+        NoteHolder(View itemView) {
+            super(itemView);
+            noteDate = itemView.findViewById(R.id.text_view_note_date);
+            noteTitle = itemView.findViewById(R.id.text_view_note_title);
+            noteDescription = itemView.findViewById(R.id.text_view_note_description);
+            buttonShare = itemView.findViewById(R.id.button_note_share);
+            buttonFavorite = itemView.findViewById(R.id.button_note_favorite);
+
+            // set buttonFavorite invisible:
+            buttonFavorite.setVisibility(View.INVISIBLE);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -118,6 +131,16 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
                     int position = getAdapterPosition();
                     if (listener != null && position != RecyclerView.NO_POSITION) {
                         listener.onItemClick(getItem(position));
+                    }
+                }
+            });
+
+            buttonShare.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (listener != null && position != RecyclerView.NO_POSITION) {
+                        listener.onButtonShareClick(getItem(position));
                     }
                 }
             });

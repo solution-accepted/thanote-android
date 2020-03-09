@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageButton;
 import android.widget.SearchView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -27,14 +28,18 @@ public class NoteListActivity extends BaseActivity {
     public static final String CATEGORY_ID =
             "edu.uci.thanote.CATEGORY_ID";
     public static final int CATEGORY_ID_DEFAULT = 0;
+    public final String SHARE_INTENT_TITLE = "Share Note Via:";
 
     private int categoryId;
+
     private RecyclerView recyclerView;
-    private NoteListViewModel viewModel;
+    private SearchView searchView;
+
     private FloatingActionButton buttonAddNote;
+
+    private NoteListViewModel viewModel;
     private final NoteListAdapter adapter = new NoteListAdapter();
 
-    private SearchView searchView;
 
 
     @Override
@@ -71,6 +76,18 @@ public class NoteListActivity extends BaseActivity {
                 intent.putExtra(AddEditNoteActivity.EXTRA_NOTE, note);
                 startActivity(intent);
             }
+
+            @Override
+            public void onButtonShareClick(Note note) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.putExtra(Intent.EXTRA_TEXT, note.getTitle() + "\n" + note.getDetail());
+                intent.setType("text/plain");
+
+                Intent shareIntent = Intent.createChooser(intent, SHARE_INTENT_TITLE);
+                startActivity(shareIntent);
+            }
+
         });
     }
 

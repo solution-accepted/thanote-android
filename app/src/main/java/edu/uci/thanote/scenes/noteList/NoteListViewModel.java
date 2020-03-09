@@ -46,7 +46,6 @@ public class NoteListViewModel extends AndroidViewModel {
 
     public interface NoteViewModelListener {
         void onNoteClick(Note note);
-        void onButtonShareClick(Note note);
     }
 
     public void setListener(NoteViewModelListener listener) {
