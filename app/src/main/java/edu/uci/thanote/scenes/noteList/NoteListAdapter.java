@@ -130,6 +130,8 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
 
     public interface OnItemClickListener {
         void onItemClick(Note note);
+
+        void onButtonShareClick(Note note);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
