@@ -90,6 +90,14 @@ public class HomeViewModel extends AndroidViewModel {
         notesInMemory.setValue(new ArrayList<>());
     }
 
+    public void backupNotesInMemory() {
+        notesInMemoryBackup = notesInMemory.getValue();
+    }
+
+    public void restoreNotesInMemory() {
+        setNotesInMemory(notesInMemoryBackup);
+    }
+
     public void fetchSingleJoke() {
         repository.fetchSingleJokeRandomly();
     }

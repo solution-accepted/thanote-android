@@ -390,6 +390,10 @@ public class HomeFragment extends Fragment {
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.i(TAG, "searchView.onQueryTextChange: newText = " + newText);
+                if (newText.isEmpty()) {
+                    viewModel.restoreNotesInMemory();
+                    return true;
+                }
                 return false;
             }
         });
@@ -478,6 +482,7 @@ public class HomeFragment extends Fragment {
         for (int i = 0; i < NOTE_RANDOM_DISPLAY_COUNT; ++i) {
             fetchSingleRandomNote();
         }
+        viewModel.backupNotesInMemory();
     }
 
     private void fetchSingleRandomNote() {
