@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,22 +27,26 @@ import edu.uci.thanote.apis.thecocktaildb.Cocktail;
 import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
 import edu.uci.thanote.apis.themoviedb.TMDbMovie;
 import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
+import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("FieldCanBeLocal")
 public class HomeFragment extends Fragment {
 
     private final String TAG = "HomeFragment";
 
+    // region API constants
+
     private final int NOTE_RANDOM_DISPLAY_COUNT = 10;
     private final int NOTE_RANDOM_TYPE_COUNT = 5;
 
-    private final int NOTE_DEFAULT_CATEGORY_ID = 1;
+    private final int NOTE_DEFAULT_CATEGORY_ID = Category.DEFAULT_CATEGORY_ID;
     private final String NOTE_DEFAULT_IMAGE_URL = "";
 
     private final String NOTE_JOKE_TITLE_PREFIX = "[Joke]: ";
@@ -66,7 +71,16 @@ public class HomeFragment extends Fragment {
 
     private API apiSelected = API.ALL;
 
+    // endregion
+
+    // region view model
+
     private HomeViewModel viewModel;
+    private List<Category> categoryList;
+
+    // endregion
+
+    // region UI components
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ImageView imageViewGalaxy;
@@ -74,6 +88,8 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private HomeRecyclerViewAdapter recyclerViewAdapter;
     private Spinner spinnerApiSwitch;
+
+    // endregion
 
     @Nullable
     @Override
@@ -175,7 +191,7 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void didFetchOpenMovie(OMDbMovie movie) {
+        public void didFetchOMDBMovie(OMDbMovie movie) {
             swipeRefreshLayout.setRefreshing(false);
             if (movie.getResponse().equals("False")) {
                 return;
@@ -191,12 +207,12 @@ public class HomeFragment extends Fragment {
                 case MOVIE:
                     break;
                 default:
-                    Log.e(TAG, "didFetchOpenMovie: apiSelected = " + apiSelected);
+                    Log.e(TAG, "didFetchOMDBMovie: apiSelected = " + apiSelected);
             }
         }
 
         @Override
-        public void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies) {
+        public void didFetchOMDBMovieSearch(OMDbMovieSearchResponse movies) {
             swipeRefreshLayout.setRefreshing(false);
             if (movies.getResponse().equals("False")) {
                 return;
@@ -212,7 +228,7 @@ public class HomeFragment extends Fragment {
                             movie.getImageUrl())));
                     break;
                 default:
-                    Log.e(TAG, "didFetchOpenMovieSearch: apiSelected = " + apiSelected);
+                    Log.e(TAG, "didFetchOMDBMovieSearch: apiSelected = " + apiSelected);
             }
         }
 
@@ -318,6 +334,11 @@ public class HomeFragment extends Fragment {
         viewModel.setListener(vmListener);
         viewModel.getNotesInMemory().observe(getViewLifecycleOwner(),
                 notes -> recyclerViewAdapter.setNotes(notes));
+        viewModel.getCategoriesInDatabase().observe(getViewLifecycleOwner(),
+                categories -> categoryList = categories);
+        viewModel.getNotesInDatabase().observe(getViewLifecycleOwner(),
+                notes -> Log.i(TAG, "setupViewModel: notes in database = "
+                        + Arrays.toString(notes.stream().map(Note::getTitle).toArray(String[]::new))));
     }
 
     private void setupViews(View view) {
@@ -372,6 +393,9 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        searchView.setOnQueryTextFocusChangeListener((v, hasFocus) ->
+                Log.i(TAG, "setOnQueryTextFocusChangeListener: " + hasFocus));
+
         // Triggered when the search icon is clicked:
 //        searchView.setOnSearchClickListener(v -> { });
 
@@ -385,7 +409,7 @@ public class HomeFragment extends Fragment {
             public void onButtonShareClicked(Note note) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, note.getDetail());
+                sendIntent.putExtra(Intent.EXTRA_TEXT, note.getTitle() + "\n" + note.getDetail());
                 sendIntent.setType("text/plain");
 
                 Intent shareIntent = Intent.createChooser(sendIntent, null);
@@ -393,14 +417,25 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onButtonFavoriteClicked(Note note) {
-                // TODO note.isFavorite()
-//                if (note.isFavorite()) {
-//                    viewModel.deleteNote(note);
-//                } else {
-//                    viewModel.insertNote(note);
-//                }
-                showToast("onButtonFavoriteClicked");
+            public void onButtonFavoriteClicked(Note note, ImageButton buttonFavorite) {
+                final String[] categoryStrings = categoryList.stream().map(Category::getName).toArray(String[]::new);
+                AtomicInteger categorySelected = new AtomicInteger(0);
+                new AlertDialog.Builder(Objects.requireNonNull(getContext()))
+                        .setTitle("Choose a category")
+                        .setSingleChoiceItems(categoryStrings, categorySelected.get(), (dialog, which) -> {
+                            Log.i(TAG, "onButtonFavoriteClicked: which = " + which);
+                            categorySelected.set(which);
+                        })
+                        .setPositiveButton("OK", (dialog, which) -> {
+                            Log.i(TAG, "onButtonFavoriteClicked: categorySelected = " + categorySelected.get());
+                            note.setCategoryId(categoryList.get(categorySelected.get()).getId());
+                            viewModel.insertNoteIntoDatabase(note);
+                            buttonFavorite.setImageResource(R.drawable.ic_favorite_black_24dp);
+                            buttonFavorite.setEnabled(false);
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .create()
+                        .show();
             }
         });
         recyclerView = view.findViewById(R.id.recycler_view_home);
@@ -494,7 +529,6 @@ public class HomeFragment extends Fragment {
         }
 
     }
-
 
     private void searchJoke(String query) {
         viewModel.searchSingleJoke(query);

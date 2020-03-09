@@ -106,9 +106,9 @@ public class HomeRepository {
 
         void didFetchPuppyRecipesByParams(RecipePuppyResponse recipes);
 
-        void didFetchOpenMovie(OMDbMovie movie);
+        void didFetchOMDBMovie(OMDbMovie movie);
 
-        void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies);
+        void didFetchOMDBMovieSearch(OMDbMovieSearchResponse movies);
 
         void didFetchTMDBMovieRandomly(TMDbMoviesResponse moviesResponse);
 
@@ -161,18 +161,18 @@ public class HomeRepository {
                 .enqueue(getCallback(listener::didFetchPuppyRecipesByParams));
     }
 
-    private void fetchOpenMovieRandomly() {
+    private void fetchOMDBMovieRandomly() {
         // Not Provided
     }
 
-    public void fetchOpenMovieByTitle(String title) {
+    public void fetchOMDBMovieByTitle(String title) {
         omdbApi.getOMDbMovieByTitle(OMDB_API_KEY, title)
-                .enqueue(getCallback(listener::didFetchOpenMovie));
+                .enqueue(getCallback(listener::didFetchOMDBMovie));
     }
 
-    public void fetchOpenMovieBySearching(String title) {
+    public void fetchOMDBMovieBySearching(String title) {
         omdbApi.getOMDbMovieBySearching(OMDB_API_KEY, title, 1)
-                .enqueue(getCallback(listener::didFetchOpenMovieSearch));
+                .enqueue(getCallback(listener::didFetchOMDBMovieSearch));
     }
 
     public void fetchTMDBMovieRandomly() {
