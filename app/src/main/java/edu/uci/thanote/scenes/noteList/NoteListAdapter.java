@@ -3,6 +3,8 @@ package edu.uci.thanote.scenes.noteList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -10,14 +12,22 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
 
-public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolder> {
+public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolder> implements Filterable {
+
+    private List<Note> notesList;
+    private List<Note> notesFullList;
 
     NoteListAdapter() {
         super(DIFF_CALLBACK);
     }
+
+
 
     private static final DiffUtil.ItemCallback<Note> DIFF_CALLBACK = new DiffUtil.ItemCallback<Note>() {
         @Override
@@ -47,6 +57,47 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
         holder.noteTitle.setText(note.getTitle());
         holder.noteDescription.setText(note.getDetail());
     }
+
+    public void setNotes(List<Note> notes) {
+        this.notesList = notes;
+        notesFullList = new ArrayList<>(notesList);
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return noteFilter;
+    }
+
+    private Filter noteFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            List<Note> notesFilterList = new ArrayList<>();
+            constraint = constraint.toString().toLowerCase().trim();
+            if (constraint == null || constraint.length() == 0) {
+                notesFilterList.addAll(notesFullList);
+            } else {
+                for (Note note : notesFullList) {
+                    if (note.getDetail().toLowerCase().contains(constraint) ||
+                            note.getTitle().toLowerCase().contains(constraint)) {
+                        notesFilterList.add(note);
+                    }
+                }
+            }
+            FilterResults results = new FilterResults();
+            results.values = notesFilterList;
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            notesList.clear();
+            notesList.addAll((List) results.values);
+            notifyDataSetChanged();
+        }
+    };
+
+
 
     public class NoteHolder extends RecyclerView.ViewHolder {
         TextView noteDate;

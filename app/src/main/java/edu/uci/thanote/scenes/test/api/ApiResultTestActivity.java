@@ -11,7 +11,7 @@ import edu.uci.thanote.apis.Api;
 import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
-import edu.uci.thanote.apis.omdb.OMDb;
+import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbApi;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
@@ -285,27 +285,27 @@ public class ApiResultTestActivity extends BaseActivity {
     // region OMDB API
     private void testOMDb(String keyword) {
         OMDbApi api = retrofitOMDb.create(OMDbApi.class);
-        Call<OMDb> call = api.getOMDb(keyword, Api.OMDB.getApiKey());
-        call.enqueue(new Callback<OMDb>() {
+        Call<OMDbMovie> call = api.getOMDbMovieByTitle(keyword, Api.OMDB.getApiKey());
+        call.enqueue(new Callback<OMDbMovie>() {
             @Override
-            public void onResponse(Call<OMDb> call, Response<OMDb> response) {
+            public void onResponse(Call<OMDbMovie> call, Response<OMDbMovie> response) {
                 if (!response.isSuccessful()) {
                     log += "Response Code: " + response.code();
                     resultTextView.setText(log);
                     return;
                 }
 
-                OMDb omDb = response.body();
+                OMDbMovie omDbMovie = response.body();
 
-                if (omDb != null) {
-                    resultTextView.setText(omDb.toString());
+                if (omDbMovie != null) {
+                    resultTextView.setText(omDbMovie.toString());
                 } else {
                     resultTextView.setText("OMDb is null!");
                 }
             }
 
             @Override
-            public void onFailure(Call<OMDb> call, Throwable t) {
+            public void onFailure(Call<OMDbMovie> call, Throwable t) {
                 log += "Error: " + t.getMessage();
                 resultTextView.setText(log);
             }

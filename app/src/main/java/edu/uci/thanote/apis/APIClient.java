@@ -21,7 +21,7 @@ public class APIClient {
 
     public static APIClient getInstance() {
         if (instance == null) {
-            synchronized(APIClient.class) {
+            synchronized (APIClient.class) {
                 instance = new APIClient();
             }
         }
@@ -41,7 +41,7 @@ public class APIClient {
             retrofitJoke = buildRetrofit(JOKE_BASE_URL);
         }
 
-        return  retrofitJoke;
+        return retrofitJoke;
     }
 
     public Retrofit getRetrofitRecipePuppy() {
@@ -49,7 +49,7 @@ public class APIClient {
             retrofitRecipePuppy = buildRetrofit(RECIPE_PUPPY_BASE_URL);
         }
 
-        return  retrofitRecipePuppy;
+        return retrofitRecipePuppy;
     }
 
     public Retrofit getRetrofitOMDb() {

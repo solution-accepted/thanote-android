@@ -24,6 +24,7 @@
     <style name="HomeTitleStyle">
         <item name="android:textColor">@color/colorOnPrimary</item>
         <item name="android:textSize">36sp</item>
+        <item name="android:fontFamily">sans-serif-black</item>
     </style>
 
     <style name="TitleStyle">

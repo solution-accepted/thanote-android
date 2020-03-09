@@ -29,6 +29,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class CollectionFragment extends Fragment {
     public static final int ADD_CATEGORY_REQUEST = 1;
+    public static final String CATEGORY_NAME = "Category_name";
 
     private RecyclerView recyclerView;
     private CollectionViewModel viewModel;
@@ -69,7 +70,7 @@ public class CollectionFragment extends Fragment {
         adapter.setOnCategoryClickListener(new CollectionAdapter.CollectionAdapterOnClickListener() {
             @Override
             public void onCategoryClick(Category category) {
-                openNoteDetail();
+                openNoteList(category);
             }
         });
     }
@@ -84,8 +85,9 @@ public class CollectionFragment extends Fragment {
         createDeleteView();
     }
 
-    private void openNoteDetail() {
+    private void openNoteList(Category category) {
         Intent intent = new Intent(getActivity(), NoteListActivity.class);
+        intent.putExtra(CATEGORY_NAME, category.getName());
         startActivity(intent);
     }
 

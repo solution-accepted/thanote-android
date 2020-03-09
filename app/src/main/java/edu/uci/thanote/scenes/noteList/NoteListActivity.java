@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -23,16 +25,22 @@ import edu.uci.thanote.scenes.addnote.AddNoteActivity;
 
 public class NoteListActivity extends AppCompatActivity {
     private final int ADD_NOTE_REQUEST = 1;
+    public static final String CATEGORY_NAME = "Category_name";
 
+    private String categoryName;
     private RecyclerView recyclerView;
     private NoteListViewModel viewModel;
     private final NoteListAdapter adapter = new NoteListAdapter();
+
+    private SearchView searchView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note_list);
+        Intent intent = getIntent();
+        categoryName = intent.getStringExtra(CATEGORY_NAME);
         setupViewModel();
         setupViews();
     }
@@ -50,6 +58,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     public void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(NoteListViewModel.class);
+        viewModel.setCategoryName(categoryName);
         viewModel.setListener(new NoteListViewModel.NoteViewModelListener() {
             @Override
             public void onNoteClick(Note note) {
@@ -60,6 +69,7 @@ public class NoteListActivity extends AppCompatActivity {
         viewModel.getNotes().observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> notes) {
+                adapter.setNotes(notes);
                 adapter.submitList(notes);
             }
         });
@@ -73,6 +83,26 @@ public class NoteListActivity extends AppCompatActivity {
 
         addNote();
         createDeleteView();
+
+        searchView = findViewById(R.id.search_view_note_list);
+//        searchView.setSubmitButtonEnabled(true);
+//        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
+        searchView.setBackgroundResource(R.color.super_light_gray);
+        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                adapter.getFilter().filter(newText);
+                return true;
+            }
+        });
+
     }
 
     private void openNote() {

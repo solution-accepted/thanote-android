@@ -2,7 +2,11 @@ package edu.uci.thanote.apis.omdb;
 
 import com.google.gson.annotations.SerializedName;
 
-public class OMDb {
+public class OMDbMovie {
+    @SerializedName("Response")
+    private String response; // "True" or "False"
+    @SerializedName("Error")
+    private String error; // error message
     @SerializedName("Title")
     private String title;
     @SerializedName("Year")
@@ -33,6 +37,7 @@ public class OMDb {
     private String imageUrl;
     private String imdbRating;
     private String imdbVotes;
+    @SerializedName("imdbID")
     private String imdbID;
     @SerializedName("Production")
     private String production;
@@ -43,82 +48,28 @@ public class OMDb {
         return title;
     }
 
-    public String getYear() {
-        return year;
-    }
-
-    public String getRated() {
-        return rated;
-    }
-
-    public String getReleased() {
-        return released;
-    }
-
-    public String getRuntime() {
-        return runtime;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public String getDirector() {
-        return director;
-    }
-
-    public String getWriter() {
-        return writer;
-    }
-
-    public String getActors() {
-        return actors;
-    }
-
-    public String getPlot() {
-        return plot;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public String getAwards() {
-        return awards;
+    public String getResponse() {
+        return response;
     }
 
     public String getImageUrl() {
         return imageUrl;
     }
 
-    public String getImdbRating() {
-        return imdbRating;
+    public String getPlot() {
+        return plot;
     }
 
-    public String getImdbVotes() {
-        return imdbVotes;
-    }
-
-    public String getImdbID() {
-        return imdbID;
-    }
-
-    public String getProduction() {
-        return production;
-    }
-
-    public String getWebsite() {
-        return website;
+    public String getImdbUrl() {
+        return "https://www.imdb.com/title/" + imdbID;
     }
 
     @Override
     public String toString() {
-        return "OMDb{" +
-                "title='" + title + '\'' +
+        return "OMDbMovie{" +
+                "response='" + response + '\'' +
+                ", error='" + error + '\'' +
+                ", title='" + title + '\'' +
                 ", year='" + year + '\'' +
                 ", rated='" + rated + '\'' +
                 ", released='" + released + '\'' +

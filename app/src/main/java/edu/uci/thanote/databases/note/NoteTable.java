@@ -11,11 +11,11 @@ import java.util.List;
 public class NoteTable {
     private NoteDao noteDao;
     private LiveData<List<Note>> notes;
+    private String categoryName = "";
 
     public NoteTable(Application application) {
         ThanoteDatabase database = ThanoteDatabase.getInstance(application);
         noteDao = database.noteDao();
-        notes = noteDao.getNotes();
     }
 
     // region Public APIs
@@ -36,7 +36,16 @@ public class NoteTable {
         new DeleteAllNotesAsyncTask(noteDao).execute();
     }
 
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
     public LiveData<List<Note>> getNotes() {
+        if (categoryName.equals("")) {
+            notes = noteDao.getNotes();
+        } else {
+            notes = noteDao.getNotes(categoryName);
+        }
         return notes;
     }
 

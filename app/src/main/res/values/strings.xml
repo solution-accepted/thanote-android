@@ -13,6 +13,7 @@
     <string name="item_note_date">noteDate</string>
     <string name="item_note_share">Share this note</string>
     <string name="item_note_fav">Add this note to favorite</string>
+    <string name="item_note_thumbnail">Thumbnail</string>
 
     <!-- Define Custom Strings here -->
     <!-- Home Fragment -->
@@ -23,6 +24,7 @@
     <!-- Collection Fragment -->
     <string name="collection_search">CollectionSearch</string>
     <string name="collection_search_hint">Find your collections</string>
+    <string name="collection_header">Collections</string>
     <!-- Add Collection Fragment -->
     <string name="new_category">new category</string>
 
