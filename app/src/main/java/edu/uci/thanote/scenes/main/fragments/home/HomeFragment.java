@@ -257,12 +257,13 @@ public class HomeFragment extends Fragment {
         @Override
         public void didFetchTMDBMovieBySearching(TMDbMoviesResponse movies) {
             swipeRefreshLayout.setRefreshing(false);
-            if (movies.getMovies() == null) {
+            List<TMDbMovie> movieList = movies.getMovies();
+            if (movieList == null || movieList.isEmpty()) {
                 return;
             }
             switch (apiSelected) {
                 case ALL: {
-                    TMDbMovie movie = movies.getMovies().get(new Random().nextInt(NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE));
+                    TMDbMovie movie = movieList.get(0);
                     viewModel.insertNoteIntoMemory(new Note(
                             NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
                             movie.getOverview(),
