@@ -1,7 +1,7 @@
 package edu.uci.thanote.apis;
 
 public enum Api {
-    JOKE("Joke"), RECIPEPUPPY("Recipe Puppy"), OMDB("OMDb"), THEMOVEDB("The Movie Db"), THECOCKTAILDB("The Cocktail Db");
+    JOKE("Joke"), RECIPEPUPPY("Recipe"), OMDB("OMDb"), THEMOVIEDB("Movie"), THECOCKTAILDB("Cocktail");
     private String apiName;
     private Api(String apiName) {
         this.apiName = apiName;
@@ -19,8 +19,8 @@ public enum Api {
             return RECIPEPUPPY;
         } else if (apiName.equals(Api.OMDB.toString())) {
             return OMDB;
-        } else if (apiName.equals(Api.THEMOVEDB.toString())) {
-            return THEMOVEDB;
+        } else if (apiName.equals(Api.THEMOVIEDB.toString())) {
+            return THEMOVIEDB;
         } else if (apiName.equals(Api.THECOCKTAILDB.toString())) {
             return THECOCKTAILDB;
         }
@@ -30,7 +30,7 @@ public enum Api {
 
     public static String[] getAllApiNames() {
         return new String[] {
-            Api.JOKE.toString(), Api.RECIPEPUPPY.toString(), Api.OMDB.toString(), Api.THEMOVEDB.toString(), Api.THECOCKTAILDB.toString()
+            Api.JOKE.toString(), Api.RECIPEPUPPY.toString(), Api.OMDB.toString(), Api.THEMOVIEDB.toString(), Api.THECOCKTAILDB.toString()
         };
     }
 
@@ -38,7 +38,7 @@ public enum Api {
         switch (this) {
             case OMDB:
                 return "7c782685";
-            case THEMOVEDB:
+            case THEMOVIEDB:
                 return "698b1027c17fe80eecb1d699d1806254";
             default:
                 return "";
