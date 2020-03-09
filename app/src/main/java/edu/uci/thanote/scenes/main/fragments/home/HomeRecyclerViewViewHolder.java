@@ -73,13 +73,13 @@ public class HomeRecyclerViewViewHolder extends RecyclerView.ViewHolder {
         }
 
         buttonShare.setOnClickListener(v -> listener.onButtonShareClicked(note));
-        buttonFavorite.setOnClickListener(v -> listener.onButtonFavoriteClicked(note));
+        buttonFavorite.setOnClickListener(v -> listener.onButtonFavoriteClicked(note, buttonFavorite));
     }
 
     public interface Listener {
         void onButtonShareClicked(Note note);
 
-        void onButtonFavoriteClicked(Note note);
+        void onButtonFavoriteClicked(Note note, ImageButton buttonFavorite);
     }
 
     private Listener listener;

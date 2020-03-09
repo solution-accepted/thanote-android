@@ -19,7 +19,9 @@ public class TMDbMovie {
     }
 
     public String getImageUrl() {
-        return "https://image.tmdb.org/t/p/w500/" + posterPath;
+        return posterPath == null || posterPath.equals("null") ?
+                "" :
+                "https://image.tmdb.org/t/p/w500/" + posterPath;
     }
 
     @Override

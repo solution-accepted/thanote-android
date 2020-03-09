@@ -119,8 +119,8 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void searchOMDBMovie(String query) {
-        repository.fetchOpenMovieByTitle(query);
-        repository.fetchOpenMovieBySearching(query);
+        repository.fetchOMDBMovieByTitle(query);
+        repository.fetchOMDBMovieBySearching(query);
     }
 
     public void fetchTMDBMovieRandomly() {
@@ -163,9 +163,9 @@ public class HomeViewModel extends AndroidViewModel {
 
         void didVerifyError(String message);
 
-        void didFetchOpenMovie(OMDbMovie movie);
+        void didFetchOMDBMovie(OMDbMovie movie);
 
-        void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies);
+        void didFetchOMDBMovieSearch(OMDbMovieSearchResponse movies);
 
         void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies);
 
@@ -225,13 +225,13 @@ public class HomeViewModel extends AndroidViewModel {
         }
 
         @Override
-        public void didFetchOpenMovie(OMDbMovie movie) {
-            listener.didFetchOpenMovie(movie);
+        public void didFetchOMDBMovie(OMDbMovie movie) {
+            listener.didFetchOMDBMovie(movie);
         }
 
         @Override
-        public void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies) {
-            listener.didFetchOpenMovieSearch(movies);
+        public void didFetchOMDBMovieSearch(OMDbMovieSearchResponse movies) {
+            listener.didFetchOMDBMovieSearch(movies);
         }
 
         @Override

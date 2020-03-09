@@ -3,6 +3,7 @@ package edu.uci.thanote.scenes.main.fragments.home;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import edu.uci.thanote.R;
@@ -40,8 +41,8 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
             }
 
             @Override
-            public void onButtonFavoriteClicked(Note note) {
-                listener.onButtonFavoriteClicked(note);
+            public void onButtonFavoriteClicked(Note note, ImageButton buttonFavorite) {
+                listener.onButtonFavoriteClicked(note, buttonFavorite);
             }
         });
 
@@ -66,7 +67,7 @@ public class HomeRecyclerViewAdapter extends RecyclerView.Adapter<HomeRecyclerVi
     public interface Listener {
         void onButtonShareClicked(Note note);
 
-        void onButtonFavoriteClicked(Note note);
+        void onButtonFavoriteClicked(Note note, ImageButton buttonFavorite);
     }
 
     private Listener listener;
