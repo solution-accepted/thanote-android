@@ -114,7 +114,7 @@ public class ApiResultTestActivity extends BaseActivity {
             case OMDB:
                 testOMDb(getRandomCharacter());
                 break;
-            case THEMOVEDB:
+            case THEMOVIEDB:
                 testTheMovieDbGet();
                 break;
             case THECOCKTAILDB:
@@ -145,7 +145,7 @@ public class ApiResultTestActivity extends BaseActivity {
             case OMDB:
                 testOMDb(keyword);
                 break;
-            case THEMOVEDB:
+            case THEMOVIEDB:
                 testTheMovieDbQuery(keyword);
                 break;
             case THECOCKTAILDB:
@@ -317,13 +317,13 @@ public class ApiResultTestActivity extends BaseActivity {
     // region TheMovieDb API
     private void testTheMovieDbGet() {
         TheMovieDbApi api = retrofitTheMovieDb.create(TheMovieDbApi.class);
-        Call<TopRatedResponse> call = api.getTopRatedResponse(Api.THEMOVEDB.getApiKey());
+        Call<TopRatedResponse> call = api.getTopRatedResponse(Api.THEMOVIEDB.getApiKey());
         executeTheMovieDb(call);
     }
 
     private void testTheMovieDbQuery(String keyword) {
         TheMovieDbApi api = retrofitTheMovieDb.create(TheMovieDbApi.class);
-        Call<TopRatedResponse> call = api.queryMovie(Api.THEMOVEDB.getApiKey(), keyword);
+        Call<TopRatedResponse> call = api.queryMovie(Api.THEMOVIEDB.getApiKey(), keyword);
         executeTheMovieDb(call);
     }
 
