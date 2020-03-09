@@ -21,7 +21,8 @@
             android:layout_height="200dp"
             android:contentDescription="@string/item_note_thumbnail"
             android:scaleType="centerCrop"
-            android:visibility="gone" tools:srcCompat="@tools:sample/backgrounds/scenic"/>
+            android:visibility="gone"
+            tools:srcCompat="@tools:sample/backgrounds/scenic"/>
 
         <TextView
             android:id="@+id/text_view_note_title"
@@ -35,7 +36,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            tools:ignore="UseCompoundDrawables">
 
             <TextView
                 android:id="@+id/text_view_note_description"
@@ -52,7 +54,8 @@
                 android:layout_height="100dp"
                 android:layout_margin="12dp"
                 android:contentDescription="@string/item_note_thumbnail"
-                android:scaleType="centerCrop" android:visibility="gone"
+                android:scaleType="centerCrop"
+                android:visibility="gone"
                 tools:srcCompat="@tools:sample/backgrounds/scenic"/>
 
         </LinearLayout>
@@ -80,7 +83,8 @@
                 android:layout_weight="1"
                 android:background="#00FFFFFF"
                 android:contentDescription="@string/item_note_share"
-                android:tint="@color/colorAccent" app:srcCompat="@drawable/ic_share_black_24dp"/>
+                android:tint="@color/colorAccent"
+                app:srcCompat="@drawable/ic_share_black_24dp"/>
 
             <ImageButton
                 android:id="@+id/button_note_favorite"
@@ -89,7 +93,8 @@
                 android:layout_weight="1"
                 android:background="#00FFFFFF"
                 android:contentDescription="@string/item_note_fav"
-                android:tint="@color/holo_red_light" app:srcCompat="@drawable/ic_favorite_border_black_24dp"/>
+                android:tint="@color/holo_red_light"
+                app:srcCompat="@drawable/ic_favorite_border_black_24dp"/>
 
         </LinearLayout>
 

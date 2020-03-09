@@ -409,7 +409,7 @@ public class HomeFragment extends Fragment {
             public void onButtonShareClicked(Note note) {
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
-                sendIntent.putExtra(Intent.EXTRA_TEXT, note.getDetail());
+                sendIntent.putExtra(Intent.EXTRA_TEXT, note.getTitle() + "\n" + note.getDetail());
                 sendIntent.setType("text/plain");
 
                 Intent shareIntent = Intent.createChooser(sendIntent, null);
