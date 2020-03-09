@@ -117,9 +117,6 @@ public class NotificationActivity extends BaseActivity implements TimePickerDial
 
         if (calendar.before(Calendar.getInstance())) {
             calendar.add(Calendar.DATE, 1);
-            showShortToast("Add 1 day!");
-        } else {
-            showShortToast("No need to adjust day!");
         }
 
         if (alarmManager != null) {
