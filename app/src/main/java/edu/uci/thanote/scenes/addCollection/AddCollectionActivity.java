@@ -19,7 +19,6 @@ public class AddCollectionActivity extends BaseActivity {
     private AddCollectionViewModel viewModel;
 
     private final String EMPTY_WARNING = "Please insert category name";
-    private final String CATEGORY_INSERT_SUCCESS = "Category saved";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +49,6 @@ public class AddCollectionActivity extends BaseActivity {
 
         Category category = new Category(categoryName);
         viewModel.insert(category);
-
-        showShortToast(CATEGORY_INSERT_SUCCESS);
     }
 
     @Override

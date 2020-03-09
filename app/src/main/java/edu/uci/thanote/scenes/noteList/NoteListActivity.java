@@ -27,7 +27,6 @@ public class NoteListActivity extends BaseActivity {
     public static final String CATEGORY_ID =
             "edu.uci.thanote.CATEGORY_ID";
     public static final int CATEGORY_ID_DEFAULT = 0;
-    private final String NOTE_DELETE_SUCCESS = "Note deleted";
 
     private int categoryId;
     private RecyclerView recyclerView;
@@ -146,7 +145,6 @@ public class NoteListActivity extends BaseActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 viewModel.delete(adapter.getNote(viewHolder.getAdapterPosition()));
-                showShortToast(NOTE_DELETE_SUCCESS);
             }
         }).attachToRecyclerView(recyclerView);
     }

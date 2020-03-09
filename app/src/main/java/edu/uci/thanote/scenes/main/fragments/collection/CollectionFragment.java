@@ -27,7 +27,6 @@ import edu.uci.thanote.scenes.noteList.NoteListActivity;
 public class CollectionFragment extends BaseFragment {
 
     private final String DEFAULT_DELETE_WARNING = "default could not be deleted";
-    private final String CATEGORY_DELETE_SUCCESS_= "Category deleted";
 
     private RecyclerView recyclerView;
     private CollectionViewModel viewModel;
@@ -103,7 +102,6 @@ public class CollectionFragment extends BaseFragment {
                     adapter.notifyDataSetChanged();
                 } else {
                     viewModel.delete(category);
-                    showShortToast(CATEGORY_DELETE_SUCCESS_);
                 }
             }
         }).attachToRecyclerView(recyclerView);

@@ -23,8 +23,6 @@ public class AddEditNoteActivity extends BaseActivity {
     private final String HEADER_EDIT_NOTE = "Edit Note";
     private final String HEADER_ADD_NOTE = "Add Note";
     private final String EMPTY_WARNING = "Please insert note title and note detail";
-    private final String NOTE_UPDATE_SUCCESS = "Note updated";
-    private final String NOTE_INSERT_SUCCESS = "Note saved";
 
 
     private EditText editTextNoteTitle;
@@ -81,12 +79,9 @@ public class AddEditNoteActivity extends BaseActivity {
             note.setTitle(newNoteTitle);
             note.setDetail(newNoteDetail);
             viewModel.update(note);
-            showShortToast(NOTE_UPDATE_SUCCESS);
         } else if (categoryId != -1) {
-            System.out.println("category id           " + categoryId);
             Note note = new Note(newNoteTitle, newNoteDetail, categoryId, "");
             viewModel.insert(note);
-            showShortToast(NOTE_INSERT_SUCCESS);
         }
 
     }
