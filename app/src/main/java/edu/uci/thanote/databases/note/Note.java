@@ -61,4 +61,14 @@ public class Note extends BaseTable {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    @Override
+    public String toString() {
+        return "Note{" +
+                "title='" + title + '\'' +
+                ", detail='" + detail + '\'' +
+                ", categoryId=" + categoryId +
+                ", imageUrl='" + imageUrl + '\'' +
+                '}';
+    }
 }

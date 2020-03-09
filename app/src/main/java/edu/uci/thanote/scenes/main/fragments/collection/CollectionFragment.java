@@ -21,7 +21,7 @@ import java.util.List;
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.scenes.addCollection.AddCollectionActivity;
-import edu.uci.thanote.scenes.main.fragments.setting.BaseFragment;
+import edu.uci.thanote.scenes.general.BaseFragment;
 import edu.uci.thanote.scenes.noteList.NoteListActivity;
 
 public class CollectionFragment extends BaseFragment {

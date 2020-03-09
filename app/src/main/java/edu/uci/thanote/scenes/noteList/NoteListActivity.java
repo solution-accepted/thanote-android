@@ -21,7 +21,7 @@ import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
 import edu.uci.thanote.scenes.addCollection.AddCollectionActivity;
 import edu.uci.thanote.scenes.addEditNote.AddEditNoteActivity;
-import edu.uci.thanote.scenes.test.BaseActivity;
+import edu.uci.thanote.scenes.general.BaseActivity;
 
 public class NoteListActivity extends BaseActivity {
     public static final String CATEGORY_ID =

@@ -3,7 +3,11 @@ package edu.uci.thanote.scenes.main;
 import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import edu.uci.thanote.apis.Api;
 import edu.uci.thanote.apis.joke.SingleJoke;
+import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
+import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.helpers.SharePreferencesHelper;
 
 public class MainViewModel extends AndroidViewModel {
@@ -18,18 +22,39 @@ public class MainViewModel extends AndroidViewModel {
         this.application = application;
     }
 
-    // TODO: add more listener from MainRepositoryListener
     private MainRepository.MainRepositoryListener repositoryListener = new MainRepository.MainRepositoryListener() {
+
         @Override
         public void didFetchError(String message) {
             listener.didFetchError(message);
         }
 
         @Override
-        public void didFetchSingleJoke(SingleJoke joke) {
-            SharePreferencesHelper.getInstance(application).setTitle("Joke");
-            SharePreferencesHelper.getInstance(application).setMessage(joke.getJoke());
-            listener.didFetchError(joke.getJoke());
+        public void didFetchSingleJokeRandomly(SingleJoke joke) {
+            final SharePreferencesHelper helper = SharePreferencesHelper.getInstance(application);
+            helper.setTitle(Api.JOKE.toString());
+            helper.setMessage(joke.getJoke());
+        }
+
+        @Override
+        public void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes) {
+            final SharePreferencesHelper helper = SharePreferencesHelper.getInstance(application);
+            helper.setTitle(Api.RECIPEPUPPY.toString());
+            helper.setMessage(recipes.getRecipes().get(0).getTitle());
+        }
+
+        @Override
+        public void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies) {
+            final SharePreferencesHelper helper = SharePreferencesHelper.getInstance(application);
+            helper.setTitle(Api.THEMOVIEDB.toString());
+            helper.setMessage(movies.getMovies().get(0).getTitle());
+        }
+
+        @Override
+        public void didFetchCocktailRandomly(CocktailResponse cocktail) {
+            final SharePreferencesHelper helper = SharePreferencesHelper.getInstance(application);
+            helper.setTitle(Api.THECOCKTAILDB.toString());
+            helper.setMessage(cocktail.getCocktails().get(0).getName());
         }
     };
 
@@ -42,12 +67,18 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     public void updateNotificationContent() {
-        // TODO: add more api calls
         String category = SharePreferencesHelper.getInstance(application).getCategory();
 
-        // TODO: create a api enum to manage
-        if (category.equals("Joke")) {
-            repository.fetchSingleJoke();
+        if (category.equals(Api.JOKE.toString())) {
+            repository.fetchSingleJokeRandomly();
+        } else if (category.equals(Api.RECIPEPUPPY.toString())) {
+            repository.fetchPuppyRecipesRandomly();
+        } else if (category.equals(Api.THEMOVIEDB.toString())) {
+            repository.fetchTMDBMovieRandomly();
+        } else if (category.equals(Api.THECOCKTAILDB.toString())) {
+            repository.fetchCocktailRandomly();
+        } else {
+            repository.fetchSingleJokeRandomly();
         }
     }
 }

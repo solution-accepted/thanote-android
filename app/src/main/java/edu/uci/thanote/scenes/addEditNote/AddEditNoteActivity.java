@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
-import edu.uci.thanote.scenes.test.BaseActivity;
+import edu.uci.thanote.scenes.general.BaseActivity;
 
 public class AddEditNoteActivity extends BaseActivity {
     public static final String EXTRA_NOTE =

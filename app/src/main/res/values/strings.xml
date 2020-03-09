@@ -13,6 +13,7 @@
     <string name="item_note_date">noteDate</string>
     <string name="item_note_share">Share this note</string>
     <string name="item_note_fav">Add this note to favorite</string>
+    <string name="item_note_thumbnail">Thumbnail</string>
 
     <!-- Define Custom Strings here -->
     <!-- Home Fragment -->

@@ -11,7 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.category.Category;
-import edu.uci.thanote.scenes.test.BaseActivity;
+import edu.uci.thanote.scenes.general.BaseActivity;
 
 public class AddCollectionActivity extends BaseActivity {
 

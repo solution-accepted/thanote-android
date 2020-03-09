@@ -2,6 +2,7 @@ package edu.uci.thanote.scenes.notification;
 
 import android.content.Context;
 import edu.uci.thanote.R;
+import edu.uci.thanote.apis.Api;
 import edu.uci.thanote.helpers.SharePreferencesHelper;
 import edu.uci.thanote.scenes.main.fragments.setting.ImageTextItem;
 
@@ -13,8 +14,10 @@ public class NotificationViewModel {
     private static final int DEFAULT_TIME_HOUR = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
     private static final int DEFAULT_TIME_MINUTE = Calendar.getInstance().get(Calendar.MINUTE);
     private static final ImageTextItem[] apis = new ImageTextItem[] {
-        new ImageTextItem(R.drawable.ic_joke, "Joke"),
-        new ImageTextItem(R.drawable.ic_recipe, "Recipe")
+        new ImageTextItem(R.drawable.ic_joke, Api.JOKE.toString()),
+        new ImageTextItem(R.drawable.ic_recipe, Api.RECIPEPUPPY.toString()),
+        new ImageTextItem(R.drawable.ic_movie, Api.THEMOVIEDB.toString()),
+        new ImageTextItem(R.drawable.ic_cocktail, Api.THECOCKTAILDB.toString())
     };
     private int hour;
     private int minute;

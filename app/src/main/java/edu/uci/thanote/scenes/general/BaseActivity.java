@@ -1,4 +1,4 @@
-package edu.uci.thanote.scenes.test;
+package edu.uci.thanote.scenes.general;
 
 import android.content.Intent;
 import android.widget.Toast;
