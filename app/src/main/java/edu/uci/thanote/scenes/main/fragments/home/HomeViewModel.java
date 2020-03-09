@@ -12,6 +12,7 @@ import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
 
@@ -106,7 +107,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     public void fetchPuppyRecipesFromApi(String ingredients, String query, int page) {
         repository.fetchPuppyRecipesFromApiBy(ingredients, query, page);
-    }                                                                                                                                                                                                                                                                                                                    
+    }
 
     public void fetchPuppyRecipesFromApiRandomly() {
         repository.fetchPuppyRecipesFromApiRandomly();
@@ -116,9 +117,17 @@ public class HomeViewModel extends AndroidViewModel {
         fetchPuppyRecipesFromApi("", query, RecipePuppyApi.getRandomPageNumber());
     }
 
-    public void searchOpenMovie(String query) {
+    public void searchOMDBMovie(String query) {
         repository.fetchOpenMovieFromApiByTitle(query);
         repository.fetchOpenMovieFromApiBySearching(query);
+    }
+
+    public void fetchTMDBMovieFromApiRandomly() {
+        repository.fetchTMDBMovieFromApiRandomly();
+    }
+
+    public void searchTMDBMovie(String query) {
+        repository.fetchTMDBMovieFromApiBySearching(query);
     }
 
     // endregion
@@ -148,6 +157,10 @@ public class HomeViewModel extends AndroidViewModel {
         void didFetchOpenMovie(OMDbMovie movie);
 
         void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies);
+
+        void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies);
+
+        void didFetchTMDBMovieBySearching(TMDbMoviesResponse movies);
     }
 
     public void setListener(Listener listener) {
@@ -206,6 +219,16 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         public void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies) {
             listener.didFetchOpenMovieSearch(movies);
+        }
+
+        @Override
+        public void didFetchTMDBMovieFromApiRandomly(TMDbMoviesResponse movies) {
+            listener.didFetchTMDBMovieRandomly(movies);
+        }
+
+        @Override
+        public void didFetchTMDBMovieFromApiBySearching(TMDbMoviesResponse movies) {
+            listener.didFetchTMDBMovieBySearching(movies);
         }
     };
 

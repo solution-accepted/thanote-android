@@ -22,6 +22,8 @@ import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.themoviedb.TMDbMovie;
+import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.databases.note.Note;
 
 import java.util.Arrays;
@@ -35,13 +37,14 @@ public class HomeFragment extends Fragment {
     private final String TAG = "HomeFragment";
 
     private final int NOTE_INIT_COUNT = 10;
-    private final int NOTE_TYPE_COUNT = 3;
+    private final int NOTE_TYPE_COUNT = 4;
     private final int NOTE_DEFAULT_CATEGORY_ID = 1;
     private final String NOTE_DEFAULT_IMAGE_URL = "";
     private final String NOTE_JOKE_TITLE_PREFIX = "[Joke]: ";
     private final String NOTE_RECIPE_TITLE_PREFIX = "[Recipe]: ";
     private final int NOTE_RECIPE_COUNT_IN_RESPONSE = 10;
     private final String NOTE_MOVIE_TITLE_PREFIX = "[Movie]: ";
+    private final int NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE = 20;
 
     private enum API {
         ALL,
@@ -72,6 +75,16 @@ public class HomeFragment extends Fragment {
     }
 
     private final HomeViewModel.Listener vmListener = new HomeViewModel.Listener() {
+        @Override
+        public void didFetchError(String message) {
+            showToast(message);
+        }
+
+        @Override
+        public void didVerifyError(String message) {
+            showToast(message);
+        }
+
         @Override
         public void didFetchSingleJokeRandomly(SingleJoke joke) {
             swipeRefreshLayout.setRefreshing(false);
@@ -194,13 +207,56 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void didFetchError(String message) {
-            showToast(message);
+        public void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies) {
+            swipeRefreshLayout.setRefreshing(false);
+            Log.i(TAG, "didFetchTMDBMovieRandomly: " + movies);
+            if (movies.getMovies() == null) {
+                return;
+            }
+            TMDbMovie movie = movies.getMovies().get(new Random().nextInt(NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE));
+            switch (apiSelected) {
+                case ALL:
+                    viewModel.insertNoteIntoMemory(new Note(
+                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
+                            movie.getOverview(),
+                            NOTE_DEFAULT_CATEGORY_ID,
+                            movie.getImageUrl()));
+                    break;
+                case MOVIE:
+                    break;
+                default:
+                    Log.e(TAG, "didFetchTMDBMovieRandomly: apiSelected = " + apiSelected);
+            }
         }
 
         @Override
-        public void didVerifyError(String message) {
-            showToast(message);
+        public void didFetchTMDBMovieBySearching(TMDbMoviesResponse movies) {
+            swipeRefreshLayout.setRefreshing(false);
+            Log.i(TAG, "didFetchTMDBMovieBySearching: " + movies);
+            if (movies.getMovies() == null) {
+                return;
+            }
+            switch (apiSelected) {
+                case ALL: {
+                    TMDbMovie movie = movies.getMovies().get(new Random().nextInt(NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE));
+                    viewModel.insertNoteIntoMemory(new Note(
+                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
+                            movie.getOverview(),
+                            NOTE_DEFAULT_CATEGORY_ID,
+                            movie.getImageUrl()));
+                }
+                break;
+                case MOVIE: {
+                    movies.getMovies().forEach(movie -> viewModel.insertNoteIntoMemory(new Note(
+                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
+                            movie.getOverview(),
+                            NOTE_DEFAULT_CATEGORY_ID,
+                            movie.getImageUrl())));
+                }
+                break;
+                default:
+                    Log.e(TAG, "didFetchTMDBMovieBySearching: apiSelected = " + apiSelected);
+            }
         }
     };
 
@@ -348,6 +404,9 @@ public class HomeFragment extends Fragment {
             case 2:
                 viewModel.fetchPuppyRecipesFromApiRandomly();
                 break;
+            case 3:
+                viewModel.fetchTMDBMovieFromApiRandomly();
+                break;
             default:
                 Log.e(TAG, "getSingleRandomNote: unknown next id = " + next);
         }
@@ -377,7 +436,6 @@ public class HomeFragment extends Fragment {
 
     }
 
-
     private void searchJoke(String query) {
         viewModel.searchSingleJoke(query);
         viewModel.searchTwoPartJoke(query);
@@ -388,7 +446,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void searchMovie(String query) {
-        viewModel.searchOpenMovie(query);
+        viewModel.searchOMDBMovie(query);
+        viewModel.searchTMDBMovie(query);
     }
 
     private void showToast(String message) {

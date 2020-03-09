@@ -1,27 +1,27 @@
 package edu.uci.thanote.scenes.test.api;
 
+import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.os.Bundle;
 import edu.uci.thanote.R;
 import edu.uci.thanote.apis.APIClient;
 import edu.uci.thanote.apis.Api;
 import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
-import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbApi;
+import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.apis.thecocktaildb.Cocktail;
 import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
 import edu.uci.thanote.apis.thecocktaildb.TheCocktailDbApi;
-import edu.uci.thanote.apis.themoviedb.Movie;
+import edu.uci.thanote.apis.themoviedb.TMDbMovie;
+import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.apis.themoviedb.TheMovieDbApi;
-import edu.uci.thanote.apis.themoviedb.TopRatedResponse;
 import edu.uci.thanote.scenes.general.BaseActivity;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -317,32 +317,32 @@ public class ApiResultTestActivity extends BaseActivity {
     // region TheMovieDb API
     private void testTheMovieDbGet() {
         TheMovieDbApi api = retrofitTheMovieDb.create(TheMovieDbApi.class);
-        Call<TopRatedResponse> call = api.getTopRatedResponse(Api.THEMOVIEDB.getApiKey());
+        Call<TMDbMoviesResponse> call = api.getTopRatedMovies(Api.THEMOVIEDB.getApiKey());
         executeTheMovieDb(call);
     }
 
     private void testTheMovieDbQuery(String keyword) {
         TheMovieDbApi api = retrofitTheMovieDb.create(TheMovieDbApi.class);
-        Call<TopRatedResponse> call = api.queryMovie(Api.THEMOVIEDB.getApiKey(), keyword);
+        Call<TMDbMoviesResponse> call = api.getMovieBySearching(Api.THEMOVIEDB.getApiKey(), keyword);
         executeTheMovieDb(call);
     }
 
-    private void executeTheMovieDb(Call<TopRatedResponse> call) {
-        call.enqueue(new Callback<TopRatedResponse>() {
+    private void executeTheMovieDb(Call<TMDbMoviesResponse> call) {
+        call.enqueue(new Callback<TMDbMoviesResponse>() {
             @Override
-            public void onResponse(Call<TopRatedResponse> call, Response<TopRatedResponse> response) {
+            public void onResponse(Call<TMDbMoviesResponse> call, Response<TMDbMoviesResponse> response) {
                 if (!response.isSuccessful()) {
                     log += "Response Code: " + response.code();
                     resultTextView.setText(log);
                     return;
                 }
 
-                List<Movie> movies = response.body().getMovies();
+                List<TMDbMovie> movies = response.body().getMovies();
 
                 if (movies != null) {
                     StringBuilder sb = new StringBuilder();
 
-                    for (Movie movie : movies) {
+                    for (TMDbMovie movie : movies) {
                         sb.append(movie.toString()).append("\n\n");
                     }
 
@@ -353,7 +353,7 @@ public class ApiResultTestActivity extends BaseActivity {
             }
 
             @Override
-            public void onFailure(Call<TopRatedResponse> call, Throwable t) {
+            public void onFailure(Call<TMDbMoviesResponse> call, Throwable t) {
                 log += "Error: " + t.getMessage();
                 resultTextView.setText(log);
             }

@@ -11,7 +11,7 @@ public enum Api {
 
     private String apiName;
 
-    private Api(String apiName) {
+    Api(String apiName) {
         this.apiName = apiName;
     }
 
@@ -40,6 +40,7 @@ public enum Api {
         return Arrays.stream(values()).map(Enum::toString).toArray(String[]::new);
     }
 
+    // Please DONT abuse this!
     public String getApiKey() {
         switch (this) {
             case OMDB:

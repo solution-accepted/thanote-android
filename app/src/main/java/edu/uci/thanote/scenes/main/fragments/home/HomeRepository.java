@@ -13,6 +13,9 @@ import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
+import edu.uci.thanote.apis.thecocktaildb.TheCocktailDbApi;
+import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
+import edu.uci.thanote.apis.themoviedb.TheMovieDbApi;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.category.CategoryTable;
 import edu.uci.thanote.databases.note.Note;
@@ -38,10 +41,14 @@ public class HomeRepository {
     private LiveData<List<Note>> notes;
 
     // api
+    private final APIClient apiClient = APIClient.getInstance();
     private JokeApi jokeApi;
     private RecipePuppyApi recipePuppyApi;
     private OMDbApi omdbApi;
-    private final String OMDB_API_KEY = Api.OMDB.getApiKey(); // Please DONT abuse this!
+    private final String OMDB_API_KEY = Api.OMDB.getApiKey();
+    private TheMovieDbApi theMovieDbApi;
+    private final String TMDB_API_KEY = Api.THEMOVIEDB.getApiKey();
+    private TheCocktailDbApi theCocktailDbApi;
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -50,9 +57,11 @@ public class HomeRepository {
         noteTable = new NoteTable(application);
         notes = noteTable.getNotes();
 
-        jokeApi = APIClient.getInstance().getRetrofitJoke().create(JokeApi.class);
-        recipePuppyApi = APIClient.getInstance().getRetrofitRecipePuppy().create(RecipePuppyApi.class);
-        omdbApi = APIClient.getInstance().getRetrofitOMDb().create(OMDbApi.class);
+        jokeApi = apiClient.getRetrofitJoke().create(JokeApi.class);
+        recipePuppyApi = apiClient.getRetrofitRecipePuppy().create(RecipePuppyApi.class);
+        omdbApi = apiClient.getRetrofitOMDb().create(OMDbApi.class);
+        theMovieDbApi = apiClient.getRetrofitTheMovieDb().create(TheMovieDbApi.class);
+        theCocktailDbApi = apiClient.getRetrofitTheCocktailDb().create(TheCocktailDbApi.class);
     }
 
     // region Public Methods (Local Database)
@@ -99,6 +108,10 @@ public class HomeRepository {
         void didFetchOpenMovie(OMDbMovie movie);
 
         void didFetchOpenMovieSearch(OMDbMovieSearchResponse movies);
+
+        void didFetchTMDBMovieFromApiRandomly(TMDbMoviesResponse moviesResponse);
+
+        void didFetchTMDBMovieFromApiBySearching(TMDbMoviesResponse moviesResponse);
     }
 
     private Listener listener;
@@ -155,6 +168,16 @@ public class HomeRepository {
     public void fetchOpenMovieFromApiBySearching(String title) {
         omdbApi.getOMDbMovieBySearching(OMDB_API_KEY, title, 1)
                 .enqueue(getCallback(listener::didFetchOpenMovieSearch));
+    }
+
+    public void fetchTMDBMovieFromApiRandomly() {
+        theMovieDbApi.getPopularMovies(TMDB_API_KEY, TheMovieDbApi.getRandomPageNumber())
+                .enqueue(getCallback(listener::didFetchTMDBMovieFromApiRandomly));
+    }
+
+    public void fetchTMDBMovieFromApiBySearching(String title) {
+        theMovieDbApi.getMovieBySearching(TMDB_API_KEY, title)
+                .enqueue(getCallback(listener::didFetchTMDBMovieFromApiBySearching));
     }
 
     private <T> Callback<T> getCallback(Consumer<T> function) {
