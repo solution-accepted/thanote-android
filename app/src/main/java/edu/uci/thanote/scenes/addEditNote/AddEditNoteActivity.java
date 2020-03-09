@@ -6,30 +6,32 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import edu.uci.thanote.R;
+import edu.uci.thanote.databases.note.Note;
+import edu.uci.thanote.scenes.test.BaseActivity;
 
-public class AddEditNoteActivity extends AppCompatActivity {
-    public static final String EXTRA_ID =
-            "com.example.myapplication.EXTRA_ID";
-    public static final String EXTRA_NOTE_TITLE =
-            "com.example.myapplication.EXTRA_NOTE_TITLE";
-    public static final String EXTRA_NOTE_DETAIL =
-            "com.example.myapplication.EXTRA_NOTE_DETAIL";
+public class AddEditNoteActivity extends BaseActivity {
+    public static final String EXTRA_NOTE =
+            "com.example.myapplication.EXTRA_NOTE";
+    public static final String CATEGORY_ID =
+            "com.example.myapplication.CATEGORY_ID";
+
 
     private EditText editTextNoteTitle;
     private EditText editTextNoteDetail;
+    private int categoryId = -1;
+    private AddEditNoteViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_note);
         setupViews();
+        setupViewModel();
     }
 
     public void setupViews() {
@@ -40,14 +42,21 @@ public class AddEditNoteActivity extends AppCompatActivity {
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
 
         Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_ID)) {
+        if (intent.hasExtra(EXTRA_NOTE)) {
             setTitle("Edit Note");
-            editTextNoteTitle.setText(intent.getStringExtra(EXTRA_NOTE_TITLE));
-            editTextNoteDetail.setText(intent.getStringExtra(EXTRA_NOTE_DETAIL));
+            Note note = (Note) intent.getSerializableExtra("EXTRA_NOTE");
+
+            editTextNoteTitle.setText(note.getTitle());
+            editTextNoteDetail.setText(note.getDetail());
         } else {
             setTitle("Add Note");
+            categoryId = intent.getIntExtra(CATEGORY_ID, -1);
         }
-        
+
+    }
+
+    public void setupViewModel() {
+        viewModel = new ViewModelProvider(this).get(AddEditNoteViewModel.class);
     }
 
     private void saveNote() {
@@ -55,21 +64,24 @@ public class AddEditNoteActivity extends AppCompatActivity {
         String newNoteDetail = editTextNoteDetail.getText().toString();
 
         if (newNoteTitle.trim().isEmpty() || newNoteDetail.trim().isEmpty()) {
-            Toast.makeText(this, "Please insert note title and note detail", Toast.LENGTH_SHORT).show();
+            showShortToast("Please insert note title and note detail");
             return;
         }
 
-        Intent data = new Intent();
-        data.putExtra(EXTRA_NOTE_TITLE, newNoteTitle);
-        data.putExtra(EXTRA_NOTE_DETAIL, newNoteDetail);
+        Intent intent = getIntent();
 
-        int id = getIntent().getIntExtra(EXTRA_ID, -1);
-        if (id != -1) {
-            data.putExtra(EXTRA_ID, id);
+        if (intent.hasExtra(EXTRA_NOTE)) {
+            Note note = (Note) getIntent().getSerializableExtra("EXTRA_NOTE");
+            note.setTitle(newNoteTitle);
+            note.setDetail(newNoteDetail);
+            viewModel.update(note);
+            showShortToast("Note updated");
+        } else if (categoryId != -1) {
+            Note note = new Note(newNoteTitle, newNoteDetail, categoryId, "");
+            viewModel.insert(note);
+            showShortToast("Note saved");
         }
 
-        setResult(RESULT_OK, data);
-        finish();
     }
 
     @Override
@@ -84,16 +96,18 @@ public class AddEditNoteActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.save:
                 saveNote();
+                finish();
                 return true;
             default:
+                showShortToast("No note saved");
                 return super.onOptionsItemSelected(item);
         }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        finish(); // close this activity as oppose to navigating up
-
+        showShortToast("No note saved");
+        finish();
         return false;
     }
 }

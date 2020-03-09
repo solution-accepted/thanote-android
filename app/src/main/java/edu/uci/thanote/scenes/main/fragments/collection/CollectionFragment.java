@@ -5,11 +5,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -23,12 +21,10 @@ import java.util.List;
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.scenes.addCollection.AddCollectionActivity;
+import edu.uci.thanote.scenes.main.fragments.setting.BaseFragment;
 import edu.uci.thanote.scenes.noteList.NoteListActivity;
 
-import static android.app.Activity.RESULT_OK;
-
-public class CollectionFragment extends Fragment {
-    public static final int ADD_CATEGORY_REQUEST = 1;
+public class CollectionFragment extends BaseFragment {
     public static final String CATEGORY_ID = "Category_id";
 
     private RecyclerView recyclerView;
@@ -49,8 +45,8 @@ public class CollectionFragment extends Fragment {
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddCollectionActivity.class);
-                startActivityForResult(intent, ADD_CATEGORY_REQUEST);
+//                Intent intent = new Intent(getActivity(), AddCollectionActivity.class);
+                openPage(AddCollectionActivity.class);
 
             }
         });
@@ -91,21 +87,6 @@ public class CollectionFragment extends Fragment {
         startActivity(intent);
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ADD_CATEGORY_REQUEST && resultCode == RESULT_OK) {
-            String categoryName = data.getStringExtra(AddCollectionActivity.EXTRA_CATEGORY);
-
-            Category category = new Category(categoryName);
-            viewModel.insert(category);
-
-            Toast.makeText(getActivity(), "Category saved", Toast.LENGTH_SHORT).show();
-        }
-
-    }
-
     public void createDeleteView() {
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0,
                 ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
@@ -118,11 +99,11 @@ public class CollectionFragment extends Fragment {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 Category category = adapter.getCategory(viewHolder.getAdapterPosition());
                 if (category.getId() == Category.DEFAULT_CATEGORY_ID) {
-                    Toast.makeText(getActivity(), "default could not be deleted", Toast.LENGTH_SHORT).show();
+                    showShortToast("default could not be deleted");
                     adapter.notifyDataSetChanged();
                 } else {
                     viewModel.delete(category);
-                    Toast.makeText(getActivity(), "Category deleted", Toast.LENGTH_SHORT).show();
+                    showShortToast("Category deleted");
                 }
             }
         }).attachToRecyclerView(recyclerView);
