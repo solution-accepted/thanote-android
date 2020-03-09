@@ -25,7 +25,9 @@ import edu.uci.thanote.scenes.main.fragments.setting.BaseFragment;
 import edu.uci.thanote.scenes.noteList.NoteListActivity;
 
 public class CollectionFragment extends BaseFragment {
-    public static final String CATEGORY_ID = "Category_id";
+
+    private final String DEFAULT_DELETE_WARNING = "default could not be deleted";
+    private final String CATEGORY_DELETE_SUCCESS_= "Category deleted";
 
     private RecyclerView recyclerView;
     private CollectionViewModel viewModel;
@@ -45,7 +47,6 @@ public class CollectionFragment extends BaseFragment {
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(), AddCollectionActivity.class);
                 openPage(AddCollectionActivity.class);
 
             }
@@ -62,7 +63,6 @@ public class CollectionFragment extends BaseFragment {
             }
         });
 
-        // TODO 放哪里？
         adapter.setOnCategoryClickListener(new CollectionAdapter.CollectionAdapterOnClickListener() {
             @Override
             public void onCategoryClick(Category category) {
@@ -83,7 +83,7 @@ public class CollectionFragment extends BaseFragment {
 
     private void openNoteList(Category category) {
         Intent intent = new Intent(getActivity(), NoteListActivity.class);
-        intent.putExtra(CATEGORY_ID, category.getId());
+        intent.putExtra(NoteListActivity.CATEGORY_ID, category.getId());
         startActivity(intent);
     }
 
@@ -99,11 +99,11 @@ public class CollectionFragment extends BaseFragment {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 Category category = adapter.getCategory(viewHolder.getAdapterPosition());
                 if (category.getId() == Category.DEFAULT_CATEGORY_ID) {
-                    showShortToast("default could not be deleted");
+                    showShortToast(DEFAULT_DELETE_WARNING);
                     adapter.notifyDataSetChanged();
                 } else {
                     viewModel.delete(category);
-                    showShortToast("Category deleted");
+                    showShortToast(CATEGORY_DELETE_SUCCESS_);
                 }
             }
         }).attachToRecyclerView(recyclerView);

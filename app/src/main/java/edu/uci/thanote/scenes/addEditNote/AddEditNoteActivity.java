@@ -16,9 +16,15 @@ import edu.uci.thanote.scenes.test.BaseActivity;
 
 public class AddEditNoteActivity extends BaseActivity {
     public static final String EXTRA_NOTE =
-            "com.example.myapplication.EXTRA_NOTE";
+            "edu.uci.thanote.EXTRA_NOTE";
     public static final String CATEGORY_ID =
-            "com.example.myapplication.CATEGORY_ID";
+            "edu.uci.thanote.CATEGORY_ID";
+
+    private final String HEADER_EDIT_NOTE = "Edit Note";
+    private final String HEADER_ADD_NOTE = "Add Note";
+    private final String EMPTY_WARNING = "Please insert note title and note detail";
+    private final String NOTE_UPDATE_SUCCESS = "Note updated";
+    private final String NOTE_INSERT_SUCCESS = "Note saved";
 
 
     private EditText editTextNoteTitle;
@@ -43,13 +49,13 @@ public class AddEditNoteActivity extends BaseActivity {
 
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_NOTE)) {
-            setTitle("Edit Note");
-            Note note = (Note) intent.getSerializableExtra("EXTRA_NOTE");
+            setTitle(HEADER_EDIT_NOTE);
+            Note note = (Note) intent.getSerializableExtra(EXTRA_NOTE);
 
             editTextNoteTitle.setText(note.getTitle());
             editTextNoteDetail.setText(note.getDetail());
         } else {
-            setTitle("Add Note");
+            setTitle(HEADER_ADD_NOTE);
             categoryId = intent.getIntExtra(CATEGORY_ID, -1);
         }
 
@@ -64,22 +70,23 @@ public class AddEditNoteActivity extends BaseActivity {
         String newNoteDetail = editTextNoteDetail.getText().toString();
 
         if (newNoteTitle.trim().isEmpty() || newNoteDetail.trim().isEmpty()) {
-            showShortToast("Please insert note title and note detail");
+            showShortToast(EMPTY_WARNING);
             return;
         }
 
         Intent intent = getIntent();
 
-        if (intent.hasExtra(EXTRA_NOTE)) {
-            Note note = (Note) getIntent().getSerializableExtra("EXTRA_NOTE");
+        if (intent.hasExtra(AddEditNoteActivity.EXTRA_NOTE)) {
+            Note note = (Note) intent.getSerializableExtra(AddEditNoteActivity.EXTRA_NOTE);
             note.setTitle(newNoteTitle);
             note.setDetail(newNoteDetail);
             viewModel.update(note);
-            showShortToast("Note updated");
+            showShortToast(NOTE_UPDATE_SUCCESS);
         } else if (categoryId != -1) {
+            System.out.println("category id           " + categoryId);
             Note note = new Note(newNoteTitle, newNoteDetail, categoryId, "");
             viewModel.insert(note);
-            showShortToast("Note saved");
+            showShortToast(NOTE_INSERT_SUCCESS);
         }
 
     }
@@ -99,14 +106,12 @@ public class AddEditNoteActivity extends BaseActivity {
                 finish();
                 return true;
             default:
-                showShortToast("No note saved");
                 return super.onOptionsItemSelected(item);
         }
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        showShortToast("No note saved");
         finish();
         return false;
     }

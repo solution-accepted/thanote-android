@@ -25,8 +25,9 @@ import edu.uci.thanote.scenes.test.BaseActivity;
 
 public class NoteListActivity extends BaseActivity {
     public static final String CATEGORY_ID =
-            "com.example.myapplication.CATEGORY_ID";
+            "edu.uci.thanote.CATEGORY_ID";
     public static final int CATEGORY_ID_DEFAULT = 0;
+    private final String NOTE_DELETE_SUCCESS = "Note deleted";
 
     private int categoryId;
     private RecyclerView recyclerView;
@@ -66,9 +67,6 @@ public class NoteListActivity extends BaseActivity {
         adapter.setOnItemClickListener(new NoteListAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Note note) {
-                System.out.println("aaaaaaaaa");
-                System.out.println(note.getTitle());
-                System.out.println(note.getDetail());
 
                 Intent intent = new Intent(NoteListActivity.this, AddEditNoteActivity.class);
                 intent.putExtra(AddEditNoteActivity.EXTRA_NOTE, note);
@@ -107,8 +105,6 @@ public class NoteListActivity extends BaseActivity {
         createDeleteView();
 
         searchView = findViewById(R.id.search_view_note_list);
-//        searchView.setSubmitButtonEnabled(true);
-//        searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
         searchView.setBackgroundResource(R.color.super_light_gray);
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
 
@@ -150,7 +146,7 @@ public class NoteListActivity extends BaseActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 viewModel.delete(adapter.getNote(viewHolder.getAdapterPosition()));
-                showShortToast("Note deleted");
+                showShortToast(NOTE_DELETE_SUCCESS);
             }
         }).attachToRecyclerView(recyclerView);
     }

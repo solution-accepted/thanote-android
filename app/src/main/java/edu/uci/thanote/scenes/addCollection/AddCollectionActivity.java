@@ -18,6 +18,9 @@ public class AddCollectionActivity extends BaseActivity {
     private EditText newCategoryEditText;
     private AddCollectionViewModel viewModel;
 
+    private final String EMPTY_WARNING = "Please insert category name";
+    private final String CATEGORY_INSERT_SUCCESS = "Category saved";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,14 +44,14 @@ public class AddCollectionActivity extends BaseActivity {
         String categoryName = newCategoryEditText.getText().toString();
 
         if (categoryName.trim().isEmpty()) {
-            showShortToast("Please insert category name");
+            showShortToast(EMPTY_WARNING);
             return;
         }
 
         Category category = new Category(categoryName);
         viewModel.insert(category);
 
-        showShortToast("Category saved");
+        showShortToast(CATEGORY_INSERT_SUCCESS);
     }
 
     @Override
