@@ -21,4 +21,11 @@
         android:hint="@string/new_note_detail"
         android:inputType="textMultiLine"/>
 
+    <EditText
+        android:id="@+id/edit_text_new_note_image_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/new_note_image_url"
+        android:inputType="textMultiLine"/>
+
 </LinearLayout>

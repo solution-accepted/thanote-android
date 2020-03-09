@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -13,7 +14,10 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +35,6 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
     NoteListAdapter() {
         super(DIFF_CALLBACK);
     }
-
 
 
     private static final DiffUtil.ItemCallback<Note> DIFF_CALLBACK = new DiffUtil.ItemCallback<Note>() {
@@ -58,9 +61,7 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
     @Override
     public void onBindViewHolder(@NonNull NoteHolder holder, int position) {
         Note note = getItem(position);
-        holder.noteDate.setText(note.getCreateDate().toString());
-        holder.noteTitle.setText(note.getTitle());
-        holder.noteDescription.setText(note.getDetail());
+        holder.setNote(note);
 
     }
 
@@ -104,11 +105,13 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
     };
 
 
-
     public class NoteHolder extends RecyclerView.ViewHolder {
-        TextView noteDate;
-        TextView noteTitle;
-        TextView noteDescription;
+        private Note note;
+        private TextView noteDate;
+        private TextView noteTitle;
+        private TextView noteDescription;
+        private ImageView imageViewThumbnailLarge;
+        private ImageView imageViewThumbnailSmall;
 
         private ImageButton buttonShare;
         private ImageButton buttonFavorite;
@@ -119,6 +122,9 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
             noteDate = itemView.findViewById(R.id.text_view_note_date);
             noteTitle = itemView.findViewById(R.id.text_view_note_title);
             noteDescription = itemView.findViewById(R.id.text_view_note_description);
+            imageViewThumbnailLarge = itemView.findViewById(R.id.image_view_note_thumbnail_large);
+            imageViewThumbnailSmall = itemView.findViewById(R.id.image_view_note_thumbnail_small);
+
             buttonShare = itemView.findViewById(R.id.button_note_share);
             buttonFavorite = itemView.findViewById(R.id.button_note_favorite);
 
@@ -128,24 +134,44 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (listener != null && position != RecyclerView.NO_POSITION) {
-                        listener.onItemClick(getItem(position));
-                    }
+                    listener.onItemClick(note);
                 }
             });
 
             buttonShare.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if (listener != null && position != RecyclerView.NO_POSITION) {
-                        listener.onButtonShareClick(getItem(position));
-                    }
+                    listener.onButtonShareClick(note);
                 }
             });
         }
+
+        public void setNote(Note note) {
+            this.note = note;
+            noteDate.setText(note.getCreateDate().toString());
+            noteTitle.setText(note.getTitle());
+            noteDescription.setText(note.getDetail());
+
+            String url = note.getImageUrl();
+            if (!url.isEmpty()) {
+                setIsRecyclable(false);
+                SetImage(note);
+            }
+        }
+
+        private void SetImage(Note note) {
+            final String url = note.getImageUrl();
+            final ImageView imageView;
+            imageView = imageViewThumbnailSmall;
+            imageView.setVisibility(View.VISIBLE);
+            Glide.with(itemView)
+                    .load(url)
+                    .thumbnail(Glide.with(itemView).load(R.drawable.loading_spinner_50px))
+                    .transform(new RoundedCorners(10))
+                    .into(imageView);
+        }
     }
+
 
     public Note getNote(int position) {
         return getItem(position);
