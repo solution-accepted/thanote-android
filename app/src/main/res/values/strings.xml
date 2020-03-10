@@ -29,7 +29,7 @@
     <string name="new_category">new category</string>
 
     <!-- Setting Fragment -->
-
+    <string name="setting_header">Setting</string>
 
     <!-- Note Activity -->
     <string name="note_search_hint">Find your notes</string>
