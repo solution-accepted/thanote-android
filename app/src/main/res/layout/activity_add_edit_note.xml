@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/new_note_title"
-        android:inputType="text"/>
+        android:inputType="textMultiLine"
+        android:maxLength="40"/>
 
     <EditText
         android:id="@+id/edit_text_new_note_detail"

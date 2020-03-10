@@ -102,6 +102,7 @@ public class AddEditNoteActivity extends BaseActivity {
             Note note = new Note(newNoteTitle, newNoteDetail, categoryId, newNoteImageUrl);
             viewModel.insert(note);
         }
+        finish();
 
     }
 
@@ -117,7 +118,6 @@ public class AddEditNoteActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.save:
                 saveNote();
-                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

@@ -122,6 +122,8 @@ public class NoteListActivity extends BaseActivity {
         searchView = findViewById(R.id.search_view_note_list);
         searchView.setBackgroundResource(R.color.super_light_gray);
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        searchView.setIconified(false);
+        searchView.clearFocus();
 
         searchView.setOnSearchClickListener(new View.OnClickListener() {
 
