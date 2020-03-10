@@ -4,7 +4,7 @@
                                                        android:id="@+id/swipe_refresh_layout_home"
                                                        android:layout_width="match_parent"
                                                        android:layout_height="match_parent"
-                                                       android:background="#462962FF">
+                                                       android:background="#EEEEEE">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -36,31 +36,34 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|top"
                     android:layout_marginTop="20dp"
-                    android:text="@string/app_name" android:textColor="@color/colorPrimaryDark"/>
+                    android:text="@string/app_name"
+                    android:textColor="@color/colorAccent"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:layout_gravity="bottom|center_horizontal"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="20dp">
+                    android:layout_marginBottom="20dp"
+                    android:background="@drawable/rounded_rectangle"
+                    android:orientation="horizontal">
 
                     <Spinner
                         android:id="@+id/spinner_home_api_switch"
                         android:layout_width="wrap_content" android:layout_height="match_parent"
-                        android:background="#8FFFFFFF" android:entries="@array/apiTypes"
-                        android:minWidth="100dp" android:spinnerMode="dropdown"/>
+                        android:entries="@array/apiTypes"
+                        android:gravity="center" android:minWidth="0dp"
+                        android:spinnerMode="dropdown"
+                        android:textAlignment="center"/>
+
                     <SearchView
                         android:id="@+id/search_view_home"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="#8FFFFFFF"
                         android:clickable="true"
-                        android:focusable="true">
+                        android:focusable="false"/>
 
-                    </SearchView>
                 </LinearLayout>
 
 

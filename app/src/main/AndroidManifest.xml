@@ -19,11 +19,10 @@
             android:name=".helpers.AlarmService"
             android:enabled="true"
             android:exported="false" />
-        <receiver android:name=".scenes.notification.AlertReceiver" />
+        <receiver android:name=".helpers.AlertReceiver" />
         <activity android:name=".scenes.notification.NotificationActivity" />
         <activity android:name=".scenes.test.api.ApiResultTestActivity" />
         <activity android:name=".scenes.test.api.ApiTestActivity" />
-        <activity android:name=".scenes.test.TestActivity" />
         <activity android:name=".scenes.noteList.NoteListActivity" />
         <activity android:name=".scenes.addEditNote.AddEditNoteActivity" />
         <activity android:name=".scenes.addCollection.AddCollectionActivity" />

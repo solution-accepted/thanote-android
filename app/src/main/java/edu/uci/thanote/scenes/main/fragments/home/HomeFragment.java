@@ -19,8 +19,11 @@ import com.bumptech.glide.Glide;
 import edu.uci.thanote.R;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
-import edu.uci.thanote.apis.omdb.OMDbMovie;
-import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
+import edu.uci.thanote.apis.nasa.NasaApod;
+import edu.uci.thanote.apis.numbers.Number;
+import edu.uci.thanote.apis.openmoviedb.OMDbMovie;
+import edu.uci.thanote.apis.openmoviedb.OMDbMovieSearchResponse;
+import edu.uci.thanote.apis.opentriviadb.TriviaResponse;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.apis.thecocktaildb.Cocktail;
@@ -43,21 +46,10 @@ public class HomeFragment extends Fragment {
 
     // region API constants
 
-    private final int NOTE_RANDOM_DISPLAY_COUNT = 10;
-    private final int NOTE_RANDOM_TYPE_COUNT = 5;
+    private final int NOTE_RANDOM_DISPLAY_COUNT = 10; // Try 100, super bad performance
 
-    private final int NOTE_DEFAULT_CATEGORY_ID = Category.DEFAULT_CATEGORY_ID;
-    private final String NOTE_DEFAULT_IMAGE_URL = "";
-
-    private final String NOTE_JOKE_TITLE_PREFIX = "[Joke]: ";
-
-    private final String NOTE_RECIPE_TITLE_PREFIX = "[Recipe]: ";
     private final int NOTE_RECIPE_COUNT_IN_RESPONSE = 10;
-
-    private final String NOTE_MOVIE_TITLE_PREFIX = "[Movie]: ";
     private final int NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE = 20;
-
-    private final String NOTE_COCKTAIL_TITLE_PREFIX = "[Cocktail]: ";
     private final int NOTE_COCKTAIL_COUNT_IN_RANDOM_RESPONSE = 1;
     private final int NOTE_COCKTAIL_COUNT_IN_SEARCH_RESPONSE = 25;
 
@@ -66,7 +58,10 @@ public class HomeFragment extends Fragment {
         JOKE,
         RECIPE,
         MOVIE,
-        COCKTAIL
+        COCKTAIL,
+        NASA,
+        NUMBER,
+        TRIVIA
     }
 
     private API apiSelected = API.ALL;
@@ -104,6 +99,10 @@ public class HomeFragment extends Fragment {
     private final HomeViewModel.Listener vmListener = new HomeViewModel.Listener() {
         @Override
         public void didFetchError(String message) {
+            swipeRefreshLayout.setRefreshing(false);
+            if (apiSelected == API.ALL) {
+                return;
+            }
             showToast(message);
         }
 
@@ -118,12 +117,7 @@ public class HomeFragment extends Fragment {
             if (joke.isError()) {
                 return;
             }
-            viewModel.insertNoteIntoMemory(new Note(
-                    NOTE_JOKE_TITLE_PREFIX + joke.getCategory(),
-                    joke.getJoke(),
-                    NOTE_DEFAULT_CATEGORY_ID,
-                    NOTE_DEFAULT_IMAGE_URL));
-
+            viewModel.insertNoteIntoMemory(joke);
         }
 
         @Override
@@ -132,11 +126,7 @@ public class HomeFragment extends Fragment {
             if (joke.isError()) {
                 return;
             }
-            viewModel.insertNoteIntoMemory(new Note(
-                    NOTE_JOKE_TITLE_PREFIX + joke.getCategory(),
-                    joke.getSetup() + "\n" + joke.getDelivery(),
-                    NOTE_DEFAULT_CATEGORY_ID,
-                    NOTE_DEFAULT_IMAGE_URL));
+            viewModel.insertNoteIntoMemory(joke);
         }
 
         @Override
@@ -150,40 +140,29 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes) {
+        public void didFetchPuppyRecipesRandomly(RecipePuppyResponse response) {
             swipeRefreshLayout.setRefreshing(false);
-            List<Recipe> recipeList = recipes.getRecipes();
-            if (recipeList.isEmpty()) {
+            final List<Recipe> recipeList = response.getRecipes();
+            if (recipeList == null || recipeList.isEmpty()) {
                 return;
             }
-            final int next = new Random().nextInt(NOTE_RECIPE_COUNT_IN_RESPONSE);
-            Recipe recipe = recipeList.get(next);
-            Note note = new Note(
-                    NOTE_RECIPE_TITLE_PREFIX + recipe.getTitle(),
-                    recipe.getIngredients() + "\n" + recipe.getWebsiteUrl(),
-                    NOTE_DEFAULT_CATEGORY_ID,
-                    recipe.getThumbnail()
-            );
-            viewModel.insertNoteIntoMemory(note);
+            Recipe recipe = recipeList.get(new Random().nextInt(NOTE_RECIPE_COUNT_IN_RESPONSE));
+            viewModel.insertNoteIntoMemory(recipe);
         }
 
         @Override
-        public void didFetchPuppyRecipesByParams(RecipePuppyResponse recipes) {
+        public void didFetchPuppyRecipesByParams(RecipePuppyResponse response) {
             swipeRefreshLayout.setRefreshing(false);
-            if (recipes.getRecipes().isEmpty()) {
+            final List<Recipe> recipeList = response.getRecipes();
+            if (recipeList == null || recipeList.isEmpty()) {
                 return;
             }
             switch (apiSelected) {
                 case ALL:
-                    didFetchPuppyRecipesRandomly(recipes);
+                    didFetchPuppyRecipesRandomly(response);
                     break;
                 case RECIPE:
-                    recipes.getRecipes().forEach(recipe -> viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_RECIPE_TITLE_PREFIX + recipe.getTitle(),
-                            recipe.getIngredients() + "\n" + recipe.getWebsiteUrl(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            recipe.getThumbnail()
-                    )));
+                    recipeList.forEach(recipe -> viewModel.insertNoteIntoMemory(recipe));
                     break;
                 default:
                     Log.e(TAG, "didFetchPuppyRecipesByParams: apiSelected = " + apiSelected);
@@ -198,11 +177,7 @@ public class HomeFragment extends Fragment {
             }
             switch (apiSelected) {
                 case ALL:
-                    viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
-                            movie.getPlot() + "\n" + movie.getImdbUrl(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl()));
+                    viewModel.insertNoteIntoMemory(movie);
                     break;
                 case MOVIE:
                     break;
@@ -212,20 +187,17 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void didFetchOMDBMovieSearch(OMDbMovieSearchResponse movies) {
+        public void didFetchOMDBMovieSearch(OMDbMovieSearchResponse response) {
             swipeRefreshLayout.setRefreshing(false);
-            if (movies.getResponse().equals("False")) {
+            if (response.getResponse().equals("False")) {
                 return;
             }
             switch (apiSelected) {
                 case ALL:
                     break;
                 case MOVIE:
-                    movies.getResults().forEach(movie -> viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
-                            movie.getImdbUrl(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl())));
+                    response.getResults()
+                            .forEach(movie -> viewModel.insertNoteIntoMemory(movie));
                     break;
                 default:
                     Log.e(TAG, "didFetchOMDBMovieSearch: apiSelected = " + apiSelected);
@@ -233,19 +205,16 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies) {
+        public void didFetchTMDBMovieRandomly(TMDbMoviesResponse response) {
             swipeRefreshLayout.setRefreshing(false);
-            if (movies.getMovies() == null) {
+            final List<TMDbMovie> movieList = response.getMovies();
+            if (movieList == null || movieList.isEmpty()) {
                 return;
             }
-            TMDbMovie movie = movies.getMovies().get(new Random().nextInt(NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE));
+            TMDbMovie movie = movieList.get(new Random().nextInt(NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE));
             switch (apiSelected) {
                 case ALL:
-                    viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
-                            movie.getOverview(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl()));
+                    viewModel.insertNoteIntoMemory(movie);
                     break;
                 case MOVIE:
                     break;
@@ -255,77 +224,92 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public void didFetchTMDBMovieBySearching(TMDbMoviesResponse movies) {
+        public void didFetchTMDBMovieBySearching(TMDbMoviesResponse response) {
             swipeRefreshLayout.setRefreshing(false);
-            if (movies.getMovies() == null) {
+            final List<TMDbMovie> movieList = response.getMovies();
+            if (movieList == null || movieList.isEmpty()) {
                 return;
             }
             switch (apiSelected) {
                 case ALL: {
-                    TMDbMovie movie = movies.getMovies().get(new Random().nextInt(NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE));
-                    viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
-                            movie.getOverview(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl()));
+                    TMDbMovie movie = movieList.get(0);
+                    viewModel.insertNoteIntoMemory(movie);
                 }
                 break;
-                case MOVIE: {
-                    movies.getMovies().forEach(movie -> viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
-                            movie.getOverview(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl())));
-                }
-                break;
+                case MOVIE:
+                    movieList.forEach(movie -> viewModel.insertNoteIntoMemory(movie));
+                    break;
                 default:
                     Log.e(TAG, "didFetchTMDBMovieBySearching: apiSelected = " + apiSelected);
             }
         }
 
         @Override
-        public void didFetchCocktailRandomly(CocktailResponse cocktails) {
+        public void didFetchCocktailRandomly(CocktailResponse response) {
             swipeRefreshLayout.setRefreshing(false);
-            List<Cocktail> cocktailList = cocktails.getCocktails();
+            final List<Cocktail> cocktailList = response.getCocktails();
             if (cocktailList == null || cocktailList.isEmpty()) {
                 return;
             }
-            Cocktail cocktail = cocktailList.get(0);
-            viewModel.insertNoteIntoMemory(new Note(
-                    NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
-                    cocktail.getInstruction(),
-                    NOTE_DEFAULT_CATEGORY_ID,
-                    cocktail.getImageUrl()));
-
+            viewModel.insertNoteIntoMemory(cocktailList.get(0));
         }
 
         @Override
-        public void didFetchCocktailBySearching(CocktailResponse cocktails) {
+        public void didFetchCocktailBySearching(CocktailResponse response) {
             swipeRefreshLayout.setRefreshing(false);
-            List<Cocktail> cocktailList = cocktails.getCocktails();
+            final List<Cocktail> cocktailList = response.getCocktails();
             if (cocktailList == null || cocktailList.isEmpty()) {
                 return;
             }
             switch (apiSelected) {
                 case ALL: {
                     Cocktail cocktail = cocktailList.get(new Random().nextInt(cocktailList.size()));
-                    viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
-                            cocktail.getInstruction(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            cocktail.getImageUrl()));
+                    viewModel.insertNoteIntoMemory(cocktail);
                 }
                 break;
                 case COCKTAIL:
-                    cocktailList.forEach(cocktail -> viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
-                            cocktail.getInstruction(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            cocktail.getImageUrl())));
+                    cocktailList.forEach(cocktail -> viewModel.insertNoteIntoMemory(cocktail));
                     break;
                 default:
                     Log.e(TAG, "didFetchCocktailBySearching: apiSelected = " + apiSelected);
             }
+        }
+
+        @Override
+        public void didFetchNasaApodRandomly(NasaApod nasaApod) {
+            swipeRefreshLayout.setRefreshing(false);
+            final String url = nasaApod.getImageUrl();
+            if (nasaApod.getCode() != null || url == null || url.isEmpty()) {
+                return;
+            }
+            viewModel.insertNoteIntoMemory(nasaApod);
+        }
+
+        @Override
+        public void didFetchNumber(Number number) {
+            swipeRefreshLayout.setRefreshing(false);
+            if (!number.isFound()) {
+                return;
+            }
+            viewModel.insertNoteIntoMemory(number);
+        }
+
+        @Override
+        public void didFetchTriviaRandomly(TriviaResponse response) {
+            swipeRefreshLayout.setRefreshing(false);
+            if (response.getCode() != 0) {
+                return;
+            }
+            viewModel.insertNoteIntoMemory(response.getSingleTrivia());
+        }
+
+        @Override
+        public void didFetchTriviaList(TriviaResponse triviaResponse) {
+            swipeRefreshLayout.setRefreshing(false);
+            if (triviaResponse.getCode() != 0) {
+                return;
+            }
+            triviaResponse.getTriviaList().forEach(trivia -> viewModel.insertNoteIntoMemory(trivia));
         }
     };
 
@@ -367,28 +351,43 @@ public class HomeFragment extends Fragment {
         searchView.setSubmitButtonEnabled(true);
         searchView.setQueryHint(getString(R.string.home_search_hint));
 
+        //
+        // Make the whole searchView clickable
+        //
         searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
-
         // Also try:
 //        searchView.setIconifiedByDefault(false);
 //        searchView.setIconified(false);
+
+        //
+        // Get the reference for the close button
+        //
+        // androidx.appcompat.R.id.search_close_btn
+        // android.support.v7.appcompat.R.id.search_close_btn
+        // android:id/search_close_btn
+        final int searchViewCloseButtonId = searchView.getResources().getIdentifier("android:id/search_close_btn", null, null);
+        final View searchViewCloseButton = searchView.findViewById(searchViewCloseButtonId);
+        searchViewCloseButton.setOnClickListener(v -> searchView.onActionViewCollapsed());
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.i(TAG, "searchView.onQueryTextSubmit: apiSelected = " + apiSelected);
                 Log.i(TAG, "searchView.onQueryTextSubmit: query = " + query);
-                if (query.isEmpty()) {
-                    fetchSomeRandomNotes();
-                } else {
+                if (!query.isEmpty()) {
                     searchNote(query);
+                    return true;
                 }
-                return true;
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 Log.i(TAG, "searchView.onQueryTextChange: newText = " + newText);
+                if (newText.isEmpty()) {
+                    viewModel.restoreNotesInMemory();
+                    return true;
+                }
                 return false;
             }
         });
@@ -477,28 +476,42 @@ public class HomeFragment extends Fragment {
         for (int i = 0; i < NOTE_RANDOM_DISPLAY_COUNT; ++i) {
             fetchSingleRandomNote();
         }
+        viewModel.backupNotesInMemory();
     }
 
     private void fetchSingleRandomNote() {
-        int next = new Random().nextInt(NOTE_RANDOM_TYPE_COUNT);
+        API next = API.values()[new Random().nextInt(API.values().length)];
         switch (next) {
-            case 0:
+            case ALL:
+                // Er... bad luck
+                fetchSingleRandomNote(); // Do it again!
+                // Hope it will not always be ALL
+                // The worst situation: next == ALL every time and stack overflow
+                // Is it possible?
+                break;
+            case JOKE:
                 viewModel.fetchSingleJoke();
                 break;
-            case 1:
-                viewModel.fetchTwoPartJoke();
-                break;
-            case 2:
+            case RECIPE:
                 viewModel.fetchPuppyRecipesRandomly();
                 break;
-            case 3:
+            case MOVIE:
                 viewModel.fetchTMDBMovieRandomly();
                 break;
-            case 4:
+            case COCKTAIL:
                 viewModel.fetchCocktailRandomly();
                 break;
+            case NASA:
+                viewModel.fetchNasaApodRandomly();
+                break;
+            case NUMBER:
+                viewModel.fetchNumberRandomly();
+                break;
+            case TRIVIA:
+                viewModel.fetchTiviaRandomly();
+                break;
             default:
-                Log.e(TAG, "getSingleRandomNote: unknown next id = " + next);
+                Log.e(TAG, "getSingleRandomNote: unknown next API = " + next);
         }
     }
 
@@ -508,21 +521,32 @@ public class HomeFragment extends Fragment {
         switch (apiSelected) {
             case ALL:
                 searchJoke(query);
-                searchRecipe(query);
+                viewModel.searchPuppyRecipes(query);
                 searchMovie(query);
-                searchCocktail(query);
+                viewModel.searchCocktail(query);
+                viewModel.searchNasaApod(query);
+                viewModel.searchNumber(query);
                 break;
             case JOKE:
                 searchJoke(query);
                 break;
             case RECIPE:
-                searchRecipe(query);
+                viewModel.searchPuppyRecipes(query);
                 break;
             case MOVIE:
                 searchMovie(query);
                 break;
             case COCKTAIL:
-                searchCocktail(query);
+                viewModel.searchCocktail(query);
+                break;
+            case NASA:
+                viewModel.searchNasaApod(query);
+                break;
+            case NUMBER:
+                viewModel.searchNumber(query);
+                break;
+            case TRIVIA:
+                viewModel.searchTrivia(query);
                 break;
             default:
                 Log.e(TAG, "searchNote: unknown apiSelected =" + apiSelected);
@@ -535,17 +559,9 @@ public class HomeFragment extends Fragment {
         viewModel.searchTwoPartJoke(query);
     }
 
-    private void searchRecipe(String query) {
-        viewModel.searchPuppyRecipes(query);
-    }
-
     private void searchMovie(String query) {
         viewModel.searchOMDBMovie(query);
         viewModel.searchTMDBMovie(query);
-    }
-
-    private void searchCocktail(String query) {
-        viewModel.searchCocktail(query);
     }
 
     private void showToast(String message) {

@@ -1,4 +1,4 @@
-package edu.uci.thanote.scenes.notification;
+package edu.uci.thanote.helpers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

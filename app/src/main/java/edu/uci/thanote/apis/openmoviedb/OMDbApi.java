@@ -1,4 +1,4 @@
-package edu.uci.thanote.apis.omdb;
+package edu.uci.thanote.apis.openmoviedb;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

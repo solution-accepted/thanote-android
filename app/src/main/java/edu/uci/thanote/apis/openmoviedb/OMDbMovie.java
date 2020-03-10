@@ -1,8 +1,9 @@
-package edu.uci.thanote.apis.omdb;
+package edu.uci.thanote.apis.openmoviedb;
 
 import com.google.gson.annotations.SerializedName;
+import edu.uci.thanote.apis.ImageNote;
 
-public class OMDbMovie {
+public class OMDbMovie implements ImageNote {
     @SerializedName("Response")
     private String response; // "True" or "False"
     @SerializedName("Error")
@@ -44,8 +45,14 @@ public class OMDbMovie {
     @SerializedName("Website")
     private String website;
 
+    @Override
     public String getTitle() {
-        return title;
+        return "Movie: " + title;
+    }
+
+    @Override
+    public String getDetail() {
+        return plot;
     }
 
     public String getResponse() {

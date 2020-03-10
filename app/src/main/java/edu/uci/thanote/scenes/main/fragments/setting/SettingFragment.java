@@ -19,8 +19,8 @@ public class SettingFragment extends BaseFragment {
     private static final String SETTING_ACTION_API_Test = "Api Test";
     private static final ImageTextItem[] SETTING_ITEMS = {
         new ImageTextItem(R.drawable.ic_notifications, SETTING_ACTION_NOTIFICATIONS),
-        new ImageTextItem(R.drawable.ic_bug_report, SETTING_ACTION_BUG_REPORT),
-        new ImageTextItem(R.drawable.ic_api_test, SETTING_ACTION_API_Test)
+//        new ImageTextItem(R.drawable.ic_bug_report, SETTING_ACTION_BUG_REPORT),
+//        new ImageTextItem(R.drawable.ic_api_test, SETTING_ACTION_API_Test)
     };
 
     @Nullable

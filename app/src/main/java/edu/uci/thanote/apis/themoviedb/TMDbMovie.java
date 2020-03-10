@@ -1,8 +1,9 @@
 package edu.uci.thanote.apis.themoviedb;
 
 import com.google.gson.annotations.SerializedName;
+import edu.uci.thanote.apis.ImageNote;
 
-public class TMDbMovie {
+public class TMDbMovie implements ImageNote {
     @SerializedName("title")
     private String title;
     @SerializedName("overview")
@@ -10,8 +11,14 @@ public class TMDbMovie {
     @SerializedName("poster_path")
     private String posterPath;
 
+    @Override
     public String getTitle() {
-        return title;
+        return "Movie: " + title;
+    }
+
+    @Override
+    public String getDetail() {
+        return overview;
     }
 
     public String getOverview() {

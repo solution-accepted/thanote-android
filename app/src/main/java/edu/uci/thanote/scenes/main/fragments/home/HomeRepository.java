@@ -8,9 +8,15 @@ import edu.uci.thanote.apis.Api;
 import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
-import edu.uci.thanote.apis.omdb.OMDbApi;
-import edu.uci.thanote.apis.omdb.OMDbMovie;
-import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
+import edu.uci.thanote.apis.nasa.NasaApi;
+import edu.uci.thanote.apis.nasa.NasaApod;
+import edu.uci.thanote.apis.numbers.Number;
+import edu.uci.thanote.apis.numbers.NumbersApi;
+import edu.uci.thanote.apis.openmoviedb.OMDbApi;
+import edu.uci.thanote.apis.openmoviedb.OMDbMovie;
+import edu.uci.thanote.apis.openmoviedb.OMDbMovieSearchResponse;
+import edu.uci.thanote.apis.opentriviadb.TriviaApi;
+import edu.uci.thanote.apis.opentriviadb.TriviaResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
@@ -27,6 +33,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class HomeRepository {
@@ -34,20 +41,25 @@ public class HomeRepository {
     private final String TAG = "HomeRepository";
 
     // database tables
-    private CategoryTable categoryTable;
-    private NoteTable noteTable;
+    private final CategoryTable categoryTable;
+    private final NoteTable noteTable;
 
     // data fields
-    private LiveData<List<Category>> categories;
-    private LiveData<List<Note>> notes;
+    private final LiveData<List<Category>> categories;
+    private final LiveData<List<Note>> notes;
 
-    private JokeApi jokeApi;
-    private RecipePuppyApi recipePuppyApi;
-    private OMDbApi omdbApi;
+    // apis
+    private final JokeApi jokeApi;
+    private final RecipePuppyApi recipePuppyApi;
+    private final OMDbApi omdbApi;
     private final String OMDB_API_KEY = Api.OMDB.getApiKey();
-    private TheMovieDbApi theMovieDbApi;
+    private final TheMovieDbApi theMovieDbApi;
     private final String TMDB_API_KEY = Api.THEMOVIEDB.getApiKey();
-    private TheCocktailDbApi theCocktailDbApi;
+    private final TheCocktailDbApi theCocktailDbApi;
+    private final NasaApi nasaApi;
+    private final String NASA_API_KEY = Api.NASA.getApiKey();
+    private final NumbersApi numbersApi;
+    private final TriviaApi triviaApi;
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -56,13 +68,15 @@ public class HomeRepository {
         noteTable = new NoteTable(application);
         notes = noteTable.getNotes();
 
-        // apis
         APIClient apiClient = APIClient.getInstance();
         jokeApi = apiClient.getRetrofitJoke().create(JokeApi.class);
         recipePuppyApi = apiClient.getRetrofitRecipePuppy().create(RecipePuppyApi.class);
         omdbApi = apiClient.getRetrofitOMDb().create(OMDbApi.class);
         theMovieDbApi = apiClient.getRetrofitTheMovieDb().create(TheMovieDbApi.class);
         theCocktailDbApi = apiClient.getRetrofitTheCocktailDb().create(TheCocktailDbApi.class);
+        nasaApi = apiClient.getRetrofitNasa().create(NasaApi.class);
+        numbersApi = apiClient.getRetrofitNumbers().create(NumbersApi.class);
+        triviaApi = apiClient.getRetrofitTrivia().create(TriviaApi.class);
     }
 
     // region Public Methods (Local Database)
@@ -117,6 +131,14 @@ public class HomeRepository {
         void didFetchCocktailRandomly(CocktailResponse cocktailResponse);
 
         void didFetchCocktailBySearching(CocktailResponse cocktailResponse);
+
+        void didFetchNasaApod(NasaApod nasaApod);
+
+        void didFetchNumber(Number number);
+
+        void didFetchTriviaRandomly(TriviaResponse triviaResponse);
+
+        void didFetchTriviaList(TriviaResponse triviaResponse);
     }
 
     private Listener listener;
@@ -193,6 +215,62 @@ public class HomeRepository {
     public void fetchCocktailBySearching(String query) {
         theCocktailDbApi.getCocktailBySearching(query)
                 .enqueue(getCallback(listener::didFetchCocktailBySearching));
+    }
+
+    public void fetchNasaApodToday() {
+        nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY)
+                .enqueue(getCallback(listener::didFetchNasaApod));
+    }
+
+    public void fetchNasaApodBySearching(String query) {
+        // 1995-06-16 <= query <= TODAY
+        if (query.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+            nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY, true, query)
+                    .enqueue(getCallback(listener::didFetchNasaApod));
+        } else {
+            listener.didFetchError("Nasa: Try YYYY-MM-DD?");
+
+            final int year = 1995 + new Random().nextInt(14); // 1995 - 2019
+            final int month = 1 + new Random().nextInt(12); // 1 - 12
+            final int day = 1 + new Random().nextInt(28); // at least 28 days a month
+
+            final String sYear = String.valueOf(year);
+            final String sMonth = String.valueOf(month).length() != 2 ? "0" + month : String.valueOf(month);
+            final String sDay = String.valueOf(day).length() != 2 ? "0" + day : String.valueOf(day);
+
+            final String date = String.join("-", sYear, sMonth, sDay);
+
+            nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY, true, date)
+                    .enqueue(getCallback(listener::didFetchNasaApod));
+        }
+    }
+
+    public void fetchNumberRandomly() {
+        numbersApi.getRandom("trivia")
+                .enqueue(getCallback(listener::didFetchNumber));
+    }
+
+    public void fetchNumberRandomlyBySearching(String query) {
+        try {
+            numbersApi.getNumber(Integer.parseInt(query), "trivia")
+                    .enqueue(getCallback(listener::didFetchNumber));
+        } catch (NumberFormatException e) {
+            listener.didFetchError("NumbersAPI: Not a Number");
+        }
+    }
+
+    public void fetchTriviaRandomly() {
+        triviaApi.getSingleMultipleChoiceTrivia()
+                .enqueue(getCallback(listener::didFetchTriviaRandomly));
+    }
+
+    public void fetchTriviaByAmount(String query) {
+        try {
+            triviaApi.getMultipleChoiceTrivia(Integer.parseInt(query))
+                    .enqueue(getCallback(listener::didFetchTriviaList));
+        } catch (NumberFormatException e) {
+            listener.didFetchError("TriviaAPI: Try input a number?");
+        }
     }
 
     private <T> Callback<T> getCallback(Consumer<T> function) {
