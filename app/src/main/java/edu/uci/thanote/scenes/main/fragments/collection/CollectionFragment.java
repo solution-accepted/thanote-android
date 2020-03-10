@@ -72,7 +72,7 @@ public class CollectionFragment extends BaseFragment {
 
     private void setupViews(View view) {
         recyclerView = view.findViewById(R.id.recycler_view_collection);
-        recyclerView.setHasFixedSize(true);
+        recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(adapter);
 
@@ -82,7 +82,7 @@ public class CollectionFragment extends BaseFragment {
 
     private void openNoteList(Category category) {
         Intent intent = new Intent(getActivity(), NoteListActivity.class);
-        intent.putExtra(NoteListActivity.CATEGORY_ID, category.getId());
+        intent.putExtra(NoteListActivity.EXTRA_CATEGORY, category);
         startActivity(intent);
     }
 

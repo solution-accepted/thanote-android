@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/default_background_color">
 
 
     <LinearLayout
@@ -13,7 +13,7 @@
 
         <TextView
             android:id="@+id/text_view_fragment_collection_header"
-            style="@style/TitleStyleCollections"
+            style="@style/TitleStyleCollectionsNotes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -27,18 +27,11 @@
             android:layout_gravity="fill_vertical"
             android:fillViewport="true">
 
-            <LinearLayout
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view_collection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view_collection"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:listitem="@layout/item_collection"/>
-            </LinearLayout>
+                android:layout_height="match_parent"
+                tools:listitem="@layout/item_collection" />
 
         </androidx.core.widget.NestedScrollView>
 

@@ -1,6 +1,7 @@
 package edu.uci.thanote.scenes.addEditNote;
 
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,6 +10,8 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
+
+import java.net.URLConnection;
 
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
@@ -23,10 +26,14 @@ public class AddEditNoteActivity extends BaseActivity {
     private final String HEADER_EDIT_NOTE = "Edit Note";
     private final String HEADER_ADD_NOTE = "Add Note";
     private final String EMPTY_WARNING = "Please insert note title and note detail";
+    private final String WRONG_IMAGE_WARNING = "Please put a valid image url or leave image url empty";
+    // TODO
+    private final String TEST_IMAGE_URL = "https://www.somagnews.com/wp-content/uploads/2019/11/d9-11-e1575118705742.jpg";
 
 
     private EditText editTextNoteTitle;
     private EditText editTextNoteDetail;
+    private EditText editTextNoteImageUrl;
     private int categoryId = -1;
     private AddEditNoteViewModel viewModel;
 
@@ -39,21 +46,25 @@ public class AddEditNoteActivity extends BaseActivity {
     }
 
     public void setupViews() {
+
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.default_background_color)));
+        setTitle("");
+
         editTextNoteTitle = findViewById(R.id.edit_text_new_note_title);
         editTextNoteDetail = findViewById(R.id.edit_text_new_note_detail);
+        editTextNoteImageUrl = findViewById(R.id.edit_text_new_note_image_url);
 
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         this.getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
 
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_NOTE)) {
-            setTitle(HEADER_EDIT_NOTE);
             Note note = (Note) intent.getSerializableExtra(EXTRA_NOTE);
 
             editTextNoteTitle.setText(note.getTitle());
             editTextNoteDetail.setText(note.getDetail());
+            editTextNoteImageUrl.setText(note.getImageUrl());
         } else {
-            setTitle(HEADER_ADD_NOTE);
             categoryId = intent.getIntExtra(CATEGORY_ID, -1);
         }
 
@@ -66,10 +77,27 @@ public class AddEditNoteActivity extends BaseActivity {
     private void saveNote() {
         String newNoteTitle = editTextNoteTitle.getText().toString();
         String newNoteDetail = editTextNoteDetail.getText().toString();
+        String newNoteImageUrl = editTextNoteImageUrl.getText().toString();
 
         if (newNoteTitle.trim().isEmpty() || newNoteDetail.trim().isEmpty()) {
             showShortToast(EMPTY_WARNING);
             return;
+        }
+
+        if (!newNoteImageUrl.isEmpty()) {
+            try {
+                String mimeType = URLConnection.guessContentTypeFromName(newNoteImageUrl);
+                boolean image = mimeType.startsWith("image/");
+
+                if (!image) {
+                    showShortToast(WRONG_IMAGE_WARNING);
+                    return;
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                showShortToast(WRONG_IMAGE_WARNING);
+                return;
+            }
         }
 
         Intent intent = getIntent();
@@ -78,11 +106,13 @@ public class AddEditNoteActivity extends BaseActivity {
             Note note = (Note) intent.getSerializableExtra(AddEditNoteActivity.EXTRA_NOTE);
             note.setTitle(newNoteTitle);
             note.setDetail(newNoteDetail);
+            note.setImageUrl(newNoteImageUrl);
             viewModel.update(note);
         } else if (categoryId != -1) {
-            Note note = new Note(newNoteTitle, newNoteDetail, categoryId, "");
+            Note note = new Note(newNoteTitle, newNoteDetail, categoryId, newNoteImageUrl);
             viewModel.insert(note);
         }
+        finish();
 
     }
 
@@ -98,7 +128,6 @@ public class AddEditNoteActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.save:
                 saveNote();
-                finish();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
