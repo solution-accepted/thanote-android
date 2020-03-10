@@ -368,23 +368,34 @@ public class HomeFragment extends Fragment {
         searchView.setSubmitButtonEnabled(true);
         searchView.setQueryHint(getString(R.string.home_search_hint));
 
+        //
+        // Make the whole searchView clickable
+        //
         searchView.setOnClickListener(v -> searchView.onActionViewExpanded());
-
         // Also try:
 //        searchView.setIconifiedByDefault(false);
 //        searchView.setIconified(false);
+
+        //
+        // Get the reference for the close button
+        //
+        // androidx.appcompat.R.id.search_close_btn
+        // android.support.v7.appcompat.R.id.search_close_btn
+        // android:id/search_close_btn
+        final int searchViewCloseButtonId = searchView.getResources().getIdentifier("android:id/search_close_btn", null, null);
+        final View searchViewCloseButton = searchView.findViewById(searchViewCloseButtonId);
+        searchViewCloseButton.setOnClickListener(v -> searchView.onActionViewCollapsed());
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.i(TAG, "searchView.onQueryTextSubmit: apiSelected = " + apiSelected);
                 Log.i(TAG, "searchView.onQueryTextSubmit: query = " + query);
-                if (query.isEmpty()) {
-                    fetchSomeRandomNotes();
-                } else {
+                if (!query.isEmpty()) {
                     searchNote(query);
+                    return true;
                 }
-                return true;
+                return false;
             }
 
             @Override
