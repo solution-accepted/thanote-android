@@ -1,4 +1,4 @@
-package edu.uci.thanote.apis.omdb;
+package edu.uci.thanote.apis.openmoviedb;
 
 import com.google.gson.annotations.SerializedName;
 
