@@ -1,5 +1,5 @@
 # thanote-android
-A thanos-like Note app
+Thanote is an all-in-one App that helps you manage your ideas anytime. We provide the following services.
 
 ## Info
 
@@ -9,7 +9,7 @@ Team Name:
 
 Team Members:
 
-- Wen Chia Yang
+- Wen-Chia Yang
 - Zihua Weng
 - Junxian Chen
 
@@ -17,25 +17,12 @@ App Name:
 
 - Thanote
 
-## Background
-
-
-
-## Purpose
-
-
-
-## References
-
-
 ## APIs
 
 - [All public APIs](https://github.com/public-apis/public-apis)
 - [Joke API](https://sv443.net/jokeapi/v2)
 
 ## Features
-
-- xxx
-  - [ ] 
-  - [ ] 
-  - [ ] 
+- [x] Search notes, stories, ideas in your interested fields
+- [x] Save and edit your favorite notes
+- [x] Daily Recommendation according to your subscription
