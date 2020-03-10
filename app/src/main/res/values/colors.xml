@@ -22,4 +22,8 @@
     <color name="dark_gray">#696969</color>
     <color name="default_background_color">#EEEEEE</color>
 
+    <!-- Fragment Background Colors -->
+    <color name="add_edit_blue">#d6e1ff</color>
+    <color name="search_bar_background">#d8d8d8</color>
+
 </resources>

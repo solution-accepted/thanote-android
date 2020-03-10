@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/default_background_color">
 
     <!-- TODO: Update blank fragment layout -->
     <EditText
@@ -12,13 +13,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/new_note_title"
-        android:inputType="text"/>
+        android:inputType="textMultiLine"
+        android:maxLength="40"/>
 
     <EditText
         android:id="@+id/edit_text_new_note_detail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/new_note_detail"
+        android:inputType="textMultiLine"/>
+
+    <EditText
+        android:id="@+id/edit_text_new_note_image_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/new_note_image_url"
         android:inputType="textMultiLine"/>
 
 </LinearLayout>

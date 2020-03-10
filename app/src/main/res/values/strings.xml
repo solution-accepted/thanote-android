@@ -36,6 +36,7 @@
     <!-- Add Note Fragment -->
     <string name="new_note_title">Title</string>
     <string name="new_note_detail">Detail</string>
+    <string name="new_note_image_url">Image Url</string>
 
     <!-- Notification Activity -->
     <string name="notification_activity_alarm">Alarm</string>

@@ -43,7 +43,7 @@ public class CollectionAdapter extends ListAdapter<Category, CollectionAdapter.C
     @Override
     public void onBindViewHolder(@NonNull CategoryHolder holder, int position) {
         Category category = getItem(position);
-        holder.categoryNameTextView.setText(category.getName());
+        holder.categoryNameTextView.setText("\n"+category.getName()+"\n");
     }
 
     public class CategoryHolder extends RecyclerView.ViewHolder {
