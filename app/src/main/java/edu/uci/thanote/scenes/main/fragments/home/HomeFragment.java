@@ -20,6 +20,7 @@ import edu.uci.thanote.R;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.apis.nasa.NasaApod;
+import edu.uci.thanote.apis.numbers.Number;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
@@ -44,11 +45,7 @@ public class HomeFragment extends Fragment {
 
     // region API constants
 
-    private final int NOTE_RANDOM_DISPLAY_COUNT = 10;
-    private final int NOTE_RANDOM_TYPE_COUNT = 6;
-
-    private final int NOTE_DEFAULT_CATEGORY_ID = Category.DEFAULT_CATEGORY_ID;
-    private final String NOTE_DEFAULT_IMAGE_URL = "";
+    private final int NOTE_RANDOM_DISPLAY_COUNT = 10; // Try 100, super bad performance
 
     private final String NOTE_JOKE_TITLE_PREFIX = "[Joke] ";
 
@@ -63,6 +60,7 @@ public class HomeFragment extends Fragment {
     private final int NOTE_COCKTAIL_COUNT_IN_SEARCH_RESPONSE = 25;
 
     private final String NOTE_NASA_TITLE_PREFIX = "[Nasa] ";
+    private final String NOTE_NUMBER_TITLE_PREFIX = "[Number] ";
 
     private enum API {
         ALL,
@@ -70,7 +68,8 @@ public class HomeFragment extends Fragment {
         RECIPE,
         MOVIE,
         COCKTAIL,
-        NASA
+        NASA,
+        NUMBER
     }
 
     private API apiSelected = API.ALL;
@@ -108,6 +107,7 @@ public class HomeFragment extends Fragment {
     private final HomeViewModel.Listener vmListener = new HomeViewModel.Listener() {
         @Override
         public void didFetchError(String message) {
+            swipeRefreshLayout.setRefreshing(false);
             showToast(message);
         }
 
@@ -124,8 +124,7 @@ public class HomeFragment extends Fragment {
             }
             viewModel.insertNoteIntoMemory(
                     NOTE_JOKE_TITLE_PREFIX + joke.getCategory(),
-                    joke.getJoke(),
-                    NOTE_DEFAULT_IMAGE_URL
+                    joke.getJoke()
             );
 
         }
@@ -138,8 +137,7 @@ public class HomeFragment extends Fragment {
             }
             viewModel.insertNoteIntoMemory(
                     NOTE_JOKE_TITLE_PREFIX + joke.getCategory(),
-                    joke.getSetup() + "\n" + joke.getDelivery(),
-                    NOTE_DEFAULT_IMAGE_URL
+                    joke.getSetup() + "\n" + joke.getDelivery()
             );
         }
 
@@ -348,6 +346,18 @@ public class HomeFragment extends Fragment {
                     nasaApod.getImageUrl()
             );
         }
+
+        @Override
+        public void didFetchNumber(Number number) {
+            swipeRefreshLayout.setRefreshing(false);
+            if (!number.isFound()) {
+                return;
+            }
+            viewModel.insertNoteIntoMemory(
+                    NOTE_NUMBER_TITLE_PREFIX + number.getTitle(),
+                    number.getDetail()
+            );
+        }
     };
 
     private void setupViewModel() {
@@ -517,28 +527,35 @@ public class HomeFragment extends Fragment {
     }
 
     private void fetchSingleRandomNote() {
-        int next = new Random().nextInt(NOTE_RANDOM_TYPE_COUNT);
+        API next = API.values()[new Random().nextInt(API.values().length)];
         switch (next) {
-            case 0:
+            case ALL:
+                // Er... bad luck
+                fetchSingleRandomNote(); // Do it again!
+                // Hope it will not always be ALL
+                // The worst situation: next == ALL every time and stack overflow
+                // Is it possible?
+                break;
+            case JOKE:
                 viewModel.fetchSingleJoke();
                 break;
-            case 1:
-                viewModel.fetchTwoPartJoke();
-                break;
-            case 2:
+            case RECIPE:
                 viewModel.fetchPuppyRecipesRandomly();
                 break;
-            case 3:
+            case MOVIE:
                 viewModel.fetchTMDBMovieRandomly();
                 break;
-            case 4:
+            case COCKTAIL:
                 viewModel.fetchCocktailRandomly();
                 break;
-            case 5:
-                viewModel.searchNasaApod("");
+            case NASA:
+                viewModel.fetchNasaApodRandomly();
+                break;
+            case NUMBER:
+                viewModel.fetchNumberRandomly();
                 break;
             default:
-                Log.e(TAG, "getSingleRandomNote: unknown next id = " + next);
+                Log.e(TAG, "getSingleRandomNote: unknown next API = " + next);
         }
     }
 
@@ -548,25 +565,29 @@ public class HomeFragment extends Fragment {
         switch (apiSelected) {
             case ALL:
                 searchJoke(query);
-                searchRecipe(query);
+                viewModel.searchPuppyRecipes(query);
                 searchMovie(query);
-                searchCocktail(query);
-                searchNasaApod(query);
+                viewModel.searchCocktail(query);
+                viewModel.searchNasaApod(query);
+                viewModel.searchNumber(query);
                 break;
             case JOKE:
                 searchJoke(query);
                 break;
             case RECIPE:
-                searchRecipe(query);
+                viewModel.searchPuppyRecipes(query);
                 break;
             case MOVIE:
                 searchMovie(query);
                 break;
             case COCKTAIL:
-                searchCocktail(query);
+                viewModel.searchCocktail(query);
                 break;
             case NASA:
-                searchNasaApod(query);
+                viewModel.searchNasaApod(query);
+                break;
+            case NUMBER:
+                viewModel.searchNumber(query);
                 break;
             default:
                 Log.e(TAG, "searchNote: unknown apiSelected =" + apiSelected);
@@ -579,21 +600,9 @@ public class HomeFragment extends Fragment {
         viewModel.searchTwoPartJoke(query);
     }
 
-    private void searchRecipe(String query) {
-        viewModel.searchPuppyRecipes(query);
-    }
-
     private void searchMovie(String query) {
         viewModel.searchOMDBMovie(query);
         viewModel.searchTMDBMovie(query);
-    }
-
-    private void searchCocktail(String query) {
-        viewModel.searchCocktail(query);
-    }
-
-    private void searchNasaApod(String query) {
-        viewModel.searchNasaApod(query);
     }
 
     private void showToast(String message) {

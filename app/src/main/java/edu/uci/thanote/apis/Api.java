@@ -8,7 +8,8 @@ public enum Api {
     OMDB("Open Movie Db"),
     THEMOVIEDB("The Movie Db"),
     THECOCKTAILDB("The Cocktail Db"),
-    NASA("NASA");
+    NASA("NASA"),
+    NUMBERS("Numbers");
 
     private String apiName;
 
@@ -34,6 +35,8 @@ public enum Api {
             return THECOCKTAILDB;
         } else if (apiName.equals(Api.NASA.toString())) {
             return NASA;
+        } else if (apiName.equals(Api.NUMBERS.toString())) {
+            return NUMBERS;
         }
 
         return JOKE;

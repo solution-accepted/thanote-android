@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.apis.nasa.NasaApod;
+import edu.uci.thanote.apis.numbers.Number;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
@@ -87,6 +88,11 @@ public class HomeViewModel extends AndroidViewModel {
         insertNoteIntoMemory(new Note(title, detail, Category.DEFAULT_CATEGORY_ID, imageUrl));
     }
 
+    public void insertNoteIntoMemory(String title, String detail) {
+        insertNoteIntoMemory(new Note(title, detail, Category.DEFAULT_CATEGORY_ID, ""));
+    }
+
+
     public void setNotesInMemory(List<Note> notes) {
         notesInMemory.setValue(notes);
     }
@@ -157,8 +163,20 @@ public class HomeViewModel extends AndroidViewModel {
         repository.fetchNasaApodToday();
     }
 
+    public void fetchNasaApodRandomly() {
+        repository.fetchNasaApodBySearching("");
+    }
+
     public void searchNasaApod(String query) {
         repository.fetchNasaApodBySearching(query);
+    }
+
+    public void fetchNumberRandomly() {
+        repository.fetchNumberRandomly();
+    }
+
+    public void searchNumber(String query) {
+        repository.fetchNumberRandomlyBySearching(query);
     }
 
     // endregion
@@ -198,6 +216,8 @@ public class HomeViewModel extends AndroidViewModel {
         void didFetchCocktailBySearching(CocktailResponse cocktails);
 
         void didFetchNasaApodRandomly(NasaApod nasaApod);
+
+        void didFetchNumber(Number number);
     }
 
     public void setListener(Listener listener) {
@@ -281,6 +301,11 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         public void didFetchNasaApod(NasaApod nasaApod) {
             listener.didFetchNasaApodRandomly(nasaApod);
+        }
+
+        @Override
+        public void didFetchNumber(Number number) {
+            listener.didFetchNumber(number);
         }
     };
 

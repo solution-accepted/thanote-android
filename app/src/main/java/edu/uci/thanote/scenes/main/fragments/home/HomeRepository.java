@@ -10,6 +10,8 @@ import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.apis.nasa.NasaApi;
 import edu.uci.thanote.apis.nasa.NasaApod;
+import edu.uci.thanote.apis.numbers.Number;
+import edu.uci.thanote.apis.numbers.NumbersApi;
 import edu.uci.thanote.apis.omdb.OMDbApi;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
@@ -37,22 +39,24 @@ public class HomeRepository {
     private final String TAG = "HomeRepository";
 
     // database tables
-    private CategoryTable categoryTable;
-    private NoteTable noteTable;
+    private final CategoryTable categoryTable;
+    private final NoteTable noteTable;
 
     // data fields
-    private LiveData<List<Category>> categories;
-    private LiveData<List<Note>> notes;
+    private final LiveData<List<Category>> categories;
+    private final LiveData<List<Note>> notes;
 
-    private JokeApi jokeApi;
-    private RecipePuppyApi recipePuppyApi;
-    private OMDbApi omdbApi;
+    // apis
+    private final JokeApi jokeApi;
+    private final RecipePuppyApi recipePuppyApi;
+    private final OMDbApi omdbApi;
     private final String OMDB_API_KEY = Api.OMDB.getApiKey();
-    private TheMovieDbApi theMovieDbApi;
+    private final TheMovieDbApi theMovieDbApi;
     private final String TMDB_API_KEY = Api.THEMOVIEDB.getApiKey();
-    private TheCocktailDbApi theCocktailDbApi;
-    private NasaApi nasaApi;
+    private final TheCocktailDbApi theCocktailDbApi;
+    private final NasaApi nasaApi;
     private final String NASA_API_KEY = Api.NASA.getApiKey();
+    private final NumbersApi numbersApi;
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -61,7 +65,6 @@ public class HomeRepository {
         noteTable = new NoteTable(application);
         notes = noteTable.getNotes();
 
-        // apis
         APIClient apiClient = APIClient.getInstance();
         jokeApi = apiClient.getRetrofitJoke().create(JokeApi.class);
         recipePuppyApi = apiClient.getRetrofitRecipePuppy().create(RecipePuppyApi.class);
@@ -69,6 +72,7 @@ public class HomeRepository {
         theMovieDbApi = apiClient.getRetrofitTheMovieDb().create(TheMovieDbApi.class);
         theCocktailDbApi = apiClient.getRetrofitTheCocktailDb().create(TheCocktailDbApi.class);
         nasaApi = apiClient.getRetrofitNasa().create(NasaApi.class);
+        numbersApi = apiClient.getRetrofitNumbers().create(NumbersApi.class);
     }
 
     // region Public Methods (Local Database)
@@ -125,6 +129,8 @@ public class HomeRepository {
         void didFetchCocktailBySearching(CocktailResponse cocktailResponse);
 
         void didFetchNasaApod(NasaApod nasaApod);
+
+        void didFetchNumber(Number number);
     }
 
     private Listener listener;
@@ -229,6 +235,19 @@ public class HomeRepository {
         }
     }
 
+    public void fetchNumberRandomly() {
+        numbersApi.getRandom("trivia")
+                .enqueue(getCallback(listener::didFetchNumber));
+    }
+
+    public void fetchNumberRandomlyBySearching(String query) {
+        try {
+            numbersApi.getNumber(Integer.parseInt(query), "trivia")
+                    .enqueue(getCallback(listener::didFetchNumber));
+        } catch (NumberFormatException ignored) {
+            listener.didFetchError("NaN: Not a Number");
+        }
+    }
 
     private <T> Callback<T> getCallback(Consumer<T> function) {
         return new Callback<T>() {

@@ -11,6 +11,7 @@ public class APIClient {
     private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3/";
     private static final String THECOCKTAILDB_BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/";
     private static final String NASA_BASE_URL = "https://api.nasa.gov/";
+    private static final String NUMBERS_BASE_URL = "http://numbersapi.com/";
 
     private static APIClient instance;
     private Retrofit retrofitDemo;
@@ -20,6 +21,7 @@ public class APIClient {
     private Retrofit retrofitTheMovieDb;
     private Retrofit retrofitTheCocktailDb;
     private Retrofit retrofitNasa;
+    private Retrofit retrofitNumbers;
 
     public static APIClient getInstance() {
         if (instance == null) {
@@ -83,6 +85,13 @@ public class APIClient {
             retrofitNasa = buildRetrofit(NASA_BASE_URL);
         }
         return retrofitNasa;
+    }
+
+    public Retrofit getRetrofitNumbers() {
+        if (retrofitNumbers == null) {
+            retrofitNumbers = buildRetrofit(NUMBERS_BASE_URL);
+        }
+        return retrofitNumbers;
     }
 
     private Retrofit buildRetrofit(String baseUrl) {
