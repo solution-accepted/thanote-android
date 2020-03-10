@@ -175,7 +175,7 @@ public class HomeViewModel extends AndroidViewModel {
     }
 
     public void fetchNasaApodRandomly() {
-        repository.fetchNasaApodBySearching("");
+        repository.fetchNasaApodRandomly();
     }
 
     public void searchNasaApod(String query) {
