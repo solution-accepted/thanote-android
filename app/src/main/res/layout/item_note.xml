@@ -84,7 +84,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="@string/item_note_date"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
                 <Space
@@ -101,7 +100,7 @@
                     android:contentDescription="@string/item_note_fav"
                     android:tint="@color/holo_red_light"
                     app:srcCompat="@drawable/ic_favorite_border_black_24dp" />
-                
+
                 <ImageButton
                     android:id="@+id/button_note_share"
                     android:layout_width="wrap_content"

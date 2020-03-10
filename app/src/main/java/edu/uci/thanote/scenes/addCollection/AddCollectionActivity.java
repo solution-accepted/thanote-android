@@ -1,5 +1,6 @@
 package edu.uci.thanote.scenes.addCollection;
 
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +34,10 @@ public class AddCollectionActivity extends BaseActivity {
     }
 
     public void setupViews() {
+
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.default_background_color)));
+        setTitle("");
+
         newCategoryEditText = findViewById(R.id.edit_text_new_cagetory);
 
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);

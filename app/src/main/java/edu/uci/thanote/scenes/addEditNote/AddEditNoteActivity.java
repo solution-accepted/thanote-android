@@ -1,8 +1,6 @@
 package edu.uci.thanote.scenes.addEditNote;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -13,8 +11,6 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
 
-import java.io.IOException;
-import java.net.URL;
 import java.net.URLConnection;
 
 import edu.uci.thanote.R;
@@ -51,8 +47,8 @@ public class AddEditNoteActivity extends BaseActivity {
 
     public void setupViews() {
 
-        ActionBar actionBar = getActionBar();
-        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.add_edit_blue)));
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.default_background_color)));
+        setTitle("");
 
         editTextNoteTitle = findViewById(R.id.edit_text_new_note_title);
         editTextNoteDetail = findViewById(R.id.edit_text_new_note_detail);
@@ -63,14 +59,12 @@ public class AddEditNoteActivity extends BaseActivity {
 
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_NOTE)) {
-            setTitle(HEADER_EDIT_NOTE);
             Note note = (Note) intent.getSerializableExtra(EXTRA_NOTE);
 
             editTextNoteTitle.setText(note.getTitle());
             editTextNoteDetail.setText(note.getDetail());
             editTextNoteImageUrl.setText(note.getImageUrl());
         } else {
-            setTitle(HEADER_ADD_NOTE);
             categoryId = intent.getIntExtra(CATEGORY_ID, -1);
         }
 
