@@ -1,8 +1,9 @@
 package edu.uci.thanote.apis.thecocktaildb;
 
 import com.google.gson.annotations.SerializedName;
+import edu.uci.thanote.apis.ImageNote;
 
-public class Cocktail {
+public class Cocktail implements ImageNote {
     @SerializedName("strDrink")
     private String name;
     @SerializedName("strInstructions")
@@ -29,5 +30,15 @@ public class Cocktail {
                 ", instruction='" + instruction + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
                 '}';
+    }
+
+    @Override
+    public String getTitle() {
+        return "Cocktail: " + name;
+    }
+
+    @Override
+    public String getDetail() {
+        return instruction;
     }
 }

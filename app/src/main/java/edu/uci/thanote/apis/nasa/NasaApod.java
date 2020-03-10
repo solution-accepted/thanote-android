@@ -1,11 +1,12 @@
 package edu.uci.thanote.apis.nasa;
 
 import com.google.gson.annotations.SerializedName;
+import edu.uci.thanote.apis.ImageNote;
 
 /**
  * Created by Joxon on 2020-03-09.
  */
-public class NasaApod {
+public class NasaApod implements ImageNote {
     private String code;
 
     @SerializedName("title")
@@ -25,7 +26,7 @@ public class NasaApod {
     }
 
     public String getTitle() {
-        return title;
+        return "Nasa: " + title;
     }
 
     public String getDetail() {

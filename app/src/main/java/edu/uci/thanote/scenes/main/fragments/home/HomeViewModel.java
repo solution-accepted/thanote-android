@@ -6,18 +6,22 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import edu.uci.thanote.apis.BasicNote;
+import edu.uci.thanote.apis.ImageNote;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
 import edu.uci.thanote.apis.nasa.NasaApod;
 import edu.uci.thanote.apis.numbers.Number;
 import edu.uci.thanote.apis.openmoviedb.OMDbMovie;
 import edu.uci.thanote.apis.openmoviedb.OMDbMovieSearchResponse;
+import edu.uci.thanote.apis.opentriviadb.TriviaResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
 import edu.uci.thanote.apis.themoviedb.TMDbMoviesResponse;
 import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +96,13 @@ public class HomeViewModel extends AndroidViewModel {
         insertNoteIntoMemory(new Note(title, detail, Category.DEFAULT_CATEGORY_ID, ""));
     }
 
+    public void insertNoteIntoMemory(@NotNull BasicNote note) {
+        insertNoteIntoMemory(note.getTitle(), note.getDetail());
+    }
+
+    public void insertNoteIntoMemory(@NotNull ImageNote note) {
+        insertNoteIntoMemory(note.getTitle(), note.getDetail(), note.getImageUrl());
+    }
 
     public void setNotesInMemory(List<Note> notes) {
         notesInMemory.setValue(notes);
@@ -179,12 +190,19 @@ public class HomeViewModel extends AndroidViewModel {
         repository.fetchNumberRandomlyBySearching(query);
     }
 
+    public void fetchTiviaRandomly() {
+        repository.fetchTriviaRandomly();
+    }
+
+    public void searchTrivia(String query) {
+        repository.fetchTriviaByAmount(query);
+    }
+
     // endregion
 
     // region ViewModel Listener
 
     private Listener listener;
-
 
     public interface Listener {
         void didFetchSingleJokeRandomly(SingleJoke joke);
@@ -218,6 +236,10 @@ public class HomeViewModel extends AndroidViewModel {
         void didFetchNasaApodRandomly(NasaApod nasaApod);
 
         void didFetchNumber(Number number);
+
+        void didFetchTriviaRandomly(TriviaResponse trivia);
+
+        void didFetchTriviaList(TriviaResponse triviaResponse);
     }
 
     public void setListener(Listener listener) {
@@ -306,6 +328,16 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         public void didFetchNumber(Number number) {
             listener.didFetchNumber(number);
+        }
+
+        @Override
+        public void didFetchTriviaRandomly(TriviaResponse trivia) {
+            listener.didFetchTriviaRandomly(trivia);
+        }
+
+        @Override
+        public void didFetchTriviaList(TriviaResponse triviaResponse) {
+            listener.didFetchTriviaList(triviaResponse);
         }
     };
 

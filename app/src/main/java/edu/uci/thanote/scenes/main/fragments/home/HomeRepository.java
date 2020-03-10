@@ -15,6 +15,8 @@ import edu.uci.thanote.apis.numbers.NumbersApi;
 import edu.uci.thanote.apis.openmoviedb.OMDbApi;
 import edu.uci.thanote.apis.openmoviedb.OMDbMovie;
 import edu.uci.thanote.apis.openmoviedb.OMDbMovieSearchResponse;
+import edu.uci.thanote.apis.opentriviadb.TriviaApi;
+import edu.uci.thanote.apis.opentriviadb.TriviaResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyResponse;
 import edu.uci.thanote.apis.thecocktaildb.CocktailResponse;
@@ -57,6 +59,7 @@ public class HomeRepository {
     private final NasaApi nasaApi;
     private final String NASA_API_KEY = Api.NASA.getApiKey();
     private final NumbersApi numbersApi;
+    private final TriviaApi triviaApi;
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -73,6 +76,7 @@ public class HomeRepository {
         theCocktailDbApi = apiClient.getRetrofitTheCocktailDb().create(TheCocktailDbApi.class);
         nasaApi = apiClient.getRetrofitNasa().create(NasaApi.class);
         numbersApi = apiClient.getRetrofitNumbers().create(NumbersApi.class);
+        triviaApi = apiClient.getRetrofitTrivia().create(TriviaApi.class);
     }
 
     // region Public Methods (Local Database)
@@ -131,6 +135,10 @@ public class HomeRepository {
         void didFetchNasaApod(NasaApod nasaApod);
 
         void didFetchNumber(Number number);
+
+        void didFetchTriviaRandomly(TriviaResponse triviaResponse);
+
+        void didFetchTriviaList(TriviaResponse triviaResponse);
     }
 
     private Listener listener;
@@ -220,6 +228,8 @@ public class HomeRepository {
             nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY, true, query)
                     .enqueue(getCallback(listener::didFetchNasaApod));
         } else {
+            listener.didFetchError("Nasa: Try YYYY-MM-DD?");
+
             final int year = 1995 + new Random().nextInt(14); // 1995 - 2019
             final int month = 1 + new Random().nextInt(12); // 1 - 12
             final int day = 1 + new Random().nextInt(28); // at least 28 days a month
@@ -244,8 +254,22 @@ public class HomeRepository {
         try {
             numbersApi.getNumber(Integer.parseInt(query), "trivia")
                     .enqueue(getCallback(listener::didFetchNumber));
-        } catch (NumberFormatException ignored) {
-            listener.didFetchError("NaN: Not a Number");
+        } catch (NumberFormatException e) {
+            listener.didFetchError("NumbersAPI: Not a Number");
+        }
+    }
+
+    public void fetchTriviaRandomly() {
+        triviaApi.getSingleMultipleChoiceTrivia()
+                .enqueue(getCallback(listener::didFetchTriviaRandomly));
+    }
+
+    public void fetchTriviaByAmount(String query) {
+        try {
+            triviaApi.getMultipleChoiceTrivia(Integer.parseInt(query))
+                    .enqueue(getCallback(listener::didFetchTriviaList));
+        } catch (NumberFormatException e) {
+            listener.didFetchError("TriviaAPI: Try input a number?");
         }
     }
 

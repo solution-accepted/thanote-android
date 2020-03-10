@@ -1,6 +1,9 @@
 package edu.uci.thanote.apis.joke;
 
-public class SingleJoke extends Joke {
+
+import edu.uci.thanote.apis.BasicNote;
+
+public class SingleJoke extends Joke implements BasicNote {
     private String joke;
 
     public String getJoke() {
@@ -12,5 +15,15 @@ public class SingleJoke extends Joke {
         return super.toString() + "SingleJoke{" +
                 "joke='" + joke + '\'' +
                 '}';
+    }
+
+    @Override
+    public String getTitle() {
+        return "Joke: " + getCategory();
+    }
+
+    @Override
+    public String getDetail() {
+        return joke;
     }
 }

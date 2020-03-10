@@ -1,11 +1,12 @@
 package edu.uci.thanote.apis.numbers;
 
 import com.google.gson.annotations.SerializedName;
+import edu.uci.thanote.apis.BasicNote;
 
 /**
  * Created by Joxon on 2020-03-09.
  */
-public class Number {
+public class Number implements BasicNote {
 
     private boolean found;
 
@@ -20,7 +21,7 @@ public class Number {
     }
 
     public String getTitle() {
-        return title;
+        return "Number: " + title;
     }
 
     public String getDetail() {
