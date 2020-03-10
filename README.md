@@ -21,13 +21,12 @@ App Name:
 
 - [All public APIs](https://github.com/public-apis/public-apis)
 - [Joke API](https://sv443.net/jokeapi/v2)
-- [Recipe Puppy API](http://www.recipepuppy.com/)
-- [The Movie Db API](https://developers.themoviedb.org/3/getting-started/introduction)
-- [OMDb API](http://omdbapi.com/)
-- [The Cocktail Db API](https://www.thecocktaildb.com/)
+- [Open Movie Db](http://omdbapi.com/)
+- [The Movie Db](https://www.themoviedb.org/documentation/api)
+- [The Cocktail Db](https://www.thecocktaildb.com/api.php)
 - [NASA API](https://api.nasa.gov/)
 - [Numbers API](http://numbersapi.com/)
-- [Trivia API](https://opentdb.com/)
+- [Open Trivia Db](https://opentdb.com/)
 
 ## Features
 - [x] Search notes, stories, ideas in your interested fields
