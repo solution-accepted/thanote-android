@@ -4,10 +4,10 @@ import java.util.Arrays;
 
 public enum Api {
     JOKE("Joke"),
-    RECIPEPUPPY("Recipe Puppy"),
-    OMDB("Open Movie Db"),
-    THEMOVIEDB("The Movie Db"),
-    THECOCKTAILDB("The Cocktail Db"),
+    RECIPEPUPPY("Recipe"),
+    OMDB("OMDb"),
+    THEMOVIEDB("Movie"),
+    THECOCKTAILDB("Cocktail"),
     NASA("NASA"),
     NUMBERS("Numbers"),
     TRIVIA("Trivia");
