@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import edu.uci.thanote.R;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.nasa.NasaApod;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.Recipe;
@@ -44,29 +45,32 @@ public class HomeFragment extends Fragment {
     // region API constants
 
     private final int NOTE_RANDOM_DISPLAY_COUNT = 10;
-    private final int NOTE_RANDOM_TYPE_COUNT = 5;
+    private final int NOTE_RANDOM_TYPE_COUNT = 6;
 
     private final int NOTE_DEFAULT_CATEGORY_ID = Category.DEFAULT_CATEGORY_ID;
     private final String NOTE_DEFAULT_IMAGE_URL = "";
 
-    private final String NOTE_JOKE_TITLE_PREFIX = "[Joke]: ";
+    private final String NOTE_JOKE_TITLE_PREFIX = "[Joke] ";
 
-    private final String NOTE_RECIPE_TITLE_PREFIX = "[Recipe]: ";
+    private final String NOTE_RECIPE_TITLE_PREFIX = "[Recipe] ";
     private final int NOTE_RECIPE_COUNT_IN_RESPONSE = 10;
 
-    private final String NOTE_MOVIE_TITLE_PREFIX = "[Movie]: ";
+    private final String NOTE_MOVIE_TITLE_PREFIX = "[Movie] ";
     private final int NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE = 20;
 
-    private final String NOTE_COCKTAIL_TITLE_PREFIX = "[Cocktail]: ";
+    private final String NOTE_COCKTAIL_TITLE_PREFIX = "[Cocktail] ";
     private final int NOTE_COCKTAIL_COUNT_IN_RANDOM_RESPONSE = 1;
     private final int NOTE_COCKTAIL_COUNT_IN_SEARCH_RESPONSE = 25;
+
+    private final String NOTE_NASA_TITLE_PREFIX = "[Nasa] ";
 
     private enum API {
         ALL,
         JOKE,
         RECIPE,
         MOVIE,
-        COCKTAIL
+        COCKTAIL,
+        NASA
     }
 
     private API apiSelected = API.ALL;
@@ -118,11 +122,11 @@ public class HomeFragment extends Fragment {
             if (joke.isError()) {
                 return;
             }
-            viewModel.insertNoteIntoMemory(new Note(
+            viewModel.insertNoteIntoMemory(
                     NOTE_JOKE_TITLE_PREFIX + joke.getCategory(),
                     joke.getJoke(),
-                    NOTE_DEFAULT_CATEGORY_ID,
-                    NOTE_DEFAULT_IMAGE_URL));
+                    NOTE_DEFAULT_IMAGE_URL
+            );
 
         }
 
@@ -132,11 +136,11 @@ public class HomeFragment extends Fragment {
             if (joke.isError()) {
                 return;
             }
-            viewModel.insertNoteIntoMemory(new Note(
+            viewModel.insertNoteIntoMemory(
                     NOTE_JOKE_TITLE_PREFIX + joke.getCategory(),
                     joke.getSetup() + "\n" + joke.getDelivery(),
-                    NOTE_DEFAULT_CATEGORY_ID,
-                    NOTE_DEFAULT_IMAGE_URL));
+                    NOTE_DEFAULT_IMAGE_URL
+            );
         }
 
         @Override
@@ -152,25 +156,23 @@ public class HomeFragment extends Fragment {
         @Override
         public void didFetchPuppyRecipesRandomly(RecipePuppyResponse recipes) {
             swipeRefreshLayout.setRefreshing(false);
-            List<Recipe> recipeList = recipes.getRecipes();
-            if (recipeList.isEmpty()) {
+            final List<Recipe> recipeList = recipes.getRecipes();
+            if (recipeList == null || recipeList.isEmpty()) {
                 return;
             }
-            final int next = new Random().nextInt(NOTE_RECIPE_COUNT_IN_RESPONSE);
-            Recipe recipe = recipeList.get(next);
-            Note note = new Note(
+            Recipe recipe = recipeList.get(new Random().nextInt(NOTE_RECIPE_COUNT_IN_RESPONSE));
+            viewModel.insertNoteIntoMemory(
                     NOTE_RECIPE_TITLE_PREFIX + recipe.getTitle(),
                     recipe.getIngredients() + "\n" + recipe.getWebsiteUrl(),
-                    NOTE_DEFAULT_CATEGORY_ID,
                     recipe.getThumbnail()
             );
-            viewModel.insertNoteIntoMemory(note);
         }
 
         @Override
         public void didFetchPuppyRecipesByParams(RecipePuppyResponse recipes) {
             swipeRefreshLayout.setRefreshing(false);
-            if (recipes.getRecipes().isEmpty()) {
+            final List<Recipe> recipeList = recipes.getRecipes();
+            if (recipeList == null || recipeList.isEmpty()) {
                 return;
             }
             switch (apiSelected) {
@@ -178,12 +180,13 @@ public class HomeFragment extends Fragment {
                     didFetchPuppyRecipesRandomly(recipes);
                     break;
                 case RECIPE:
-                    recipes.getRecipes().forEach(recipe -> viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_RECIPE_TITLE_PREFIX + recipe.getTitle(),
-                            recipe.getIngredients() + "\n" + recipe.getWebsiteUrl(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            recipe.getThumbnail()
-                    )));
+                    recipeList.forEach(recipe ->
+                            viewModel.insertNoteIntoMemory(
+                                    NOTE_RECIPE_TITLE_PREFIX + recipe.getTitle(),
+                                    recipe.getIngredients() + "\n" + recipe.getWebsiteUrl(),
+                                    recipe.getThumbnail()
+                            )
+                    );
                     break;
                 default:
                     Log.e(TAG, "didFetchPuppyRecipesByParams: apiSelected = " + apiSelected);
@@ -198,11 +201,11 @@ public class HomeFragment extends Fragment {
             }
             switch (apiSelected) {
                 case ALL:
-                    viewModel.insertNoteIntoMemory(new Note(
+                    viewModel.insertNoteIntoMemory(
                             NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
                             movie.getPlot() + "\n" + movie.getImdbUrl(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl()));
+                            movie.getImageUrl()
+                    );
                     break;
                 case MOVIE:
                     break;
@@ -221,11 +224,14 @@ public class HomeFragment extends Fragment {
                 case ALL:
                     break;
                 case MOVIE:
-                    movies.getResults().forEach(movie -> viewModel.insertNoteIntoMemory(new Note(
-                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
-                            movie.getImdbUrl(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl())));
+                    movies.getResults()
+                            .forEach(movie ->
+                                    viewModel.insertNoteIntoMemory(
+                                            NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
+                                            movie.getImdbUrl(),
+                                            movie.getImageUrl()
+                                    )
+                            );
                     break;
                 default:
                     Log.e(TAG, "didFetchOMDBMovieSearch: apiSelected = " + apiSelected);
@@ -235,17 +241,18 @@ public class HomeFragment extends Fragment {
         @Override
         public void didFetchTMDBMovieRandomly(TMDbMoviesResponse movies) {
             swipeRefreshLayout.setRefreshing(false);
-            if (movies.getMovies() == null) {
+            final List<TMDbMovie> movieList = movies.getMovies();
+            if (movieList == null || movieList.isEmpty()) {
                 return;
             }
-            TMDbMovie movie = movies.getMovies().get(new Random().nextInt(NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE));
+            TMDbMovie movie = movieList.get(new Random().nextInt(NOTE_TMDB_MOVIE_COUNT_IN_RESPONSE));
             switch (apiSelected) {
                 case ALL:
-                    viewModel.insertNoteIntoMemory(new Note(
+                    viewModel.insertNoteIntoMemory(
                             NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
                             movie.getOverview(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl()));
+                            movie.getImageUrl()
+                    );
                     break;
                 case MOVIE:
                     break;
@@ -257,28 +264,28 @@ public class HomeFragment extends Fragment {
         @Override
         public void didFetchTMDBMovieBySearching(TMDbMoviesResponse movies) {
             swipeRefreshLayout.setRefreshing(false);
-            List<TMDbMovie> movieList = movies.getMovies();
+            final List<TMDbMovie> movieList = movies.getMovies();
             if (movieList == null || movieList.isEmpty()) {
                 return;
             }
             switch (apiSelected) {
                 case ALL: {
                     TMDbMovie movie = movieList.get(0);
-                    viewModel.insertNoteIntoMemory(new Note(
+                    viewModel.insertNoteIntoMemory(
                             NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
                             movie.getOverview(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl()));
+                            movie.getImageUrl()
+                    );
                 }
                 break;
-                case MOVIE: {
-                    movies.getMovies().forEach(movie -> viewModel.insertNoteIntoMemory(new Note(
+                case MOVIE:
+                    movieList.forEach(movie -> viewModel.insertNoteIntoMemory(
                             NOTE_MOVIE_TITLE_PREFIX + movie.getTitle(),
                             movie.getOverview(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            movie.getImageUrl())));
-                }
-                break;
+                            movie.getImageUrl()
+                            )
+                    );
+                    break;
                 default:
                     Log.e(TAG, "didFetchTMDBMovieBySearching: apiSelected = " + apiSelected);
             }
@@ -287,46 +294,59 @@ public class HomeFragment extends Fragment {
         @Override
         public void didFetchCocktailRandomly(CocktailResponse cocktails) {
             swipeRefreshLayout.setRefreshing(false);
-            List<Cocktail> cocktailList = cocktails.getCocktails();
+            final List<Cocktail> cocktailList = cocktails.getCocktails();
             if (cocktailList == null || cocktailList.isEmpty()) {
                 return;
             }
             Cocktail cocktail = cocktailList.get(0);
-            viewModel.insertNoteIntoMemory(new Note(
+            viewModel.insertNoteIntoMemory(
                     NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
                     cocktail.getInstruction(),
-                    NOTE_DEFAULT_CATEGORY_ID,
-                    cocktail.getImageUrl()));
-
+                    cocktail.getImageUrl()
+            );
         }
 
         @Override
         public void didFetchCocktailBySearching(CocktailResponse cocktails) {
             swipeRefreshLayout.setRefreshing(false);
-            List<Cocktail> cocktailList = cocktails.getCocktails();
+            final List<Cocktail> cocktailList = cocktails.getCocktails();
             if (cocktailList == null || cocktailList.isEmpty()) {
                 return;
             }
             switch (apiSelected) {
                 case ALL: {
                     Cocktail cocktail = cocktailList.get(new Random().nextInt(cocktailList.size()));
-                    viewModel.insertNoteIntoMemory(new Note(
+                    viewModel.insertNoteIntoMemory(
                             NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
                             cocktail.getInstruction(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            cocktail.getImageUrl()));
+                            cocktail.getImageUrl()
+                    );
                 }
                 break;
                 case COCKTAIL:
-                    cocktailList.forEach(cocktail -> viewModel.insertNoteIntoMemory(new Note(
+                    cocktailList.forEach(cocktail -> viewModel.insertNoteIntoMemory(
                             NOTE_COCKTAIL_TITLE_PREFIX + cocktail.getName(),
                             cocktail.getInstruction(),
-                            NOTE_DEFAULT_CATEGORY_ID,
-                            cocktail.getImageUrl())));
+                            cocktail.getImageUrl())
+                    );
                     break;
                 default:
                     Log.e(TAG, "didFetchCocktailBySearching: apiSelected = " + apiSelected);
             }
+        }
+
+        @Override
+        public void didFetchNasaApodRandomly(NasaApod nasaApod) {
+            swipeRefreshLayout.setRefreshing(false);
+            final String url = nasaApod.getImageUrl();
+            if (nasaApod.getCode() != null || url == null || url.isEmpty()) {
+                return;
+            }
+            viewModel.insertNoteIntoMemory(
+                    NOTE_NASA_TITLE_PREFIX + nasaApod.getTitle(),
+                    nasaApod.getDetail(),
+                    nasaApod.getImageUrl()
+            );
         }
     };
 
@@ -514,6 +534,9 @@ public class HomeFragment extends Fragment {
             case 4:
                 viewModel.fetchCocktailRandomly();
                 break;
+            case 5:
+                viewModel.searchNasaApod("");
+                break;
             default:
                 Log.e(TAG, "getSingleRandomNote: unknown next id = " + next);
         }
@@ -528,6 +551,7 @@ public class HomeFragment extends Fragment {
                 searchRecipe(query);
                 searchMovie(query);
                 searchCocktail(query);
+                searchNasaApod(query);
                 break;
             case JOKE:
                 searchJoke(query);
@@ -540,6 +564,9 @@ public class HomeFragment extends Fragment {
                 break;
             case COCKTAIL:
                 searchCocktail(query);
+                break;
+            case NASA:
+                searchNasaApod(query);
                 break;
             default:
                 Log.e(TAG, "searchNote: unknown apiSelected =" + apiSelected);
@@ -563,6 +590,10 @@ public class HomeFragment extends Fragment {
 
     private void searchCocktail(String query) {
         viewModel.searchCocktail(query);
+    }
+
+    private void searchNasaApod(String query) {
+        viewModel.searchNasaApod(query);
     }
 
     private void showToast(String message) {

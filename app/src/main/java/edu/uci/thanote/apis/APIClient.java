@@ -10,6 +10,7 @@ public class APIClient {
     private static final String OMDB_BASE_URL = "http://omdbapi.com/";
     private static final String THEMOVIEDB_BASE_URL = "https://api.themoviedb.org/3/";
     private static final String THECOCKTAILDB_BASE_URL = "https://www.thecocktaildb.com/api/json/v1/1/";
+    private static final String NASA_BASE_URL = "https://api.nasa.gov/";
 
     private static APIClient instance;
     private Retrofit retrofitDemo;
@@ -18,6 +19,7 @@ public class APIClient {
     private Retrofit retrofitOMDb;
     private Retrofit retrofitTheMovieDb;
     private Retrofit retrofitTheCocktailDb;
+    private Retrofit retrofitNasa;
 
     public static APIClient getInstance() {
         if (instance == null) {
@@ -74,6 +76,13 @@ public class APIClient {
         }
 
         return retrofitTheCocktailDb;
+    }
+
+    public Retrofit getRetrofitNasa() {
+        if (retrofitNasa == null) {
+            retrofitNasa = buildRetrofit(NASA_BASE_URL);
+        }
+        return retrofitNasa;
     }
 
     private Retrofit buildRetrofit(String baseUrl) {

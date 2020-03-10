@@ -7,7 +7,8 @@ public enum Api {
     RECIPEPUPPY("Recipe Puppy"),
     OMDB("Open Movie Db"),
     THEMOVIEDB("The Movie Db"),
-    THECOCKTAILDB("The Cocktail Db");
+    THECOCKTAILDB("The Cocktail Db"),
+    NASA("NASA");
 
     private String apiName;
 
@@ -31,6 +32,8 @@ public enum Api {
             return THEMOVIEDB;
         } else if (apiName.equals(Api.THECOCKTAILDB.toString())) {
             return THECOCKTAILDB;
+        } else if (apiName.equals(Api.NASA.toString())) {
+            return NASA;
         }
 
         return JOKE;
@@ -47,6 +50,8 @@ public enum Api {
                 return "7c782685";
             case THEMOVIEDB:
                 return "698b1027c17fe80eecb1d699d1806254";
+            case NASA:
+                return "04pM2SYDhbE4ahGbNTXmOnQNh3G5DOQXPJWqIfnz";
             default:
                 return "";
         }

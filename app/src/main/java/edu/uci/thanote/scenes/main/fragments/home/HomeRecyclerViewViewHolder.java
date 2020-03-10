@@ -69,7 +69,9 @@ public class HomeRecyclerViewViewHolder extends RecyclerView.ViewHolder {
         final ImageView imageView;
         if (title.contains("Recipe")) {
             imageView = imageViewThumbnailSmall;
-        } else if (title.contains("Movie") || title.contains("Cocktail")) {
+        } else if (title.contains("Movie") ||
+                title.contains("Cocktail") ||
+                title.contains("Nasa")) {
             imageView = imageViewThumbnailLarge;
         } else {
             imageView = imageViewThumbnailSmall;

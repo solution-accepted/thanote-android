@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.nasa.NasaApod;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
 import edu.uci.thanote.apis.recipepuppy.RecipePuppyApi;
@@ -82,6 +83,10 @@ public class HomeViewModel extends AndroidViewModel {
         }
     }
 
+    public void insertNoteIntoMemory(String title, String detail, String imageUrl) {
+        insertNoteIntoMemory(new Note(title, detail, Category.DEFAULT_CATEGORY_ID, imageUrl));
+    }
+
     public void setNotesInMemory(List<Note> notes) {
         notesInMemory.setValue(notes);
     }
@@ -147,6 +152,15 @@ public class HomeViewModel extends AndroidViewModel {
         repository.fetchCocktailBySearching(query);
     }
 
+    // TODAY only, not random
+    public void fetchNasaApodToday() {
+        repository.fetchNasaApodToday();
+    }
+
+    public void searchNasaApod(String query) {
+        repository.fetchNasaApodBySearching(query);
+    }
+
     // endregion
 
     // region ViewModel Listener
@@ -182,6 +196,8 @@ public class HomeViewModel extends AndroidViewModel {
         void didFetchCocktailRandomly(CocktailResponse cocktails);
 
         void didFetchCocktailBySearching(CocktailResponse cocktails);
+
+        void didFetchNasaApodRandomly(NasaApod nasaApod);
     }
 
     public void setListener(Listener listener) {
@@ -260,6 +276,11 @@ public class HomeViewModel extends AndroidViewModel {
         @Override
         public void didFetchCocktailBySearching(CocktailResponse cocktails) {
             listener.didFetchCocktailBySearching(cocktails);
+        }
+
+        @Override
+        public void didFetchNasaApod(NasaApod nasaApod) {
+            listener.didFetchNasaApodRandomly(nasaApod);
         }
     };
 

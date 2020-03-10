@@ -8,6 +8,8 @@ import edu.uci.thanote.apis.Api;
 import edu.uci.thanote.apis.joke.JokeApi;
 import edu.uci.thanote.apis.joke.SingleJoke;
 import edu.uci.thanote.apis.joke.TwoPartJoke;
+import edu.uci.thanote.apis.nasa.NasaApi;
+import edu.uci.thanote.apis.nasa.NasaApod;
 import edu.uci.thanote.apis.omdb.OMDbApi;
 import edu.uci.thanote.apis.omdb.OMDbMovie;
 import edu.uci.thanote.apis.omdb.OMDbMovieSearchResponse;
@@ -27,6 +29,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 import java.util.List;
+import java.util.Random;
 import java.util.function.Consumer;
 
 public class HomeRepository {
@@ -48,6 +51,8 @@ public class HomeRepository {
     private TheMovieDbApi theMovieDbApi;
     private final String TMDB_API_KEY = Api.THEMOVIEDB.getApiKey();
     private TheCocktailDbApi theCocktailDbApi;
+    private NasaApi nasaApi;
+    private final String NASA_API_KEY = Api.NASA.getApiKey();
 
     public HomeRepository(Application application) {
         categoryTable = new CategoryTable(application);
@@ -63,6 +68,7 @@ public class HomeRepository {
         omdbApi = apiClient.getRetrofitOMDb().create(OMDbApi.class);
         theMovieDbApi = apiClient.getRetrofitTheMovieDb().create(TheMovieDbApi.class);
         theCocktailDbApi = apiClient.getRetrofitTheCocktailDb().create(TheCocktailDbApi.class);
+        nasaApi = apiClient.getRetrofitNasa().create(NasaApi.class);
     }
 
     // region Public Methods (Local Database)
@@ -117,6 +123,8 @@ public class HomeRepository {
         void didFetchCocktailRandomly(CocktailResponse cocktailResponse);
 
         void didFetchCocktailBySearching(CocktailResponse cocktailResponse);
+
+        void didFetchNasaApod(NasaApod nasaApod);
     }
 
     private Listener listener;
@@ -194,6 +202,33 @@ public class HomeRepository {
         theCocktailDbApi.getCocktailBySearching(query)
                 .enqueue(getCallback(listener::didFetchCocktailBySearching));
     }
+
+    public void fetchNasaApodToday() {
+        nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY)
+                .enqueue(getCallback(listener::didFetchNasaApod));
+    }
+
+    public void fetchNasaApodBySearching(String query) {
+        // 1995-06-16 <= query <= TODAY
+        if (query.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
+            nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY, true, query)
+                    .enqueue(getCallback(listener::didFetchNasaApod));
+        } else {
+            final int year = 1995 + new Random().nextInt(14); // 1995 - 2019
+            final int month = 1 + new Random().nextInt(12); // 1 - 12
+            final int day = 1 + new Random().nextInt(28); // at least 28 days a month
+
+            final String sYear = String.valueOf(year);
+            final String sMonth = String.valueOf(month).length() != 2 ? "0" + month : String.valueOf(month);
+            final String sDay = String.valueOf(day).length() != 2 ? "0" + day : String.valueOf(day);
+
+            final String date = String.join("-", sYear, sMonth, sDay);
+
+            nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY, true, date)
+                    .enqueue(getCallback(listener::didFetchNasaApod));
+        }
+    }
+
 
     private <T> Callback<T> getCallback(Consumer<T> function) {
         return new Callback<T>() {
