@@ -22,4 +22,8 @@
     <color name="dark_gray">#696969</color>
     <color name="default_background_color">#EEEEEE</color>
 
+    <!-- Fragment Background Colors -->
+    <color name="activity_blue">#462962FF</color>
+    <color name="add_edit_blue">#d6e1ff</color>
+
 </resources>

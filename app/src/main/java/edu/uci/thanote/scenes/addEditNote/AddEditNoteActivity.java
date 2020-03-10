@@ -1,6 +1,9 @@
 package edu.uci.thanote.scenes.addEditNote;
 
+import android.app.ActionBar;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,6 +12,10 @@ import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
+
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
 
 import edu.uci.thanote.R;
 import edu.uci.thanote.databases.note.Note;
@@ -24,9 +31,6 @@ public class AddEditNoteActivity extends BaseActivity {
     private final String HEADER_ADD_NOTE = "Add Note";
     private final String EMPTY_WARNING = "Please insert note title and note detail";
     private final String WRONG_IMAGE_WARNING = "Please put a valid image url or leave image url empty";
-    private final String IMAGE_SUFFIX_1 = "jpg";
-    private final String IMAGE_SUFFIX_2 = "jpeg";
-    private final String IMAGE_SUFFIX_3 = "png";
     // TODO
     private final String TEST_IMAGE_URL = "https://www.somagnews.com/wp-content/uploads/2019/11/d9-11-e1575118705742.jpg";
 
@@ -46,6 +50,10 @@ public class AddEditNoteActivity extends BaseActivity {
     }
 
     public void setupViews() {
+
+        ActionBar actionBar = getActionBar();
+        actionBar.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.add_edit_blue)));
+
         editTextNoteTitle = findViewById(R.id.edit_text_new_note_title);
         editTextNoteDetail = findViewById(R.id.edit_text_new_note_detail);
         editTextNoteImageUrl = findViewById(R.id.edit_text_new_note_image_url);
@@ -82,12 +90,20 @@ public class AddEditNoteActivity extends BaseActivity {
             return;
         }
 
-        if (!newNoteImageUrl.isEmpty() &&
-                (!newNoteImageUrl.trim().endsWith(IMAGE_SUFFIX_1) &&
-                        !newNoteImageUrl.trim().endsWith(IMAGE_SUFFIX_2) &&
-                        !newNoteImageUrl.trim().endsWith(IMAGE_SUFFIX_3))) {
-            showShortToast(WRONG_IMAGE_WARNING);
-            return;
+        if (!newNoteImageUrl.isEmpty()) {
+            try {
+                String mimeType = URLConnection.guessContentTypeFromName(newNoteImageUrl);
+                boolean image = mimeType.startsWith("image/");
+
+                if (!image) {
+                    showShortToast(WRONG_IMAGE_WARNING);
+                    return;
+                }
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                showShortToast(WRONG_IMAGE_WARNING);
+                return;
+            }
         }
 
         Intent intent = getIntent();

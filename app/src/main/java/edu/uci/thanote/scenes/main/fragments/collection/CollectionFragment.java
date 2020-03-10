@@ -82,7 +82,7 @@ public class CollectionFragment extends BaseFragment {
 
     private void openNoteList(Category category) {
         Intent intent = new Intent(getActivity(), NoteListActivity.class);
-        intent.putExtra(NoteListActivity.CATEGORY_ID, category.getId());
+        intent.putExtra(NoteListActivity.EXTRA_CATEGORY, category);
         startActivity(intent);
     }
 

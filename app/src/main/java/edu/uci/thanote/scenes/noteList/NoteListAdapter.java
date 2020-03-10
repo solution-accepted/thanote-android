@@ -107,10 +107,9 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
 
     public class NoteHolder extends RecyclerView.ViewHolder {
         private Note note;
-        private TextView noteDate;
+//        private TextView noteDate;
         private TextView noteTitle;
         private TextView noteDescription;
-        private ImageView imageViewThumbnailLarge;
         private ImageView imageViewThumbnailSmall;
 
         private ImageButton buttonShare;
@@ -119,10 +118,9 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
 
         NoteHolder(View itemView) {
             super(itemView);
-            noteDate = itemView.findViewById(R.id.text_view_note_date);
+//            noteDate = itemView.findViewById(R.id.text_view_note_date);
             noteTitle = itemView.findViewById(R.id.text_view_note_title);
             noteDescription = itemView.findViewById(R.id.text_view_note_description);
-            imageViewThumbnailLarge = itemView.findViewById(R.id.image_view_note_thumbnail_large);
             imageViewThumbnailSmall = itemView.findViewById(R.id.image_view_note_thumbnail_small);
 
             buttonShare = itemView.findViewById(R.id.button_note_share);
@@ -148,7 +146,7 @@ public class NoteListAdapter extends ListAdapter<Note, NoteListAdapter.NoteHolde
 
         public void setNote(Note note) {
             this.note = note;
-            noteDate.setText(note.getCreateDate().toString());
+//            noteDate.setText(note.getCreateDate().toString());
             noteTitle.setText(note.getTitle());
             noteDescription.setText(note.getDetail());
 

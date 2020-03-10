@@ -11,35 +11,37 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ImageView;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
 
 import edu.uci.thanote.R;
+import edu.uci.thanote.databases.category.Category;
 import edu.uci.thanote.databases.note.Note;
 import edu.uci.thanote.scenes.addCollection.AddCollectionActivity;
 import edu.uci.thanote.scenes.addEditNote.AddEditNoteActivity;
 import edu.uci.thanote.scenes.general.BaseActivity;
 
 public class NoteListActivity extends BaseActivity {
-    public static final String CATEGORY_ID =
-            "edu.uci.thanote.CATEGORY_ID";
+    public static final String EXTRA_CATEGORY =
+            "edu.uci.thanote.EXTRA_CATEGORY";
     public static final int CATEGORY_ID_DEFAULT = 0;
     public final String SHARE_INTENT_TITLE = "Share Note Via:";
 
-    private int categoryId;
+    private Category category;
 
     private RecyclerView recyclerView;
     private SearchView searchView;
+    private TextView textView;
 
     private FloatingActionButton buttonAddNote;
 
     private NoteListViewModel viewModel;
     private final NoteListAdapter adapter = new NoteListAdapter();
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +49,7 @@ public class NoteListActivity extends BaseActivity {
         setContentView(R.layout.activity_note_list);
 
         Intent intent = getIntent();
-        categoryId = intent.getIntExtra(CATEGORY_ID, CATEGORY_ID_DEFAULT);
+        category = (Category) intent.getSerializableExtra(EXTRA_CATEGORY);
 
         setupViewModel();
         setupViews();
@@ -60,7 +62,7 @@ public class NoteListActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(NoteListActivity.this, AddEditNoteActivity.class);
-                intent.putExtra(AddEditNoteActivity.CATEGORY_ID, categoryId);
+                intent.putExtra(AddEditNoteActivity.CATEGORY_ID, category.getId());
                 startActivity(intent);
             }
         });
@@ -92,7 +94,7 @@ public class NoteListActivity extends BaseActivity {
 
     public void setupViewModel() {
         viewModel = new ViewModelProvider(this).get(NoteListViewModel.class);
-        viewModel.setCategoryId(categoryId);
+        viewModel.setCategoryId(category.getId());
         viewModel.setListener(new NoteListViewModel.NoteViewModelListener() {
             @Override
             public void onNoteClick(Note note) {
@@ -110,6 +112,11 @@ public class NoteListActivity extends BaseActivity {
     }
 
     private void setupViews() {
+        getSupportActionBar().hide();
+
+        textView = findViewById(R.id.text_view_note_list_header);
+        textView.setText(category.getName());
+
         recyclerView = findViewById(R.id.recycler_view_note_list);
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -122,14 +129,26 @@ public class NoteListActivity extends BaseActivity {
         searchView = findViewById(R.id.search_view_note_list);
         searchView.setBackgroundResource(R.color.super_light_gray);
         searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        searchView.setIconified(false);
         searchView.clearFocus();
 
-        searchView.setOnSearchClickListener(new View.OnClickListener() {
+        searchView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
+                searchView.setIconified(false);
                 buttonAddNote.hide();
+            }
+        });
+
+        int searchCloseButtonId = searchView.getContext().getResources()
+                .getIdentifier("android:id/search_close_btn", null, null);
+        ImageView closeButton = (ImageView) this.searchView.findViewById(searchCloseButtonId);
+
+        closeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setIconified(true);
+                buttonAddNote.show();
             }
         });
 
@@ -145,6 +164,8 @@ public class NoteListActivity extends BaseActivity {
                 return true;
             }
         });
+
+
 
     }
 

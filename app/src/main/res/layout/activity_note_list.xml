@@ -3,13 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white">
+    android:background="@color/activity_blue">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/text_view_note_list_header"
+            style="@style/TitleStyleCollectionsNotes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
 
         <SearchView
             android:id="@+id/search_view_note_list"
@@ -20,7 +30,9 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="10dp"
-            android:background="#8FFFFFFF"
+            android:background="#bbbbbb"
+            android:clickable="true"
+            android:focusable="true"
             android:queryHint="@string/note_search_hint">
 
         </SearchView>
@@ -33,13 +45,14 @@
             android:layout_gravity="fill_vertical"
             android:fillViewport="true">
 
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_note_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:listitem="@layout/item_note" />
-
         </androidx.core.widget.NestedScrollView>
+
 
     </LinearLayout>
 
