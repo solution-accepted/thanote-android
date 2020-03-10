@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.*;
 import androidx.fragment.app.DialogFragment;
 import edu.uci.thanote.R;
+import edu.uci.thanote.helpers.AlertReceiver;
 import edu.uci.thanote.scenes.main.fragments.setting.ImageTextItem;
 import edu.uci.thanote.scenes.general.BaseActivity;
 

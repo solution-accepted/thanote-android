@@ -6,10 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.widget.Toast;
-import edu.uci.thanote.scenes.notification.AlertReceiver;
 
-import java.text.DateFormat;
 import java.util.Calendar;
 
 public class AlarmService extends Service {
