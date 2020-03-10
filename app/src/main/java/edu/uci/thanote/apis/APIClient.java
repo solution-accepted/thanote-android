@@ -4,7 +4,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIClient {
-    private static final String DEMO_BASE_URL = "https://jsonplaceholder.typicode.com/";
     private static final String JOKE_BASE_URL = "https://sv443.net/jokeapi/v2/joke/";
     private static final String RECIPE_PUPPY_BASE_URL = "http://www.recipepuppy.com/api/";
     private static final String OMDB_BASE_URL = "http://omdbapi.com/";
@@ -15,7 +14,6 @@ public class APIClient {
     private static final String TRIVIA_BASE_URL = "https://opentdb.com/";
 
     private static APIClient instance;
-    private Retrofit retrofitDemo;
     private Retrofit retrofitJoke;
     private Retrofit retrofitRecipePuppy;
     private Retrofit retrofitOMDb;
@@ -32,14 +30,6 @@ public class APIClient {
             }
         }
         return instance;
-    }
-
-    public Retrofit getRetrofitDemo() {
-        if (retrofitDemo == null) {
-            retrofitDemo = buildRetrofit(DEMO_BASE_URL);
-        }
-
-        return retrofitDemo;
     }
 
     public Retrofit getRetrofitJoke() {
