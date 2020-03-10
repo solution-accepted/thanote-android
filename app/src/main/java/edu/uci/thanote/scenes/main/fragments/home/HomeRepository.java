@@ -222,6 +222,21 @@ public class HomeRepository {
                 .enqueue(getCallback(listener::didFetchNasaApod));
     }
 
+    public void fetchNasaApodRandomly() {
+        final int year = 1995 + new Random().nextInt(14); // 1995 - 2019
+        final int month = 1 + new Random().nextInt(12); // 1 - 12
+        final int day = 1 + new Random().nextInt(28); // at least 28 days a month
+
+        final String sYear = String.valueOf(year);
+        final String sMonth = String.valueOf(month).length() != 2 ? "0" + month : String.valueOf(month);
+        final String sDay = String.valueOf(day).length() != 2 ? "0" + day : String.valueOf(day);
+
+        final String date = String.join("-", sYear, sMonth, sDay);
+
+        nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY, true, date)
+                .enqueue(getCallback(listener::didFetchNasaApod));
+    }
+
     public void fetchNasaApodBySearching(String query) {
         // 1995-06-16 <= query <= TODAY
         if (query.matches("\\d\\d\\d\\d-\\d\\d-\\d\\d")) {
@@ -229,19 +244,7 @@ public class HomeRepository {
                     .enqueue(getCallback(listener::didFetchNasaApod));
         } else {
             listener.didFetchError("Nasa: Try YYYY-MM-DD?");
-
-            final int year = 1995 + new Random().nextInt(14); // 1995 - 2019
-            final int month = 1 + new Random().nextInt(12); // 1 - 12
-            final int day = 1 + new Random().nextInt(28); // at least 28 days a month
-
-            final String sYear = String.valueOf(year);
-            final String sMonth = String.valueOf(month).length() != 2 ? "0" + month : String.valueOf(month);
-            final String sDay = String.valueOf(day).length() != 2 ? "0" + day : String.valueOf(day);
-
-            final String date = String.join("-", sYear, sMonth, sDay);
-
-            nasaApi.getAstronomyPictureOfTheDay(NASA_API_KEY, true, date)
-                    .enqueue(getCallback(listener::didFetchNasaApod));
+            fetchNasaApodRandomly();
         }
     }
 
